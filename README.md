@@ -3,173 +3,71 @@
 **Kontoauszug auswerten – 100 % offline.**
 
 dewz is a desktop app for Windows, macOS and Linux for analysing your own bank account exports. Import the Excel or CSV export from your
-bank, let the bookings be categorised automatically by keyword rules, and see where your money goes – per category,
-per month and over time. Nothing ever leaves your computer: the app has no network access at all.
+bank, let the bookings be categorised automatically, and see where your money goes – per category, per month and
+over time. Nothing ever leaves your computer: the app has no network access at all.
 
-The user interface is available in German and English: it starts in the system language and can be switched any time
-with the language button in the header (the choice is remembered).
-
-## Features
-
-- **Import** bank exports as Excel (`.xlsx`, `.xlsm`) or CSV/TXT (UTF-8, UTF-16 or Windows-1252, delimiter detected
-  automatically). A mapping dialog suggests the columns (date, signed amount or separate debit/credit columns,
-  recipient, purpose, booking text, category) and remembers the mapping for the next import. Several files can be imported at once, also via drag & drop; duplicate bookings are detected and skipped.
-  The old Excel format `.xls` is not supported – save it as `.xlsx` or CSV first.
-- **Automatic categorisation** by keywords in recipient, purpose or booking text. The longest matching keyword wins;
-  `"word"` matches whole words only, `!keyword` overrides a category supplied by the import file. Bookings can be
-  reassigned by hand, and "Regel erstellen …" turns such a correction into a rule.
-- **Rücklagen (transfers)**: categories marked as transfers to your own accounts (e.g. savings) are excluded from
-  income and expenses and reported separately.
-- **Views**: expenses by category, monthly overview, categories compared month by month, small expenses (configurable
-  threshold) and the full booking list – all with filters for text, category, type, month, date range and amount.
-- **Export** bookings and the evaluation as CSV (Excel-compatible, protected against formula injection) and the
-  category rules as JSON.
-- **Data file** in a folder of your choice, saved automatically after every change – optionally **encrypted with a
-  password** (AES-256-GCM, key derived with PBKDF2-SHA-256, 600,000 iterations).
+The app is available in German and English. It starts in your system language; you can switch any time with the
+language button in the top right corner.
 
 ## Download
 
-Installers for every platform are attached to the [GitHub releases](https://github.com/binoema/dews/releases):
+Download the installer for your system from the [releases page](https://github.com/binoema/dews/releases):
 
-| Platform | File |
+| System | File |
 |---|---|
-| Windows (x64) | `dewz_<version>_x64-setup.exe` (recommended) or `dewz_<version>_x64_en-US.msi` |
-| macOS (Apple Silicon / Intel) | `dewz_<version>_aarch64.dmg` / `dewz_<version>_x64.dmg` |
-| Linux (x64) | `.AppImage` (runs anywhere), `.deb` (Debian/Ubuntu) or `.rpm` (Fedora/openSUSE) |
+| Windows | `dewz_<version>_x64-setup.exe` |
+| macOS (Apple Silicon, M1 and newer) | `dewz_<version>_aarch64.dmg` |
+| macOS (Intel) | `dewz_<version>_x64.dmg` |
+| Linux | `.AppImage` (runs on any distribution), `.deb` (Debian/Ubuntu) or `.rpm` (Fedora/openSUSE) |
 
-The installers are not code-signed. Windows SmartScreen shows a warning on first install ("More info" → "Run
-anyway"); on macOS, open the app via right-click → **Open** the first time, or run `xattr -cr /Applications/dewz.app`.
+The installers are not signed, so your system will warn you the first time:
 
-## Using the app
+- **Windows:** SmartScreen shows "Windows protected your PC" – click **More info**, then **Run anyway**.
+- **macOS:** right-click the app in the Applications folder and choose **Open**. If macOS says the app is damaged,
+  run `xattr -cr /Applications/dewz.app` in the Terminal once.
 
-1. Start dewz and click **Datenordner wählen**. Pick any folder – e.g. in your documents, a cloud folder or a
-   USB stick. dewz creates `dewz-daten.json` there and reopens the folder automatically on the next start.
-2. Click **Kontoexport importieren** (or drop files onto the window) and confirm the column mapping.
-3. Adjust categories and rules under **Kategorien & Regeln**.
-4. Optional: set a password in the **Datenordner** dialog. It is asked for at every start.
-   **If you forget it, the data cannot be recovered.**
+## Getting started
 
-Two invented sample exports for trying the app are included: `Kontoauszug_Beispiel.xlsx` and
-`Kontoauszug_Halbjahr.xlsx`.
+1. Start dewz and click **Choose data folder**. Pick any folder – e.g. in your documents, a cloud folder or a
+   USB stick. dewz saves your data there and opens the folder automatically on the next start.
+2. Export your transactions from your online banking as Excel (`.xlsx`) or CSV file.
+3. Click **Import bank export** (or drag the files onto the window) and check the suggested column mapping.
+4. Adjust the categories and rules under **Categories & rules** if needed.
 
-### Where data is stored
+Want to try it first? Download one of the two invented sample exports from this repository:
+[Kontoauszug_Beispiel.xlsx](Kontoauszug_Beispiel.xlsx) (one month) or
+[Kontoauszug_Halbjahr.xlsx](Kontoauszug_Halbjahr.xlsx) (six months).
 
-| What | Where |
-|---|---|
-| Bookings, categories, rules | `dewz-daten.json` in the folder you chose (plain JSON or encrypted) |
-| Remembered data folder | `einstellungen.json` in the app's config folder: `%APPDATA%\app.dewz.desktop` (Windows), `~/Library/Application Support/app.dewz.desktop` (macOS), `~/.config/app.dewz.desktop` (Linux) |
-| UI settings (last view, column mappings, small-expense threshold, a copy of the categories) | the web view's local storage (on Windows the WebView2 profile in `%LOCALAPPDATA%\app.dewz.desktop`) |
+## Features
 
-Data files from the app's former name (`finanz-buddy-daten.json`) are read and migrated to `dewz-daten.json`;
-the old file is left untouched.
+- **Import** Excel (`.xlsx`) and CSV files from any bank. dewz suggests which column is the date, the amount, the
+  recipient and so on, and remembers your choice for the next import. Several files can be imported at once;
+  transactions you already imported are recognised and skipped. The old Excel format `.xls` is not supported –
+  save it as `.xlsx` or CSV first.
+- **Automatic categories** based on keywords in the recipient or purpose, e.g. "rewe" → Groceries. You can change the
+  category of any transaction by hand, and turn such a correction into a rule with **Create rule …** so that similar
+  transactions are sorted automatically from then on.
+- **Reserves:** mark categories such as "Savings" as transfers between your own accounts. They then don't count as
+  income or expenses and are shown separately.
+- **Views:** expenses by category, monthly overview, categories month by month (with unusual months highlighted),
+  small expenses and the full list of transactions – all with filters for text, category, month, date range and amount.
+- **Export** transactions and the summary as CSV for Excel, and your category rules to back them up or move them
+  to another computer.
 
-## Security and privacy
+## Your data
 
-dewz handles personal financial data, so it is built to have as little attack surface as possible:
-
-- **No network.** A strict Content Security Policy (`default-src 'none'`) blocks every connection, external script,
-  font and image. The only allowed channel is the IPC bridge to the app's own Rust backend. Inline scripts and styles
-  are only executed with the hash/nonce Tauri adds at build time; `eval` is blocked.
-- **Narrow file access.** The web UI has no general file system access. The Rust backend
-  (`src-tauri/src/main.rs`) exposes only a few commands: it reads only folders the user picked in the system's folder dialog,
-  writes only `dewz-daten.json` into the active folder, and writes exports only to the path chosen in the
-  "Save as" dialog.
-- **Atomic saves.** The data file is written to a temporary file first and then renamed, so a crash never leaves a
-  half-written file.
-- **Encryption stays in the UI.** Password and key never leave the web view; the backend only receives finished
-  (encrypted) text.
-- **Minimal permissions.** The Tauri capability (`src-tauri/capabilities/default.json`) only allows listening to
-  window events and closing the window.
-
-## Development
-
-The app is a single self-contained HTML file (`src/index.html`, no build step, no frameworks) running in the system web view
-(WebView2 on Windows, WKWebView on macOS, WebKitGTK on Linux), hosted by a small [Tauri 2](https://tauri.app) backend in Rust.
-
-### Prerequisites (Windows)
-
-- [Node.js](https://nodejs.org) 20 or newer (only for the Tauri CLI)
-- [Rust](https://rustup.rs) (stable, MSVC toolchain) – `winget install Rustlang.Rustup`
-- Microsoft C++ Build Tools with the "Desktop development with C++" workload –
-  `winget install Microsoft.VisualStudio.2022.BuildTools --override "--quiet --wait --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"`
-- WebView2 Runtime (preinstalled on Windows 10/11)
-
-### Prerequisites (macOS / Linux)
-
-- Node.js 20 or newer and Rust (stable) as above
-- macOS: Xcode Command Line Tools – `xcode-select --install`
-- Linux (Debian/Ubuntu): `sudo apt install libwebkit2gtk-4.1-dev build-essential libssl-dev libayatana-appindicator3-dev librsvg2-dev`
-  – see the [Tauri prerequisites](https://tauri.app/start/prerequisites/) for other distributions
-
-### Commands
-
-```sh
-npm install        # installs the Tauri CLI
-npm run dev        # starts the app in development mode (rebuilds on Rust changes)
-npm run build      # release build plus installers
-```
-
-`npm run build` creates the installers for the current platform in `src-tauri/target/release/bundle/`:
-
-- Windows: `nsis/dewz_<version>_x64-setup.exe` (setup program) and `msi/dewz_<version>_x64_en-US.msi`
-  (e.g. for managed installations)
-- macOS: `macos/dewz.app` and `dmg/dewz_<version>_<arch>.dmg`
-- Linux: `appimage/`, `deb/` and `rpm/` packages
-
-### Releases
-
-`.github/workflows/release.yml` builds the installers for all platforms on GitHub Actions. To publish a release,
-set the new version in `src-tauri/tauri.conf.json` (and `package.json`), then push a matching tag:
-
-```sh
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-The workflow creates a draft release with all installers attached; review it on GitHub and click **Publish**.
-
-### Project structure
-
-```
-src/index.html                  the whole UI: markup, styles and script (German)
-src-tauri/src/main.rs           Rust backend: folder dialog, reading/writing the data file, export
-src-tauri/tauri.conf.json       window, bundle and Content Security Policy configuration
-src-tauri/capabilities/         permissions of the web view
-src-tauri/icons/                app icons, generated from dewz-logo.svg (npx tauri icon dewz-logo.svg -o src-tauri/icons)
-tools/screenshot.mjs            screenshots of the app with sample data and an empty, temporary profile
-dewz-logo.svg                   logo
-Kontoauszug_*.xlsx              invented sample bank exports
-```
-
-### Notes for changes
-
-- **CSP:** maintained only in `src-tauri/tauri.conf.json`. Keep the script and styles inline in `src/index.html`;
-  Tauri hashes the `<script>` and adds a nonce to the `<style>` automatically. Tauri also allows `'self'`, so any
-  additional `.js`/`.css` file placed in `src/` would be loadable – add files there only deliberately.
-  `npm run dev` serves the page from Tauri's dev server **without** the CSP header; test CSP-related changes with
-  `npm run build` or `tools/screenshot.mjs`, which both embed the page like the release.
-- **Screenshots:** `node --experimental-websocket tools/screenshot.mjs --out shot.png --import Kontoauszug_Halbjahr.xlsx`
-  (options: `--dark`, `--width`, `--height`, `--full`, `--eval "<js>"`). It builds its own debug exe in
-  `src-tauri/target/screenshot` and starts it with a temporary profile, so your real data folder is never opened.
-  The debug-only environment variable `DEWZ_SETTINGS_DIR` that makes this possible does not exist in release builds.
-- **Never commit personal data.** `.gitignore` excludes data files, rule exports, CSV exports, bank exports and
-  archives; only the two invented sample files are tracked. Check `git status` before every commit.
-
-## Contributing
-
-This is a personal project, and I don't accept pull requests. You're welcome to fork it and adapt it to your own
-needs within the terms of the license.
+- Everything is stored in a single file, `dewz-daten.json`, in the folder you chose. Every change is saved
+  automatically. To back up your data or move it to another computer, copy this file.
+- You can protect the file with a **password** (in the **Data folder** dialog). It is encrypted and the password is
+  asked for at every start. **If you forget the password, the data cannot be recovered.**
+- dewz never connects to the internet. Your bank data stays on your computer.
 
 ## License
 
 Copyright (C) 2026 binoema
 
-dewz is free software: you can redistribute it and/or modify it under the terms of the
-[GNU General Public License](LICENSE) as published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+dewz is free software under the [GNU General Public License v3](LICENSE) or later: you may use, modify and share it.
+If you distribute a modified version, you must publish its source code under the same license. dewz comes without
+any warranty.
 
-dewz is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-In short: you may use, modify and share dewz, but if you distribute a modified version, you must publish its
-source code under the same license.
+Building from source: see [DEVELOPMENT.md](DEVELOPMENT.md).
