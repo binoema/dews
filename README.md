@@ -15,7 +15,7 @@ Download the installer for your system from the [releases page](https://github.c
 
 | System | File |
 |---|---|
-| Windows | `dewz_<version>_x64-setup.exe` |
+| Windows | `dewz_<version>_x64-setup.exe` (installer) or `dewz_<version>_x64-portable.zip` (no installation: unzip and start `dewz.exe`, e.g. from a USB stick) |
 | macOS (Apple Silicon, M1 and newer) | `dewz_<version>_aarch64.dmg` |
 | macOS (Intel) | `dewz_<version>_x64.dmg` |
 | Linux | `.AppImage` (runs on any distribution), `.deb` (Debian/Ubuntu) or `.rpm` (Fedora/openSUSE) |

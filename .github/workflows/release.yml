@@ -62,12 +62,33 @@ jobs:
         run: npm ci
 
       - uses: tauri-apps/tauri-action@v0
+        id: tauri
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_type == 'tag' && github.ref_name || 'v__VERSION__' }}
           releaseName: dewz ${{ github.ref_type == 'tag' && github.ref_name || 'v__VERSION__' }}
-          releaseBody: Installer für Windows (.msi/.exe), macOS (.dmg) und Linux (.deb/.rpm/.AppImage) siehe unten.
+          releaseBody: Installer für Windows (.msi/.exe), macOS (.dmg) und Linux (.deb/.rpm/.AppImage) siehe unten. Windows ohne Installation – dewz_…_x64-portable.zip entpacken und dewz.exe starten.
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
+
+      # Portable Windows-Version: nur dewz.exe (plus Lizenz) als ZIP, läuft ohne Installation, solange die
+      # WebView2-Laufzeit vorhanden ist (ab Windows 10/11 vorinstalliert).
+      - name: Upload portable Windows build
+        if: runner.os == 'Windows'
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ steps.tauri.outputs.releaseId }}
+          VERSION: ${{ steps.tauri.outputs.appVersion }}
+        run: |
+          name="dewz_${VERSION}_x64-portable.zip"
+          mkdir portable
+          cp src-tauri/target/release/dewz.exe LICENSE portable/
+          (cd portable && 7z a -tzip "../$name" dewz.exe LICENSE)
+          curl --fail-with-body -sS -X POST \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Content-Type: application/zip" \
+            --data-binary @"$name" \
+            "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?name=${name}"
