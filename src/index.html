@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later – Copyright (C) 2026 binoema -->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<!-- Die Content-Security-Policy steht in src-tauri/tauri.conf.json; Tauri ergänzt beim Build die Prüfsumme des <script> und für das <style> eine Nonce. -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dewz</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20role%3D%22img%22%20aria-label%3D%22dewz%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2215%22%20fill%3D%22%232a6fc9%22%2F%3E%3Cpath%20d%3D%22M32%208C24%2019%2015%2029%2015%2039a17%2017%200%200%200%2034%200C49%2029%2040%2019%2032%208Z%22%20fill%3D%22%23fff%22%2F%3E%3Cg%20fill%3D%22%232a6fc9%22%3E%3Crect%20x%3D%2222%22%20y%3D%2241%22%20width%3D%225.5%22%20height%3D%228%22%20rx%3D%221.6%22%2F%3E%3Crect%20x%3D%2229.25%22%20y%3D%2235%22%20width%3D%225.5%22%20height%3D%2214%22%20rx%3D%221.6%22%2F%3E%3Crect%20x%3D%2236.5%22%20y%3D%2229%22%20width%3D%225.5%22%20height%3D%2220%22%20rx%3D%221.6%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
+<style>
+:root {
+  --bg: #f4f4f2; --surface: #fcfcfb; --border: #dcdcd8; --text: #1c1c1a; --muted: #6a6a66;
+  --accent: #2a6fc9; --accent-text: #fff; --bar: #3b82d6; --bar-bg: #e8e8e4;
+  --pos: #006300; --warn: #a85f00; --danger: #b42c2c; --hover: #eeeeea;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121211; --surface: #1a1a19; --border: #363633; --text: #ecece8; --muted: #a0a09a;
+    --accent: #5a9cf0; --accent-text: #0b1420; --bar: #5a9cf0; --bar-bg: #2a2a28;
+    --pos: #3cc43c; --warn: #e8a33a; --danger: #f07070; --hover: #242422;
+  }
+}
+* { box-sizing: border-box; }
+/* Platz für den Scrollbalken immer freihalten, damit die Seite beim Wechsel der Ansicht nicht seitlich springt */
+html { scrollbar-gutter: stable; color-scheme: light dark; }
+@supports not (scrollbar-gutter: stable) { html { overflow-y: scroll; } }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 "Segoe UI", system-ui, sans-serif; }
+header { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 20px; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
+header h1 { font-size: 18px; margin: 0 auto 0 0; display: flex; align-items: center; gap: 8px; }
+header h1 .logo { width: 28px; height: 28px; flex: none; }
+header h1 .wordmark { font-size: 21px; font-weight: 700; letter-spacing: -0.02em; }
+header h1 small { font-weight: 400; color: var(--muted); font-size: 12px; margin-left: 4px; }
+main { max-width: 1400px; margin: 0 auto; padding: 16px 20px 40px; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+button:hover { background: var(--hover); }
+button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
+button.primary:disabled { opacity: .5; cursor: not-allowed; }
+button.danger { color: var(--danger); }
+input, select, textarea { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
+/* Titelzeile als Flex-Zeile mit fester Mindesthöhe: Titel, Zusatztext und Eingabefelder stehen auf einer Linie */
+.card h2 { font-size: 15px; margin: 0 0 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 2px; min-height: 28px; }
+.card h2 small { font-weight: 400; color: var(--muted); margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; }
+/* In schmalen Kacheln (halbe Breite im Dashboard) stehen die Teil-Tabellen untereinander statt nebeneinander */
+#views > .card { container-type: inline-size; }
+@container (max-width: 760px) { .card .cols { grid-template-columns: minmax(0, 1fr); } }
+#drop { border: 2px dashed var(--border); border-radius: 14px; padding: 60px 20px; text-align: center; background: var(--surface); margin-top: 30px; }
+#drop.over, body.dragging #drop { border-color: var(--accent); }
+#drop p { color: var(--muted); max-width: 600px; margin: 10px auto; }
+.attention { border-color: var(--warn); color: var(--warn); }
+#dataState { margin: 12px 0 0; }
+#dlgPw { width: min(440px, 94vw); }
+#dlgPw label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--muted); margin-top: 10px; }
+#pwErr { color: var(--danger); margin: 10px 0 0; min-height: 1.4em; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+.filters label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; color: var(--muted); }
+.filters input[type=number] { width: 90px; }
+.filters #fQ { width: 220px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+.kpi .l { font-size: 12px; color: var(--muted); }
+.kpi .v { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cols { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; }
+@media (max-width: 950px) { .cols { grid-template-columns: 1fr; } }
+#tabs { display: flex; flex-wrap: wrap; gap: 2px; align-items: center; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+#tabs .tab { border: none; background: none; border-radius: 0; padding: 9px 14px; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+#tabs .tab:hover { color: var(--text); }
+#tabs .tab[aria-selected=true] { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+#views { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+#views > * { margin-bottom: 0; }
+button:disabled { opacity: .4; cursor: default; }
+#smallMax { width: 64px; height: 24px; padding: 0 6px; font-size: 12px; vertical-align: middle; margin: 0 2px; }
+#smallInfo, .hint { margin: 0 0 10px; }
+.gap-top { margin-top: 18px; }
+.tip { margin: 0 0 12px; padding: 9px 12px; border-left: 3px solid var(--accent); border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent); }
+#dlgRule { width: min(480px, 94vw); }
+#mapPrev { margin-top: 12px; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+th { font-size: 12px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+th.sortable { cursor: pointer; user-select: none; }
+th.sortable:hover { color: var(--text); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.pos { color: var(--pos); }
+tr.click { cursor: pointer; }
+tr.click:hover td, tr.active td { background: var(--hover); }
+tr.total td { font-weight: 600; border-top: 2px solid var(--border); border-bottom: none; }
+.barcell { width: 30%; min-width: 80px; }
+.bartrack { background: var(--bar-bg); border-radius: 4px; height: 10px; }
+.bar { background: var(--bar); border-radius: 4px; height: 10px; min-width: 2px; }
+.scroll { overflow-x: auto; }
+.bartrack.mini, .mini .bar { height: 4px; }
+.bartrack.mini { margin-top: 3px; min-width: 60px; }
+.warn { color: var(--warn); font-size: 11px; cursor: help; }
+#hints { margin: 0 0 12px; padding: 0; list-style: none; }
+#hints li { padding: 2px 0; }
+#hints.alert { padding: 9px 12px; border-left: 3px solid var(--warn); border-radius: 6px;
+  background: color-mix(in srgb, var(--warn) 16%, transparent); }
+#txTable td.p { max-width: 380px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+#txTable td.d { white-space: nowrap; }
+/* Lange Buchungslisten scrollen innerhalb der Tabelle; die Kopfzeile bleibt stehen */
+#txScroll { overflow: auto; }
+#txTable th { position: sticky; top: 0; z-index: 3; background: var(--surface); border-bottom: none; box-shadow: inset 0 -1px 0 var(--border); }
+.more { padding-bottom: 10px; }
+#txTable .sel { width: 28px; padding-right: 0; }
+#txTable .sel input { cursor: pointer; margin: 0; vertical-align: middle; }
+.card[data-view=tx] { position: relative; }
+#bulk { position: absolute; left: 16px; right: 16px; bottom: 14px; z-index: 4; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 10px 14px;
+  background: var(--surface); border: 1px solid var(--accent); border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,.25); }
+#txScroll.hasbulk { padding-bottom: 70px; }   /* damit die letzten Zeilen nicht hinter der Leiste verschwinden */
+#bulk .muted { margin-left: auto; font-size: 12px; }
+.chip { border-radius: 999px; padding: 0 10px; height: 24px; font-size: 12px; white-space: nowrap; }
+#txTable td.editing { position: relative; }
+#txTable td.editing select { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); z-index: 2;
+  height: 24px; padding: 0 6px; font-size: 12px; border-radius: 999px; }
+.chip.uncat { border-style: dashed; color: var(--muted); }
+.muted { color: var(--muted); }
+.more { text-align: center; padding-top: 10px; }
+dialog { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; width: min(860px, 94vw); max-height: 90vh; }
+dialog::backdrop { background: rgba(0,0,0,.45); }
+dialog h2 { margin: 0 0 4px; font-size: 17px; }
+dialog .actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+dialog .actions .left { margin-right: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.mapgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin: 12px 0; }
+.mapgrid label { display: flex; flex-direction: column; font-size: 12px; color: var(--muted); gap: 2px; }
+.catrow { display: grid; grid-template-columns: 200px 1fr auto; gap: 8px; margin-bottom: 8px; align-items: start; }
+.catrow textarea { min-height: 52px; resize: vertical; width: 100%; }
+#catList { max-height: 55vh; overflow-y: auto; padding-right: 4px; }
+#toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 8px; display: none; gap: 12px; align-items: center; z-index: 50; max-width: 90vw; box-shadow: 0 4px 16px rgba(0,0,0,.3); }
+#toast.err { background: var(--danger); color: #fff; }
+#toast button { padding: 3px 10px; color: var(--text); }
+footer { text-align: center; color: var(--muted); font-size: 12px; padding: 0 20px 24px; }
+[hidden] { display: none !important; }
+
+/* --- Kopfzeile: Export-Menü, bei schmalem Fenster nicht fixiert --- */
+.menu { position: relative; }
+.menu summary { list-style: none; cursor: pointer; user-select: none; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; background: var(--surface); }
+.menu summary::-webkit-details-marker { display: none; }
+.menu summary::after { content: " ▾"; color: var(--muted); }
+.menu summary:hover { background: var(--hover); }
+.menu summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.menu > div { position: absolute; right: 0; top: calc(100% + 4px); z-index: 10; display: flex; flex-direction: column; gap: 2px; padding: 6px; min-width: 210px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.25); }
+.menu > div button { text-align: left; border: none; }
+@media (max-width: 950px) { header { position: static; } }
+
+/* --- Filter: gesetzte Felder hervorheben, leere Ergebnisse --- */
+.filters .set { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+#fInfo { align-self: center; color: var(--muted); }
+td.empty { text-align: center; color: var(--muted); padding: 28px 8px; border-bottom: none; }
+td.empty button { margin-left: 8px; }
+
+/* --- Tipp mit Schließen-Knopf --- */
+.tip { display: flex; gap: 12px; align-items: center; }
+.tip > span { flex: 1; }
+
+/* --- Regel-Dialog --- */
+#ruleInfo { margin: 0 0 8px; min-height: 1.4em; }
+#ruleManualRow { display: flex; gap: 8px; align-items: center; cursor: pointer; }
+
+/* --- Schmale Breiten --- */
+#txTable .p2 { display: none; color: var(--muted); font-size: 12px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@container (max-width: 900px) {
+  #txTable .pcol { display: none; }
+  #txTable .p2 { display: block; }
+}
+@media (max-width: 600px) {
+  .catrow { grid-template-columns: 1fr auto; }
+  .catrow .ck { grid-column: 1 / -1; grid-row: 2; }
+  .mapgrid { grid-template-columns: 1fr; }
+}
+
+/* --- Rücklagen (Umbuchungen auf eigene Konten) --- */
+.kpi .v2 { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.5; margin-top: 3px; }
+.note-warn { margin: 0; padding: 9px 12px; border-left: 3px solid var(--warn); border-radius: 6px;
+  background: color-mix(in srgb, var(--warn) 16%, transparent); }
+.tag { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 7px; margin-left: 6px; white-space: nowrap; }
+tr.res td { color: var(--muted); }
+.catrow .cn { width: 100%; }
+.cres { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); margin-top: 5px; cursor: pointer; }
+</style>
+</head>
+<body>
+<header>
+  <h1><svg class="logo" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="#2a6fc9"/><path d="M32 8C24 19 15 29 15 39a17 17 0 0 0 34 0C49 29 40 19 32 8Z" fill="#fff"/><g fill="#2a6fc9"><rect x="22" y="41" width="5.5" height="8" rx="1.6"/><rect x="29.25" y="35" width="5.5" height="14" rx="1.6"/><rect x="36.5" y="29" width="5.5" height="20" rx="1.6"/></g></svg><span class="wordmark">dewz</span> <small>Kontoauszug auswerten – 100 % offline</small></h1>
+  <button id="btnData">Kein Datenordner</button>
+  <button class="primary" id="btnImport">Kontoexport importieren</button>
+  <button id="btnCats">Kategorien &amp; Regeln</button>
+  <details class="menu" id="exportMenu" hidden>
+    <summary>Exportieren</summary>
+    <div>
+      <button id="btnExport">Buchungen als CSV</button>
+      <button id="btnExportSum">Auswertung als CSV</button>
+    </div>
+  </details>
+  <input type="file" id="file" accept=".xlsx,.xlsm,.csv,.txt,.xls" multiple hidden>
+</header>
+
+<main>
+  <div id="drop">
+    <h2>Datenordner wählen oder Kontoexport importieren</h2>
+    <p>Deine Buchungen liegen in der Datei <code>dewz-daten.json</code> in einem Ordner deiner Wahl, zum Beispiel
+       in deinen Dokumenten oder auf einem USB-Stick. Wähle den Ordner einmal aus; die App merkt ihn sich und speichert jede Änderung automatisch dort.</p>
+    <p><button class="primary" id="dropOpen">Datenordner wählen</button> <button id="dropOther" hidden>Anderen Ordner wählen</button></p>
+    <p>Einen Kontoexport deiner Bank (<b>Excel .xlsx</b> oder <b>CSV</b>) ziehst du hierher oder wählst ihn über „Kontoexport importieren“.
+       Mehrere Dateien sind möglich, doppelte Buchungen werden erkannt.</p>
+    <p>Alles wird ausschließlich lokal verarbeitet – es werden keine Daten übertragen.</p>
+  </div>
+
+  <div id="app" hidden>
+    <nav id="tabs" role="tablist" aria-label="Ansichten"></nav>
+    <div class="card filters">
+      <label>Suche<input id="fQ" type="search" placeholder="Empfänger, Zweck, Kategorie …"></label>
+      <label>Kategorie<select id="fCat"></select></label>
+      <label>Art<select id="fKind"><option value="">Alle</option><option value="out">Nur Ausgaben</option><option value="in">Nur Einnahmen</option></select></label>
+      <label>Monat<select id="fMonth"></select></label>
+      <label>Von<input id="fFrom" type="date"></label>
+      <label>Bis<input id="fTo" type="date"></label>
+      <label>Betrag ab (€)<input id="fMin" type="number" min="0" step="0.01"></label>
+      <label>Betrag bis (€)<input id="fMax" type="number" min="0" step="0.01"></label>
+      <button id="btnReset">Filter zurücksetzen</button>
+      <span id="fInfo"></span>
+    </div>
+
+
+    <div id="views">
+    <div class="kpis" data-view="kpi">
+      <div class="kpi"><div class="l">Einnahmen</div><div class="v" id="kIn"></div></div>
+      <div class="kpi"><div class="l">Ausgaben</div><div class="v" id="kOut"></div></div>
+      <div class="kpi"><div class="l" id="kSalLabel">Saldo</div><div class="v" id="kSal"></div></div>
+      <div class="kpi" id="kResBox" hidden><div class="l">Rücklagen</div><div class="v2" id="kRes"></div></div>
+      <div class="kpi"><div class="l">Buchungen</div><div class="v" id="kN"></div></div>
+    </div>
+    <p class="note-warn" id="resNote" hidden></p>
+
+      <div class="card" data-view="cat">
+        <h2>Ausgaben nach Kategorie <small>Zeile anklicken, um die Buchungen zu sehen</small></h2>
+        <div class="scroll"><table id="sumTable"></table></div>
+      </div>
+      <div class="card" data-view="month">
+        <h2>Monatsübersicht <small>Zeile anklicken, um die Buchungen zu sehen</small></h2>
+        <div class="scroll"><table id="monTable"></table></div>
+      </div>
+
+    <div class="card" data-view="cmp">
+      <h2>Kategorien im Monatsvergleich <small>Ausgaben je Monat – Balken zeigen den Vergleich innerhalb einer Kategorie</small></h2>
+      <ul id="hints"></ul>
+      <div class="scroll"><table id="cmpTable"></table></div>
+    </div>
+
+    <div class="card" data-view="small">
+      <h2>Kleine Ausgaben
+        <small>Einzelbeträge bis <input id="smallMax" type="number" min="1" step="1"> €</small></h2>
+      <p id="smallInfo"></p>
+      <div class="cols">
+        <div>
+          <div class="scroll"><table id="smallMon"></table></div>
+          <div class="scroll gap-top"><table id="sizeTable"></table></div>
+        </div>
+        <div class="scroll"><table id="smallRec"></table></div>
+      </div>
+    </div>
+
+    <div class="card" data-view="tx">
+      <h2>Buchungen <small id="txCount"></small></h2>
+      <div class="tip" id="txTip"><span><b>Tipp:</b> Klicke auf die Kategorie einer Buchung, um sie zu ändern. Über „Regel erstellen …“ in derselben Auswahl
+        werden gleichartige Buchungen künftig automatisch zugeordnet – auch bei späteren Importen.</span>
+        <button id="tipOk">Verstanden</button></div>
+      <div class="scroll" id="txScroll">
+        <table id="txTable"></table>
+        <div class="more" id="more" hidden><button id="btnMore">Weitere anzeigen</button></div>
+      </div>
+      <div id="bulk" hidden>
+        <b id="bulkN"></b>
+        <select id="bulkCat" aria-label="Kategorie für die ausgewählten Buchungen"></select>
+        <button class="primary" id="bulkOk">Zuweisen</button>
+        <button id="bulkClear">Auswahl aufheben</button>
+        <span class="muted">Tipp: Mit gedrückter Umschalttaste einen ganzen Bereich markieren</span>
+      </div>
+    </div>
+    </div>
+  </div>
+</main>
+<footer>Buchungen, Kategorien und Regeln liegen in deiner Datendatei; in der App bleiben nur Einstellungen wie die zuletzt geöffnete Ansicht. Netzwerkzugriffe sind per Content-Security-Policy blockiert.</footer>
+
+<dialog id="dlgMap">
+  <h2>Spalten zuordnen</h2>
+  <div class="muted" id="mapFile"></div>
+  <div id="mapBody"></div>
+  <div class="actions">
+    <button id="mapCancel">Abbrechen</button>
+    <button class="primary" id="mapOk">Importieren</button>
+  </div>
+</dialog>
+
+<dialog id="dlgCats">
+  <h2>Kategorien &amp; Regeln</h2>
+  <p class="muted">Eine Buchung bekommt die Kategorie, deren Stichwort in Empfänger, Verwendungszweck oder Buchungstext vorkommt
+    (bei mehreren Treffern gewinnt das längste Stichwort). Stichwörter mit Komma trennen.
+    In Anführungszeichen – z.&nbsp;B. <code>"jet"</code> – zählt nur das ganze Wort.</p>
+  <p class="muted">Bringt die importierte Datei selbst eine Kategorie mit, hat diese Vorrang vor normalen Stichwörtern.
+    Ein Stichwort mit Ausrufezeichen davor – z.&nbsp;B. <code>!thalia</code> – setzt sich auch gegen die Kategorie aus der Datei durch;
+    so werden Regeln aus „Regel erstellen“ gespeichert. Von Hand zugeordnete Buchungen bleiben immer unverändert.</p>
+  <p class="muted">Kategorien mit dem Häkchen „Rücklage“ stehen für Umbuchungen auf eigene Konten, etwa aufs Sparkonto und zurück.
+    Ihre Buchungen zählen weder zu den Einnahmen noch zu den Ausgaben und werden getrennt ausgewiesen. Welche Buchungen das sind,
+    legst du selbst über eine Regel oder von Hand fest.</p>
+  <div id="catList"></div>
+  <div class="actions">
+    <div class="left">
+      <button id="catAdd">+ Kategorie</button>
+      <button id="catExport">Regeln exportieren</button>
+      <button id="catImport">Regeln importieren</button>
+      <button id="catDefaults">Standard wiederherstellen</button>
+      <input type="file" id="catFile" accept=".json" hidden>
+    </div>
+    <button id="catCancel">Abbrechen</button>
+    <button class="primary" id="catSave">Speichern</button>
+  </div>
+</dialog>
+
+<dialog id="dlgData">
+  <h2>Datenordner</h2>
+  <p class="muted">dewz speichert Buchungen, Kategorien und Regeln in der Datei <code>dewz-daten.json</code>
+    im gewählten Ordner. Jede Änderung wird automatisch dorthin geschrieben. Der Ordner wird gemerkt und beim
+    nächsten Start automatisch wieder geöffnet.</p>
+  <p class="muted">Mit einem Passwort wird die Datei verschlüsselt gespeichert. Ohne das Passwort lassen sich die Daten
+    nicht wiederherstellen.</p>
+  <p id="dataState"></p>
+  <div class="actions">
+    <div class="left">
+      <button id="pwSet" hidden>Passwort festlegen</button>
+      <button id="pwRemove" hidden>Passwort entfernen</button>
+      <button class="danger" id="btnClear" hidden>Alle Buchungen löschen …</button>
+    </div>
+    <button id="dataClose">Schließen</button>
+    <button id="dataChoose">Ordner wählen</button>
+    <button class="primary" id="dataLoad" hidden>Daten laden</button>
+  </div>
+</dialog>
+
+<dialog id="dlgPw">
+  <h2 id="pwTitle"></h2>
+  <p class="muted" id="pwText"></p>
+  <label>Passwort<input type="password" id="pw1" autocomplete="off"></label>
+  <label id="pw2Row">Passwort wiederholen<input type="password" id="pw2" autocomplete="off"></label>
+  <p id="pwErr" role="alert"></p>
+  <div class="actions">
+    <button id="pwCancel">Abbrechen</button>
+    <button class="primary" id="pwOk">OK</button>
+  </div>
+</dialog>
+
+<dialog id="dlgRule">
+  <h2>Regel erstellen</h2>
+  <p class="muted">Buchungen, die dieses Stichwort in Empfänger, Verwendungszweck oder Buchungstext enthalten, werden jetzt und bei
+    späteren Importen dieser Kategorie zugeordnet – auch wenn die importierte Datei eine andere Kategorie mitbringt.</p>
+  <div class="mapgrid">
+    <label>Stichwort<input id="ruleKw"></label>
+    <label>Kategorie<select id="ruleCat"></select></label>
+  </div>
+  <p id="ruleInfo" role="status"></p>
+  <label id="ruleManualRow" hidden><input type="checkbox" id="ruleManual"> Auch die von Hand zugeordneten Buchungen umstellen</label>
+  <div class="actions">
+    <button id="ruleCancel">Abbrechen</button>
+    <button class="primary" id="ruleOk">Regel speichern</button>
+  </div>
+</dialog>
+
+<div id="toast"><span id="toastMsg"></span><button id="toastBtn" hidden></button></div>
+
+<script>
+'use strict';
+/* ============================== Helfer ============================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const eur = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
+const fmt = cents => eur.format(cents / 100);
+const fmtDate = iso => iso.slice(8, 10) + '.' + iso.slice(5, 7) + '.' + iso.slice(0, 4);
+const monFmt = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const fmtMonth = ym => monFmt.format(new Date(ym + '-01T00:00:00Z'));
+const monShortFmt = new Intl.DateTimeFormat('de-DE', { month: 'short', year: '2-digit', timeZone: 'UTC' });
+const fmtMonthShort = ym => monShortFmt.format(new Date(ym + '-01T00:00:00Z'));
+const pad = n => String(n).padStart(2, '0');
+const UNCAT = 'Nicht zugeordnet';
+
+function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }
+function store(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); return true; }
+  catch { toast('Einstellungen konnten nicht gespeichert werden.', true); return false; }
+}
+
+let toastTimer;
+function toast(msg, isErr, actionLabel, action) {
+  const t = $('#toast'), b = $('#toastBtn');
+  $('#toastMsg').textContent = msg;
+  t.className = isErr ? 'err' : '';
+  b.hidden = !actionLabel;
+  b.textContent = actionLabel || '';
+  b.onclick = () => { t.style.display = 'none'; action && action(); };
+  t.style.display = 'flex';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.display = 'none'; }, isErr || actionLabel ? 12000 : 7000);
+}
+
+/* ============================== Kategorien ============================== */
+function defaultCats() {
+  return [
+    { name: 'Supermarkt', keywords: ['rewe', 'edeka', 'aldi', 'lidl', '"netto"', 'penny', 'kaufland', 'norma', 'tegut', 'globus', 'alnatura', 'denns', 'supermarkt', 'metzgerei', 'getränke'] },
+    { name: 'Drogerie', keywords: ['dm-drogerie', 'dm drogerie', '"dm"', 'rossmann', 'müller drogerie', 'budni'] },
+    { name: 'Gesundheit', keywords: ['apotheke', 'arzt', 'praxis', 'optiker', 'fielmann', 'krankenhaus', 'physio'] },
+    { name: 'Gastronomie', keywords: ['restaurant', 'lieferando', 'mcdonald', 'burger king', 'pizzeria', 'pizza', 'subway', 'starbucks', 'imbiss', 'gaststätte', 'cafe', 'café', 'bäckerei', 'baeckerei', 'bistro'] },
+    { name: 'Tankstelle', keywords: ['tankstelle', '"aral"', '"shell"', '"esso"', '"jet"', 'totalenergies', '"omv"', '"agip"'] },
+    { name: 'Mobilität', keywords: ['db vertrieb', 'deutsche bahn', '"bahn"', 'flixbus', '"kfz"', '"adac"', 'parkhaus', 'parken', 'deutschlandticket', 'verkehrsbetriebe'] },
+    { name: 'Einzelhandel', keywords: ['h&m', 'deichmann', 'ikea', '"obi"', 'baumarkt', 'hornbach', 'bauhaus', 'mediamarkt', 'media markt', 'saturn', 'thalia', 'buchhandlung', 'c&a', 'tk maxx', 'decathlon'] },
+    { name: 'Online-Shopping', keywords: ['amazon', 'amzn', 'paypal', 'ebay', 'zalando', '"otto"', 'klarna'] },
+    { name: 'Fixkosten', keywords: ['dauerauftrag', 'sportverein', 'mitgliedsbeitrag', 'fitnessstudio'] },
+    { name: 'Wohnen & Nebenkosten', keywords: ['miete', 'nebenkosten', 'hausverwaltung', 'stadtwerke', 'strom', '"gas"', 'e.on', 'vattenfall', 'enbw', 'rundfunk', 'abfall', 'wasserwerk'] },
+    { name: 'Versicherungen', keywords: ['versicherung', 'allianz', '"huk"', 'huk-coburg', '"ergo"', '"axa"', 'debeka', 'krankenkasse', 'techniker', '"aok"', 'barmer'] },
+    { name: 'Telefon & Internet', keywords: ['telekom', 'vodafone', 'telefonica', '"o2"', '1&1', '1und1', 'congstar'] },
+    { name: 'Abos & Streaming', keywords: ['netflix', 'spotify', 'disney', 'amazon prime', 'prime video', 'youtube', 'apple.com/bill', 'audible', 'dazn'] },
+    { name: 'Freizeit & Reisen', keywords: ['kino', 'booking.com', 'airbnb', 'hotel', 'lufthansa', 'ryanair', 'eurowings', 'mcfit', 'steam', 'playstation', 'eventim', 'ticket', 'reisebüro'] },
+    { name: 'Bargeld', keywords: ['geldautomat', 'bargeld', 'barauszahlung', '"ga"', '"atm"'] },
+    { name: 'Sparen & Anlage', keywords: [], transfer: true },   // Rücklagen: Zuordnung legt der Nutzer per Regel fest
+    { name: 'Steuern & Gebühren', keywords: ['finanzamt', 'kontoführung', 'kontofuehrung', 'entgelt', 'gebühr', 'gebuehr'] },
+    { name: 'Einnahmen', keywords: ['gehalt', '"lohn"', 'bezüge', 'bezuege', '"rente"', 'kindergeld', 'familienkasse'] },
+  ];
+}
+
+let cats = load('fb.cats') || defaultCats();
+let txs = [];   // wird aus der Datendatei geladen
+let matchers = [], catSet = new Set();
+
+// Früher gespeicherte Kategorienlisten einmalig um die neu hinzugekommenen Kategorien ergänzen
+if (!(load('fb.catsV') >= 2)) {
+  if (load('fb.cats')) {
+    const added = ['Supermarkt', 'Drogerie', 'Gesundheit', 'Gastronomie', 'Tankstelle', 'Einzelhandel', 'Fixkosten', 'Einnahmen'];
+    for (const d of defaultCats()) if (added.includes(d.name) && !cats.some(c => c.name === d.name)) cats.push(d);
+    store('fb.cats', cats);
+  }
+  store('fb.catsV', 2);
+}
+
+// Ein Stichwort: "..." = nur ganzes Wort, führendes ! = Vorrang vor der Kategorie aus der importierten Datei
+function parseKw(raw) {
+  let k = String(raw).trim().toLowerCase(), prio = false, whole = false;
+  if (k.startsWith('!')) { prio = true; k = k.slice(1).trim(); }
+  if (k.length > 2 && k.startsWith('"') && k.endsWith('"')) { whole = true; k = k.slice(1, -1).trim(); }
+  if (!k) return null;
+  return { k, prio, re: whole ? new RegExp('(^|[^a-z0-9äöüß])' + escRe(k) + '($|[^a-z0-9äöüß])') : null };
+}
+const txText = tx => (tx.r + ' ' + tx.p + ' ' + tx.t).toLowerCase();
+const kwHit = (m, text) => m.re ? m.re.test(text) : text.includes(m.k);
+let prioMatchers = [];
+
+// Einmalige Umstellung älterer Kategorienlisten: „Sparen & Anlage“ wird zur Rücklagen-Kategorie.
+// Die früheren Standard-Stichwörter entfallen, weil jeder selbst festlegt, was bei ihm eine Rücklage ist.
+function migrateTransfer(list) {
+  const c = list.find(x => x.name === 'Sparen & Anlage');
+  if (!c || 'transfer' in c) return;
+  c.transfer = true;
+  if (c.keywords.join(',') === 'sparplan,sparkonto,depot,trade republic,scalable,wertpapier,bausparen') c.keywords = [];
+}
+if (!(load('fb.catsV') >= 3)) {
+  migrateTransfer(cats);
+  if (load('fb.cats')) store('fb.cats', cats);
+  store('fb.catsV', 3);
+}
+
+function buildMatchers() {
+  matchers = []; prioMatchers = [];
+  catSet = new Set(cats.map(c => c.name));
+  for (const cat of cats) for (const kw of cat.keywords) {
+    const m = parseKw(kw);
+    if (m) { m.cat = cat.name; (m.prio ? prioMatchers : matchers).push(m); }
+  }
+  matchers.sort((a, b) => b.k.length - a.k.length);
+  prioMatchers.sort((a, b) => b.k.length - a.k.length);
+}
+// Reihenfolge: Regeln mit Vorrang (!) – Kategorie aus der importierten Datei – normale Stichwörter.
+function categorize(tx) {
+  const text = txText(tx);
+  for (const m of prioMatchers) if (kwHit(m, text)) return m.cat;
+  if (tx.fc && catSet.has(tx.fc)) return tx.fc;
+  for (const m of matchers) if (kwHit(m, text)) return m.cat;
+  return UNCAT;
+}
+function recategorize() {
+  buildMatchers();
+  const names = new Set(cats.map(c => c.name));
+  for (const tx of txs) {
+    if (tx.m && !names.has(tx.c) && tx.c !== UNCAT) tx.m = false;
+    if (!tx.m) tx.c = categorize(tx);
+  }
+}
+
+/* ============================== Datei lesen ============================== */
+async function readFile(file) {
+  const buf = new Uint8Array(await file.arrayBuffer());
+  if (buf[0] === 0x50 && buf[1] === 0x4B) return parseXlsx(buf);
+  if (buf[0] === 0xD0 && buf[1] === 0xCF)
+    throw new Error('Das alte Excel-Format (.xls) wird nicht unterstützt. Bitte in Excel als .xlsx oder CSV speichern.');
+  const text = decodeText(buf);
+  if (/<table[\s>]/i.test(text.slice(0, 50000))) return [{ name: 'Tabelle', rows: parseHtmlTable(text) }];
+  return [{ name: 'CSV', rows: parseCsv(text) }];
+}
+
+function decodeText(buf) {
+  if (buf[0] === 0xFF && buf[1] === 0xFE) return new TextDecoder('utf-16le').decode(buf);
+  try { return new TextDecoder('utf-8', { fatal: true }).decode(buf); }
+  catch { return new TextDecoder('windows-1252').decode(buf); }
+}
+
+function detectDelim(text) {
+  const sample = text.slice(0, 20000), counts = { ';': 0, ',': 0, '\t': 0, '|': 0 };
+  let q = false;
+  for (const ch of sample) { if (ch === '"') q = !q; else if (!q && ch in counts) counts[ch]++; }
+  return Object.keys(counts).reduce((a, b) => counts[b] > counts[a] ? b : a);
+}
+
+function parseCsv(text) {
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const delim = detectDelim(text), rows = [];
+  let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) {
+      if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+      else cell += ch;
+    } else if (ch === '"' && cell === '') q = true;
+    else if (ch === delim) { row.push(cell); cell = ''; }
+    else if (ch === '\n' || ch === '\r') {
+      if (ch === '\r' && text[i + 1] === '\n') i++;
+      row.push(cell); cell = ''; rows.push(row); row = [];
+    } else cell += ch;
+  }
+  if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+  return rows.map(r => r.map(c => c.trim())).filter(r => r.some(c => c !== ''));
+}
+
+function parseHtmlTable(text) {
+  const doc = new DOMParser().parseFromString(text, 'text/html');
+  return Array.from(doc.querySelectorAll('tr')).map(tr =>
+    Array.from(tr.querySelectorAll('th,td')).map(td => td.textContent.replace(/\s+/g, ' ').trim()));
+}
+
+/* ---------- XLSX: ZIP-Container + XML, ohne externe Bibliothek ---------- */
+function unzip(buf) {
+  const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+  let e = buf.length - 22;
+  while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error('Die Datei ist keine gültige XLSX-Datei.');
+  const n = dv.getUint16(e + 10, true), td = new TextDecoder(), files = {};
+  let p = dv.getUint32(e + 16, true);
+  for (let i = 0; i < n && dv.getUint32(p, true) === 0x02014b50; i++) {
+    const nl = dv.getUint16(p + 28, true);
+    files[td.decode(buf.subarray(p + 46, p + 46 + nl)).toLowerCase()] =
+      { method: dv.getUint16(p + 10, true), size: dv.getUint32(p + 20, true), off: dv.getUint32(p + 42, true) };
+    p += 46 + nl + dv.getUint16(p + 30, true) + dv.getUint16(p + 32, true);
+  }
+  return {
+    names: Object.keys(files),
+    async text(name) {
+      const f = files[name.toLowerCase()];
+      if (!f) return null;
+      const start = f.off + 30 + dv.getUint16(f.off + 26, true) + dv.getUint16(f.off + 28, true);
+      const data = buf.subarray(start, start + f.size);
+      if (f.method === 0) return td.decode(data);
+      if (f.method !== 8) throw new Error('Nicht unterstützte ZIP-Kompression in der XLSX-Datei.');
+      const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+      return new Response(stream).text();
+    },
+  };
+}
+
+const serialToIso = n => new Date(Date.UTC(1899, 11, 30) + Math.floor(n) * 86400000).toISOString().slice(0, 10);
+
+async function parseXlsx(buf) {
+  const zip = unzip(buf);
+  const xml = async name => { const t = await zip.text(name); return t ? new DOMParser().parseFromString(t, 'application/xml') : null; };
+  const tags = (node, name) => Array.from(node.getElementsByTagNameNS('*', name));
+  const siText = node => tags(node, 't').filter(t => t.parentNode.localName !== 'rPh').map(t => t.textContent).join('');
+
+  const sst = [];
+  const sdoc = await xml('xl/sharedStrings.xml');
+  if (sdoc) for (const si of tags(sdoc, 'si')) sst.push(siText(si));
+
+  const dateStyle = [];
+  const stdoc = await xml('xl/styles.xml');
+  if (stdoc) {
+    const codes = {};
+    for (const nf of tags(stdoc, 'numFmt')) codes[nf.getAttribute('numFmtId')] = nf.getAttribute('formatCode') || '';
+    const isDate = id => (id >= 14 && id <= 22) || (id >= 27 && id <= 36) || (id >= 45 && id <= 47) || (id >= 50 && id <= 58) ||
+      (!!codes[id] && /[dmyhs]/i.test(codes[id].replace(/"[^"]*"|\[[^\]]*\]|\\./g, '')));
+    const cx = tags(stdoc, 'cellXfs')[0];
+    if (cx) for (const xf of tags(cx, 'xf')) dateStyle.push(isDate(+xf.getAttribute('numFmtId')));
+  }
+
+  // Blätter in Arbeitsmappen-Reihenfolge ermitteln
+  let sheetFiles = [];
+  const wb = await xml('xl/workbook.xml'), rels = await xml('xl/_rels/workbook.xml.rels');
+  if (wb && rels) {
+    const target = {};
+    for (const r of tags(rels, 'Relationship')) target[r.getAttribute('Id')] = r.getAttribute('Target');
+    for (const s of tags(wb, 'sheet')) {
+      const rid = Array.from(s.attributes).find(a => a.localName === 'id' && a.name !== 'id');
+      const t = rid && target[rid.value];
+      if (t) sheetFiles.push({ name: s.getAttribute('name'), path: t.startsWith('/') ? t.slice(1) : 'xl/' + t });
+    }
+  }
+  if (!sheetFiles.length)
+    sheetFiles = zip.names.filter(n => /^xl\/worksheets\/[^/]+\.xml$/.test(n)).sort().map(n => ({ name: n.split('/').pop(), path: n }));
+
+  const sheets = [];
+  for (const sf of sheetFiles) {
+    const doc = await xml(sf.path);
+    if (!doc) continue;
+    const rows = [];
+    for (const r of tags(doc, 'row')) {
+      const row = [];
+      let ci = 0;
+      for (const c of tags(r, 'c')) {
+        const ref = c.getAttribute('r');
+        if (ref) { ci = 0; for (const ch of ref) { if (ch >= 'A' && ch <= 'Z') ci = ci * 26 + ch.charCodeAt(0) - 64; else break; } ci--; }
+        const t = c.getAttribute('t'), vn = tags(c, 'v')[0];
+        let v = '';
+        if (t === 'inlineStr') v = siText(c);
+        else if (vn) {
+          const raw = vn.textContent;
+          if (t === 's') v = sst[+raw] ?? '';
+          else if (t === 'str' || t === 'e') v = raw;
+          else if (t === 'b') v = raw === '1' ? 'WAHR' : 'FALSCH';
+          else if (t === 'd') v = raw.slice(0, 10);
+          else { const num = Number(raw); v = isNaN(num) ? raw : (dateStyle[+c.getAttribute('s')] ? serialToIso(num) : num); }
+        }
+        row[ci++] = typeof v === 'string' ? v.trim() : v;
+      }
+      const full = Array.from(row, v => v ?? '');
+      if (full.some(v => v !== '')) rows.push(full);
+    }
+    sheets.push({ name: sf.name, rows });
+  }
+  return sheets;
+}
+
+/* ============================== Werte interpretieren ============================== */
+function parseDate(v) {
+  if (typeof v === 'number') return v > 20000 && v < 80000 ? serialToIso(v) : null;
+  const s = String(v).trim();
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/), y, mo, d;
+  if (m) [y, mo, d] = [+m[1], +m[2], +m[3]];
+  else if ((m = s.match(/^(\d{1,2})[./](\d{1,2})[./](\d{2,4})/))) {
+    [d, mo, y] = [+m[1], +m[2], +m[3]];
+    if (y < 100) y += y >= 70 ? 1900 : 2000;
+  } else return null;
+  if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+  return y + '-' + pad(mo) + '-' + pad(d);
+}
+
+// Liefert Cent (Ganzzahl) oder null. Versteht "1.234,56", "-12,50 €", "12.50", "12,50 S", "(12,50)".
+function parseAmount(v) {
+  if (typeof v === 'number') return Math.round(v * 100);
+  const s = String(v).trim();
+  if (!s) return null;
+  const neg = /[-−–]/.test(s) || /^\(.*\)$/.test(s) || /\d\s*S$/i.test(s);
+  let n = s.replace(/[^\d.,]/g, '');
+  if (!/\d/.test(n)) return null;
+  const lc = n.lastIndexOf(','), ld = n.lastIndexOf('.');
+  if (lc >= 0 && ld >= 0) n = lc > ld ? n.replace(/\./g, '').replace(',', '.') : n.replace(/,/g, '');
+  else if (lc >= 0) n = n.replace(/,(?=.*,)/g, '').replace(',', '.');
+  else if (/^\d{1,3}(\.\d{3})+$/.test(n)) n = n.replace(/\./g, '');
+  const x = parseFloat(n);
+  return isNaN(x) ? null : Math.round(x * 100) * (neg ? -1 : 1);
+}
+
+/* ============================== Spaltenerkennung ============================== */
+const FIELDS = [
+  { key: 'date', label: 'Datum (Pflicht)', pats: [/^buchungstag|^buchungsdatum|^buchung$/, /^datum|^date/, /datum|buchung(?!stext)/, /valuta|wertstellung/] },
+  { key: 'amount', label: 'Betrag mit Vorzeichen (Pflicht, außer bei getrennten Spalten)', pats: [/^betrag|^umsatz(?!art|typ)|^amount/, /betrag/] },
+  { key: 'ind', label: 'Soll/Haben-Kennzeichen (optional)', pats: [/soll.*haben|^s\/h$/] },
+  { key: 'debit', label: 'Ausgaben-Spalte (Soll), falls getrennt', pats: [/^soll|ausgang|ausgabe|belastung/] },
+  { key: 'credit', label: 'Einnahmen-Spalte (Haben), falls getrennt', pats: [/^haben|eingang|einnahme|gutschrift/] },
+  { key: 'recipient', label: 'Empfänger / Auftraggeber', pats: [/beg[uü]nstigter|zahlungsempf|empf[aä]nger/, /auftraggeber|zahlungsbeteiligt|zahlungspflichtig|^name/, /partner|h[aä]ndler|merchant|payee/] },
+  { key: 'purpose', label: 'Verwendungszweck', pats: [/verwendungszweck/, /zweck|beschreibung|description|vorgang|notiz/, /buchungstext|^text/] },
+  { key: 'type', label: 'Buchungstext / Umsatzart (optional)', pats: [/buchungstext|umsatzart|umsatztyp|buchungsart|^art$|^typ$/] },
+  { key: 'cat', label: 'Kategorie aus der Datei (optional)', pats: [/^kategorie|^category|^rubrik/] },
+];
+const HEAD_KW = /datum|buchung|valuta|wertstellung|betrag|umsatz|verwendungszweck|empf[aä]nger|auftraggeber|beg[uü]nstigter|zahlungs|^soll|^haben|w[aä]hrung|iban|saldo|^text|^name|date|amount/i;
+
+function detectHeader(rows) {
+  let best = -1, bestScore = 1;
+  for (let i = 0; i < Math.min(rows.length, 50); i++) {
+    const score = rows[i].filter(c => typeof c === 'string' && c.length < 60 && HEAD_KW.test(c)).length;
+    if (score > bestScore) { bestScore = score; best = i; }
+  }
+  if (best >= 0) return best;
+  const i = rows.findIndex(r => r.filter(c => c !== '').length >= 3);
+  return Math.max(i, 0);
+}
+
+function guessMap(headers) {
+  const low = headers.map(h => h.toLowerCase()), used = new Set(), map = {};
+  for (const f of FIELDS) {
+    map[f.key] = -1;
+    for (const pat of f.pats) {
+      const i = low.findIndex((h, j) => !used.has(j) && pat.test(h));
+      if (i >= 0) { map[f.key] = i; used.add(i); break; }
+    }
+  }
+  return map;
+}
+
+function buildTx(rows, headerIdx, map, invert) {
+  const out = [];
+  let skipped = 0;
+  const txt = (row, i) => i >= 0 && row[i] != null ? String(row[i]).replace(/\s+/g, ' ').trim() : '';
+  for (let i = headerIdx + 1; i < rows.length; i++) {
+    const row = rows[i];
+    const d = map.date >= 0 ? parseDate(row[map.date] ?? '') : null;
+    let a = null;
+    if (map.amount >= 0) {
+      a = parseAmount(row[map.amount] ?? '');
+      if (a != null && map.ind >= 0) a = Math.abs(a) * (/^\s*(s|d)/i.test(String(row[map.ind] ?? '')) ? -1 : 1);
+    } else if (map.debit >= 0 || map.credit >= 0) {
+      const deb = map.debit >= 0 ? parseAmount(row[map.debit] ?? '') : null;
+      const cre = map.credit >= 0 ? parseAmount(row[map.credit] ?? '') : null;
+      if (deb != null || cre != null) a = Math.abs(cre || 0) - Math.abs(deb || 0);
+    }
+    if (!d || a == null) { skipped++; continue; }
+    const tx = { d, a: invert ? -a : a, r: txt(row, map.recipient), p: txt(row, map.purpose), t: txt(row, map.type) };
+    let fc = txt(row, map.cat);
+    // Sammelkategorie "Fixkosten/Einnahme" anhand des Vorzeichens aufteilen
+    if (/^fixkosten\s*\/\s*einnahmen?$/i.test(fc)) fc = tx.a > 0 ? 'Einnahmen' : 'Fixkosten';
+    if (fc && fc !== UNCAT) tx.fc = fc;
+    out.push(tx);
+  }
+  return { list: out, skipped };
+}
+
+/* ============================== Import-Dialog ============================== */
+function askMapping(fileName, sheets) {
+  return new Promise(resolve => {
+    const dlg = $('#dlgMap'), body = $('#mapBody'), maps = load('fb.maps') || {};
+    let si = sheets.reduce((b, s, i) => s.rows.length > sheets[b].rows.length ? i : b, 0);
+    let rows, hi, headers, map, invert, result;
+    $('#mapFile').textContent = fileName;
+
+    function setSheet(i) { si = i; rows = sheets[si].rows; setHeader(detectHeader(rows)); }
+    function setHeader(i) {
+      hi = Math.min(Math.max(i, 0), rows.length - 1);
+      headers = (rows[hi] || []).map((h, j) => String(h ?? '').trim() || 'Spalte ' + (j + 1));
+      const saved = maps[headers.join('|')];
+      map = saved ? { ...guessMap(headers), ...saved.map } : guessMap(headers);
+      invert = saved ? !!saved.invert : false;
+      draw();
+    }
+    function draw() {
+      const opts = sel => '<option value="-1">— nicht vorhanden —</option>' +
+        headers.map((h, j) => `<option value="${j}"${j === sel ? ' selected' : ''}>${esc(h)}</option>`).join('');
+      body.innerHTML = '<div class="mapgrid">' +
+        (sheets.length > 1 ? `<label>Tabellenblatt<select data-k="sheet">${sheets.map((s, i) => `<option value="${i}"${i === si ? ' selected' : ''}>${esc(s.name)} (${s.rows.length} Zeilen)</option>`).join('')}</select></label>` : '') +
+        `<label>Kopfzeile (Zeile mit den Spaltennamen)<input type="number" data-k="header" min="1" max="${rows.length}" value="${hi + 1}"></label>` +
+        FIELDS.map(f => `<label>${esc(f.label)}<select data-k="${f.key}">${opts(map[f.key])}</select></label>`).join('') +
+        `</div><label><input type="checkbox" data-k="invert"${invert ? ' checked' : ''}> Vorzeichen umkehren (wenn Ausgaben in der Datei als positive Beträge stehen)</label>` +
+        '<div id="mapPrev"></div>';
+      preview();
+    }
+    function preview() {
+      result = buildTx(rows, hi, map, invert);
+      const ok = map.date >= 0 && (map.amount >= 0 || map.debit >= 0 || map.credit >= 0) && result.list.length > 0;
+      $('#mapOk').disabled = !ok;
+      $('#mapPrev').innerHTML = `<b>${result.list.length} Buchungen erkannt</b>` +
+        (result.skipped ? ` <span class="muted">(${result.skipped} Zeilen ohne gültiges Datum/Betrag übersprungen)</span>` : '') +
+        (result.list.length ? '<div class="scroll"><table><tr><th>Datum</th><th>Empfänger</th><th>Verwendungszweck</th><th class="num">Betrag</th></tr>' +
+          result.list.slice(0, 5).map(t => `<tr><td>${fmtDate(t.d)}</td><td>${esc(t.r)}</td><td>${esc(t.p.slice(0, 80))}</td><td class="num">${fmt(t.a)}</td></tr>`).join('') +
+          '</table></div>' : '<p class="muted">Bitte mindestens die Spalten für Datum und Betrag zuordnen.</p>');
+    }
+    body.onchange = ev => {
+      const k = ev.target.dataset.k;
+      if (!k) return;
+      if (k === 'sheet') setSheet(+ev.target.value);
+      else if (k === 'header') setHeader(+ev.target.value - 1);
+      else if (k === 'invert') { invert = ev.target.checked; preview(); }
+      else { map[k] = +ev.target.value; preview(); }
+    };
+    const done = val => { dlg.onclose = null; dlg.close(); resolve(val); };
+    $('#mapOk').onclick = () => {
+      maps[headers.join('|')] = { map, invert };
+      store('fb.maps', maps);
+      done(result.list);
+    };
+    $('#mapCancel').onclick = () => done(null);
+    dlg.onclose = () => resolve(null);
+    setSheet(si);
+    dlg.showModal();
+  });
+}
+
+// Fügt neue Buchungen hinzu; bereits vorhandene (aus früheren Importen) werden übersprungen.
+// Kategorien aus der Datei, die es in der App noch nicht gibt, werden automatisch angelegt.
+function mergeTx(list) {
+  const key = t => t.d + '|' + t.a + '|' + t.r + '|' + t.p;
+  const have = new Map();
+  for (const t of txs) { const k = key(t); have.has(k) ? have.get(k).push(t) : have.set(k, [t]); }
+  let id = txs.reduce((m, t) => Math.max(m, t.id), 0), added = 0, newCats = 0;
+  for (const t of list) {
+    if (t.fc && !cats.some(c => c.name === t.fc)) { cats.push({ name: t.fc, keywords: [] }); newCats++; }
+    const old = (have.get(key(t)) || []).shift();
+    if (old) { if (t.fc) old.fc = t.fc; continue; }   // Duplikat: nur die Datei-Kategorie nachtragen
+    t.id = ++id; t.m = !!t.m;
+    if (!t.m) t.c = UNCAT;
+    txs.push(t); added++;
+  }
+  if (newCats) store('fb.cats', cats);
+  recategorize();
+  return added;
+}
+
+async function importFiles(files) {
+  for (const f of files) {
+    if (/\.json$/i.test(f.name)) { toast('Die Datendatei wird über den Datenordner geladen, nicht über den Import.', true); continue; }
+    try {
+      const sheets = (await readFile(f)).filter(s => s.rows.length);
+      if (!sheets.length) throw new Error('Keine Daten gefunden.');
+      const list = await askMapping(f.name + (files.length > 1 ? ` (Datei ${files.indexOf(f) + 1} von ${files.length})` : ''), sheets);
+      if (!list) continue;
+      const added = mergeTx(list), dup = list.length - added;
+      toast(`${added} Buchungen importiert` + (dup ? `, ${dup} bereits vorhandene übersprungen` : '') + '.' + (dataDir ? '' : ' Noch nicht gespeichert.'),
+        false, dataDir ? '' : 'Datenordner wählen …', () => $('#btnData').click());
+    } catch (e) {
+      console.error(e);
+      toast(`Fehler bei „${f.name}“: ${e.message}`, true);
+    }
+  }
+  persist();
+  limit = 300;
+  render();
+}
+
+/* ============================== Filtern, Sortieren, Anzeigen ============================== */
+let sort = { key: 'd', dir: -1 };
+let limit = 300;
+let lastView = { list: [], sum: [] };
+const FILTER_IDS = ['fQ', 'fCat', 'fKind', 'fMonth', 'fFrom', 'fTo', 'fMin', 'fMax'];
+const SIZE_BOUNDS = [500, 1000, 2000, 5000, 10000, Infinity];   // Obergrenzen der Betragsgrößen in Cent
+
+function getFiltered() {
+  const q = $('#fQ').value.trim().toLowerCase(), c = $('#fCat').value, k = $('#fKind').value;
+  const from = $('#fFrom').value, to = $('#fTo').value;
+  const mn = parseFloat($('#fMin').value), mx = parseFloat($('#fMax').value);
+  return txs.filter(t =>
+    (!q || (t.r + ' ' + t.p + ' ' + t.t + ' ' + t.c).toLowerCase().includes(q)) &&
+    (!c || t.c === c) &&
+    (!k || (k === 'out' ? t.a < 0 : t.a > 0)) &&
+    (!from || t.d >= from) && (!to || t.d <= to) &&
+    (isNaN(mn) || Math.abs(t.a) >= Math.round(mn * 100)) &&
+    (isNaN(mx) || Math.abs(t.a) <= Math.round(mx * 100)));
+}
+
+function fillSelect(sel, options, keep) {
+  const cur = keep ?? sel.value;
+  sel.innerHTML = options.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('');
+  sel.value = options.some(([v]) => v === cur) ? cur : '';
+}
+
+function render() {
+  const has = txs.length > 0;
+  $('#drop').hidden = has;
+  $('#app').hidden = !has;
+  $('#exportMenu').hidden = !has;
+  if (!has) return;
+
+  fillSelect($('#fCat'), [['', 'Alle Kategorien'], ...cats.map(c => [c.name, c.name]), [UNCAT, UNCAT]]);
+  const months = [...new Set(txs.map(t => t.d.slice(0, 7)))].sort().reverse();
+  fillSelect($('#fMonth'), [['', 'Alle Monate'], ...months.map(m => [m, fmtMonth(m)])]);
+
+  const list = getFiltered();
+  const cmp = sort.key === 'a' ? (x, y) => x.a - y.a
+    : (x, y) => String(x[sort.key]).localeCompare(String(y[sort.key]), 'de', { sensitivity: 'base' });
+  list.sort((x, y) => sort.dir * cmp(x, y) || y.d.localeCompare(x.d) || x.id - y.id);
+
+  // Kennzahlen
+  // Rücklagen-Kategorien (Umbuchungen auf eigene Konten) zählen weder zu Einnahmen noch zu Ausgaben.
+  const resCats = new Set(cats.filter(c => c.transfer).map(c => c.name)), isRes = t => resCats.has(t.c);
+  let tin = 0, tout = 0, resOut = 0, resIn = 0, resN = 0;
+  for (const t of list) {
+    if (isRes(t)) { resN++; t.a < 0 ? resOut -= t.a : resIn += t.a; }
+    else t.a < 0 ? tout -= t.a : tin += t.a;
+  }
+  $('#kIn').textContent = fmt(tin);
+  $('#kOut').textContent = fmt(tout);
+  $('#kSal').textContent = fmt(tin - tout);
+  $('#kSalLabel').textContent = resN ? 'Saldo ohne Rücklagen' : 'Saldo';
+  $('#kN').textContent = list.length.toLocaleString('de-DE');
+  $('#kResBox').hidden = !resN;
+  $('#kRes').innerHTML = `zurückgelegt ${fmt(resOut)}<br>entnommen ${fmt(resIn)}`;
+  // Hinweis, wenn im betrachteten Zeitraum mehr aus Rücklagen kam als hineinging
+  const drawn = resIn - resOut;
+  $('#resNote').hidden = !(drawn > 0);
+  $('#resNote').innerHTML = `<b>Rücklagen angezapft:</b> In der aktuellen Auswahl hast du ${fmt(drawn)} mehr aus Rücklagen entnommen als zurückgelegt.` +
+    (tout > tin ? ` Deine Ausgaben lagen ${fmt(tout - tin)} über deinen Einnahmen.` : '');
+
+  // Auswertung nach Kategorie
+  const by = new Map();
+  for (const t of list) {
+    const s = by.get(t.c) || { c: t.c, out: 0, in: 0, n: 0 };
+    t.a < 0 ? s.out -= t.a : s.in += t.a;
+    s.n++;
+    by.set(t.c, s);
+  }
+  const allSum = [...by.values()].sort((a, b) => b.out - a.out || b.in - a.in);
+  const sum = allSum.filter(x => !resCats.has(x.c)), resSum = allSum.filter(x => resCats.has(x.c));
+  const maxOut = Math.max(1, ...sum.map(s => s.out)), activeCat = $('#fCat').value;
+  $('#sumTable').innerHTML =
+    '<tr><th>Kategorie</th><th class="num">Ausgaben</th><th class="num">Anteil</th><th></th><th class="num">Einnahmen</th><th class="num">Anzahl</th></tr>' +
+    sum.map(s => `<tr class="click${s.c === activeCat ? ' active' : ''}" data-cat="${esc(s.c)}" title="${esc(s.c)}: ${fmt(s.out)} Ausgaben in ${s.n} Buchungen">
+      <td>${esc(s.c)}</td><td class="num">${fmt(s.out)}</td><td class="num">${tout ? (s.out / tout * 100).toFixed(1).replace('.', ',') : '0,0'} %</td>
+      <td class="barcell"><div class="bartrack">${s.out ? `<div class="bar" data-w="${(s.out / maxOut * 100).toFixed(1)}"></div>` : ''}</div></td>
+      <td class="num${s.in ? ' pos' : ''}">${s.in ? fmt(s.in) : '–'}</td><td class="num">${s.n}</td></tr>`).join('') +
+    `<tr class="total"><td>Summe</td><td class="num">${fmt(tout)}</td><td class="num">${tout ? '100,0 %' : ''}</td><td></td><td class="num">${fmt(tin)}</td><td class="num">${list.length - resN}</td></tr>` +
+    resSum.map(x => `<tr class="click res${x.c === activeCat ? ' active' : ''}" data-cat="${esc(x.c)}" title="Rücklage – zählt weder zu Einnahmen noch zu Ausgaben">
+      <td>${esc(x.c)}<span class="tag">Rücklage</span></td><td class="num" colspan="3">zurückgelegt ${fmt(x.out)}</td>
+      <td class="num">entnommen ${fmt(x.in)}</td><td class="num">${x.n}</td></tr>`).join('');
+
+  // Monatsübersicht
+  const mon = new Map();
+  for (const t of list) {
+    const k = t.d.slice(0, 7), s = mon.get(k) || { m: k, out: 0, in: 0, res: 0 };
+    if (isRes(t)) s.res += t.a;   // positiv = aus Rücklagen entnommen, negativ = zurückgelegt
+    else t.a < 0 ? s.out -= t.a : s.in += t.a;
+    mon.set(k, s);
+  }
+  const ml = [...mon.values()].sort((a, b) => b.m.localeCompare(a.m)), maxM = Math.max(1, ...ml.map(s => s.out));
+  $('#monTable').innerHTML =
+    `<tr><th>Monat</th><th class="num">Ausgaben</th><th></th><th class="num">Einnahmen</th><th class="num">${resN ? 'Saldo ohne Rücklagen' : 'Saldo'}</th>${resN ? '<th class="num">Rücklagen</th>' : ''}</tr>` +
+    ml.map(s => `<tr class="click${s.m === $('#fMonth').value ? ' active' : ''}" data-month="${s.m}" title="${esc(fmtMonth(s.m))}: ${fmt(s.out)} Ausgaben, ${fmt(s.in)} Einnahmen">
+      <td>${esc(fmtMonth(s.m))}</td><td class="num">${fmt(s.out)}</td>
+      <td class="barcell"><div class="bartrack">${s.out ? `<div class="bar" data-w="${(s.out / maxM * 100).toFixed(1)}"></div>` : ''}</div></td>
+      <td class="num${s.in ? ' pos' : ''}">${fmt(s.in)}</td><td class="num">${fmt(s.in - s.out)}</td>
+      ${resN ? `<td class="num">${s.res > 0 ? fmt(s.res) + ' entnommen' : s.res < 0 ? fmt(-s.res) + ' zurückgelegt' : '–'}</td>` : ''}</tr>`).join('');
+
+  // Kategorien im Monatsvergleich (Zeilen = Kategorien, Spalten = Monate)
+  // Auffällig = mind. 30 % und mind. 20 € über dem eigenen Monatsdurchschnitt (erst ab 3 Monaten sinnvoll).
+  const mAsc = [...mon.keys()].sort(), cm = new Map(), hints = [];
+  const isHot = (v, avg) => mAsc.length >= 3 && v > avg * 1.3 && v - avg >= 2000;
+  const over = (v, avg) => `${Math.round((v / avg - 1) * 100)} % über dem Durchschnitt von ${fmt(Math.round(avg))}`;
+  const mark = (v, avg) => isHot(v, avg) ? `<span class="warn" title="${over(v, avg)}">▲</span> ` : '';
+  for (const t of list) if (t.a < 0 && !isRes(t)) { const k = t.c + '\n' + t.d.slice(0, 7); cm.set(k, (cm.get(k) || 0) - t.a); }
+  $('#cmpTable').innerHTML =
+    '<tr><th>Kategorie</th>' + mAsc.map(m => `<th class="num">${esc(fmtMonthShort(m))}</th>`).join('') + '<th class="num">Ø pro Monat</th><th class="num">Summe</th></tr>' +
+    sum.filter(s => s.out > 0).map(s => {
+      const vals = mAsc.map(m => cm.get(s.c + '\n' + m) || 0), mx = Math.max(...vals), avg = s.out / mAsc.length;
+      return `<tr><td>${esc(s.c)}</td>` + vals.map((v, i) => {
+        if (isHot(v, avg)) hints.push({ c: s.c, m: mAsc[i], v, avg });
+        return `<td class="num" title="${esc(s.c + ', ' + fmtMonth(mAsc[i]))}: ${fmt(v)}">${mark(v, avg)}${v ? fmt(v) : '–'}
+          <div class="bartrack mini">${v ? `<div class="bar" data-w="${(v / mx * 100).toFixed(0)}"></div>` : ''}</div></td>`;
+      }).join('') + `<td class="num">${fmt(Math.round(avg))}</td><td class="num">${fmt(s.out)}</td></tr>`;
+    }).join('') +
+    '<tr class="total"><td>Summe</td>' + mAsc.map(m => `<td class="num">${mark(mon.get(m).out, tout / mAsc.length)}${fmt(mon.get(m).out)}</td>`).join('') +
+    `<td class="num">${fmt(Math.round(tout / Math.max(1, mAsc.length)))}</td><td class="num">${fmt(tout)}</td></tr>`;
+  $('#hints').innerHTML = mAsc.length < 3 ? '' : !hints.length
+    ? '<li class="muted">Keine auffälligen Monate: keine Kategorie liegt deutlich über ihrem Durchschnitt.</li>'
+    : '<li><b>Achtung:</b> In diesen Monaten lagen die Ausgaben deutlich über dem Durchschnitt.</li>' +
+      hints.sort((a, b) => (b.v - b.avg) - (a.v - a.avg)).slice(0, 6).map(h =>
+      `<li><span class="warn">▲</span> <b>${esc(h.c)}</b> im ${esc(fmtMonth(h.m))}: ${fmt(h.v)} – ${over(h.v, h.avg)}</li>`).join('');
+
+  $('#hints').classList.toggle('alert', mAsc.length >= 3 && hints.length > 0);
+
+  // Kleine Ausgaben: viele kleine Einzelbeträge sichtbar machen
+  const thr = Math.round((parseFloat($('#smallMax').value) || 0) * 100);
+  const sMon = new Map(), sRec = new Map();
+  let sN = 0, sS = 0, cashN = 0, cashS = 0;
+  for (const t of list) if (t.a < 0 && !isRes(t)) {
+    if (t.c === 'Bargeld') { cashN++; cashS -= t.a; }
+    if (-t.a > thr) continue;
+    const mk = t.d.slice(0, 7), rk = t.r || t.p || '(ohne Angabe)';
+    const a = sMon.get(mk) || { n: 0, s: 0 }, b = sRec.get(rk) || { r: rk, n: 0, s: 0 };
+    a.n++; a.s -= t.a; b.n++; b.s -= t.a; sN++; sS -= t.a;
+    sMon.set(mk, a); sRec.set(rk, b);
+  }
+  const pct = (a, b) => b ? (a / b * 100).toFixed(1).replace('.', ',') + ' %' : '–';
+  $('#smallInfo').innerHTML = (sN
+    ? `<b>${sN} kleine Ausgaben</b> bis ${fmt(thr)} ergeben zusammen <b>${fmt(sS)}</b> – das sind ${pct(sS, tout)} aller Ausgaben und im Schnitt ${fmt(Math.round(sS / sN))} pro Buchung.`
+    : `<span class="muted">Keine Ausgaben bis ${fmt(thr)} in der aktuellen Auswahl.</span>`) +
+    (cashN ? `<br>Dazu kommen <b>${cashN} Bargeldabhebungen</b> über zusammen <b>${fmt(cashS)}</b> (${pct(cashS, tout)} aller Ausgaben) – wofür das Bargeld ausgegeben wurde, ist im Kontoauszug nicht sichtbar.` : '');
+  const maxS = Math.max(1, ...[...sMon.values()].map(x => x.s)), avgS = sS / Math.max(1, ml.length);
+  $('#smallMon').innerHTML = !sN ? '' :
+    `<tr><th>Kleine Ausgaben je Monat</th><th class="num">Anzahl</th><th class="num">Summe</th><th></th><th class="num">Anteil an Monatsausgaben</th></tr>` +
+    ml.map(s => {
+      const x = sMon.get(s.m) || { n: 0, s: 0 };
+      return `<tr class="click" data-smonth="${s.m}" title="Anklicken, um diese Buchungen anzuzeigen"><td>${esc(fmtMonth(s.m))}</td><td class="num">${x.n}</td><td class="num">${mark(x.s, avgS)}${fmt(x.s)}</td>
+        <td class="barcell"><div class="bartrack">${x.s ? `<div class="bar" data-w="${(x.s / maxS * 100).toFixed(1)}"></div>` : ''}</div></td>
+        <td class="num">${pct(x.s, s.out)}</td></tr>`;
+    }).join('');
+  $('#smallRec').innerHTML = !sN ? '' :
+    '<tr><th>Wohin die kleinen Beträge gehen (Top 12)</th><th class="num">Anzahl</th><th class="num">Summe</th><th class="num">Ø Betrag</th></tr>' +
+    [...sRec.values()].sort((a, b) => b.s - a.s).slice(0, 12).map(x =>
+      `<tr><td>${esc(x.r)}</td><td class="num">${x.n}</td><td class="num">${fmt(x.s)}</td><td class="num">${fmt(Math.round(x.s / x.n))}</td></tr>`).join('');
+
+  // Alle Ausgaben nach Betragsgröße
+  const sizes = SIZE_BOUNDS.map((hi, i) => ({ lo: i ? SIZE_BOUNDS[i - 1] : 0, hi, n: 0, s: 0 }));
+  for (const t of list) if (t.a < 0 && !isRes(t)) { const b = sizes.find(z => -t.a <= z.hi); b.n++; b.s -= t.a; }
+  const maxZ = Math.max(1, ...sizes.map(z => z.s)), e0 = c => (c / 100).toLocaleString('de-DE') + ' €';
+  $('#sizeTable').innerHTML =
+    '<tr><th>Alle Ausgaben nach Betragsgröße</th><th class="num">Anzahl</th><th class="num">Summe</th><th></th><th class="num">Anteil an Ausgaben</th></tr>' +
+    sizes.map((z, i) => `<tr class="click" data-size="${i}" title="Anklicken, um diese Buchungen anzuzeigen">
+      <td>${!z.lo ? 'bis ' + e0(z.hi) : z.hi === Infinity ? 'über ' + e0(z.lo) : e0(z.lo).replace(' €', '') + ' – ' + e0(z.hi)}</td>
+      <td class="num">${z.n}</td><td class="num">${fmt(z.s)}</td>
+      <td class="barcell"><div class="bartrack">${z.s ? `<div class="bar" data-w="${(z.s / maxZ * 100).toFixed(1)}"></div>` : ''}</div></td>
+      <td class="num">${pct(z.s, tout)}</td></tr>`).join('');
+
+  // Buchungstabelle – Auswahl auf die aktuell gefilterten Buchungen beschränken
+  const visibleIds = new Set(list.map(t => t.id));
+  for (const id of selected) if (!visibleIds.has(id)) selected.delete(id);
+  lastSel = -1;
+  const th = (k, label, cls) => `<th class="sortable ${cls || ''}" data-sort="${k}">${label}${sort.key === k ? (sort.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`;
+  $('#txTable').innerHTML =
+    '<tr><th class="sel"><input type="checkbox" data-act="selAll" title="Alle gefilterten Buchungen auswählen" aria-label="Alle gefilterten Buchungen auswählen"></th>' + th('d', 'Datum') + th('r', 'Empfänger / Auftraggeber') + th('p', 'Verwendungszweck', 'pcol') + th('c', 'Kategorie') + th('a', 'Betrag', 'num') + '</tr>' +
+    list.slice(0, limit).map(t => `<tr data-id="${t.id}"><td class="sel"><input type="checkbox" data-act="sel" aria-label="Buchung auswählen"></td><td class="d">${fmtDate(t.d)}</td><td>${esc(t.r)}<div class="p2">${esc(t.p || t.t)}</div></td>
+      <td class="p pcol" title="${esc(t.p + (t.t ? ' · ' + t.t : ''))}">${esc(t.p || t.t)}</td>
+      <td><button class="chip${t.c === UNCAT ? ' uncat' : ''}" data-act="cat" title="Kategorie ändern">${esc(t.c)}${t.m ? ' ✎' : ''}</button></td>
+      <td class="num${t.a > 0 ? ' pos' : ''}">${fmt(t.a)}</td></tr>`).join('');
+  $('#txCount').textContent = `${Math.min(limit, list.length)} von ${list.length} angezeigt` + (list.length !== txs.length ? ` (gefiltert aus ${txs.length})` : '');
+  $('#more').hidden = list.length <= limit;
+  // Sichtbar machen, dass gefiltert wird (Monat zählt mit Von/Bis als ein Filter)
+  let nSet = 0;
+  for (const id of FILTER_IDS) {
+    const el = $('#' + id), on = el.value !== '';
+    el.classList.toggle('set', on);
+    if (on && !((id === 'fFrom' || id === 'fTo') && $('#fMonth').value)) nSet++;
+  }
+  $('#btnReset').disabled = !nSet;
+  $('#btnReset').textContent = nSet ? `Filter zurücksetzen (${nSet})` : 'Filter zurücksetzen';
+  $('#fInfo').textContent = nSet ? `Gefiltert: ${list.length} von ${nBook(txs.length)}` : '';
+  if (!list.length) {
+    const empty = '<tr><td class="empty">Keine Buchungen für diese Filter. <button data-reset>Filter zurücksetzen</button></td></tr>';
+    for (const id of ['sumTable', 'monTable', 'cmpTable', 'sizeTable', 'txTable']) $('#' + id).innerHTML = empty;
+    $('#smallMon').innerHTML = $('#smallRec').innerHTML = $('#hints').innerHTML = '';
+    $('#hints').classList.remove('alert');
+    $('#smallInfo').innerHTML = '<span class="muted">Keine Buchungen für diese Filter.</span>';
+  }
+  lastView = { list, sum: allSum };
+  fillSelect($('#bulkCat'), [['', 'Kategorie wählen …'], ...cats.map(c => [c.name, c.name]), [UNCAT, UNCAT], ['__auto__', '↺ Automatisch zuordnen']]);
+  syncSel();
+  fitTx();
+  // Balkenbreiten setzen (als Attribut im HTML würde die Content-Security-Policy sie blockieren)
+  for (const el of document.querySelectorAll('#views .bar[data-w]')) el.style.width = el.dataset.w + '%';
+}
+
+/* ============================== Mehrere Buchungen auswählen und zuordnen ============================== */
+const selected = new Set();   // IDs der markierten Buchungen
+let lastSel = -1;             // zuletzt angeklickte Zeile (für Bereichsauswahl mit Umschalttaste)
+
+function syncSel() {
+  for (const cb of document.querySelectorAll('#txTable input[data-act=sel]')) {
+    const tr = cb.closest('tr'), on = selected.has(+tr.dataset.id);
+    cb.checked = on;
+    tr.classList.toggle('active', on);
+  }
+  const all = $('#txTable input[data-act=selAll]'), n = selected.size, total = lastView.list.length;
+  if (all) { all.checked = n > 0 && n === total; all.indeterminate = n > 0 && n < total; }
+  $('#bulk').hidden = !n;
+  $('#txScroll').classList.toggle('hasbulk', n > 0);
+  $('#bulkN').textContent = n === 1 ? '1 Buchung ausgewählt' : `${n} Buchungen ausgewählt`;
+}
+$('#bulkClear').onclick = () => { selected.clear(); syncSel(); };
+$('#bulkOk').onclick = () => {
+  const cat = $('#bulkCat').value, n = selected.size;
+  if (!cat) return toast('Bitte zuerst eine Kategorie wählen.', true);
+  for (const t of txs) if (selected.has(t.id)) {
+    if (cat === '__auto__') { t.m = false; t.c = categorize(t); }
+    else { t.c = cat; t.m = true; }
+  }
+  persist();
+  selected.clear();
+  $('#bulkCat').value = '';
+  render();
+  toast(cat === '__auto__' ? `${n} Buchungen wieder automatisch zugeordnet.` : `${n} Buchungen der Kategorie „${cat}“ zugewiesen.`);
+};
+
+// Die Buchungsliste füllt den Rest des Fensters, damit Filter und Kennzahlen sichtbar bleiben und nur die Liste scrollt.
+function fitTx() {
+  const el = $('#txScroll');
+  if (!el.offsetParent) return;   // gerade nicht sichtbar
+  const top = el.getBoundingClientRect().top + window.scrollY;
+  el.style.maxHeight = Math.max(260, window.innerHeight - top - 110) + 'px';
+}
+window.addEventListener('resize', fitTx);
+
+/* ============================== Kategorie einer Buchung ändern ============================== */
+function editCategory(btn, tx) {
+  const sel = document.createElement('select');
+  sel.innerHTML = [...cats.map(c => c.name), UNCAT].map(n => `<option${n === tx.c ? ' selected' : ''}>${esc(n)}</option>`).join('') +
+    (tx.m ? '<option value="__auto__">↺ Automatisch zuordnen</option>' : '') +
+    '<option value="__rule__">＋ Regel erstellen …</option>';
+  // Das Feld bleibt unsichtbar stehen und hält die Zeilenhöhe und Spaltenbreite; die Auswahl liegt darüber.
+  btn.style.visibility = 'hidden';
+  btn.parentNode.classList.add('editing');
+  btn.parentNode.appendChild(sel);
+  sel.focus();
+  let finished = false;
+  const finish = () => { if (!finished) { finished = true; render(); } };
+  sel.onblur = finish;
+  sel.onchange = () => {
+    if (sel.value === '__rule__') { finish(); return openRule(tx); }
+    if (sel.value === '__auto__') { tx.m = false; tx.c = categorize(tx); }
+    else { tx.c = sel.value; tx.m = true; }
+    persist();
+    finish();
+    if (tx.m && tx.c !== UNCAT) toast(`Kategorie geändert auf „${tx.c}“.`, false, 'Regel daraus erstellen …', () => openRule(tx));
+  };
+}
+
+const nBook = n => n === 1 ? '1 Buchung' : n + ' Buchungen';
+const ruleKeyword = () => $('#ruleKw').value.trim().toLowerCase().replace(/^!+\s*/, '');
+function ruleMatches() {
+  const m = parseKw(ruleKeyword());
+  return m ? txs.filter(t => kwHit(m, txText(t))) : [];
+}
+// Zeigt schon vor dem Speichern, was die Regel bewirken würde
+function updateRuleInfo() {
+  const list = ruleMatches(), manual = list.filter(t => t.m).length;
+  $('#ruleInfo').textContent = !ruleKeyword() ? ''
+    : !list.length ? 'Trifft im Moment auf keine Buchung zu. Die Regel gilt dann für künftige Importe.'
+    : `Trifft auf ${nBook(list.length)} zu.` + (manual ? ` ${manual === 1 ? 'Eine davon ist' : manual + ' davon sind'} von Hand zugeordnet und ${manual === 1 ? 'bleibt' : 'bleiben'} unverändert, solange du das Häkchen nicht setzt.` : '');
+  $('#ruleManualRow').hidden = !manual;
+}
+function openRule(tx) {
+  $('#ruleKw').value = (tx.r || tx.p).toLowerCase().slice(0, 40);
+  $('#ruleCat').innerHTML = cats.map(c => `<option value="${esc(c.name)}"${c.name === tx.c ? ' selected' : ''}>${esc(c.name)}${c.transfer ? ' (Rücklage)' : ''}</option>`).join('');
+  $('#ruleManual').checked = false;
+  updateRuleInfo();
+  $('#dlgRule').showModal();
+  $('#ruleKw').select();
+}
+$('#ruleKw').oninput = updateRuleInfo;
+$('#ruleKw').onkeydown = ev => { if (ev.key === 'Enter') { ev.preventDefault(); $('#ruleOk').click(); } };
+$('#ruleCancel').onclick = () => $('#dlgRule').close();
+$('#ruleOk').onclick = () => {
+  const kw = ruleKeyword(), cat = cats.find(c => c.name === $('#ruleCat').value);
+  if (!kw || !cat) return;
+  const stored = '!' + kw;
+  for (const c of cats) c.keywords = c.keywords.filter(k => k.trim().toLowerCase() !== stored);   // dieselbe Regel nicht doppelt führen
+  cat.keywords.push(stored);
+  if ($('#ruleManual').checked) for (const t of ruleMatches()) t.m = false;
+  recategorize();
+  const n = ruleMatches().filter(t => t.c === cat.name).length;
+  store('fb.cats', cats); persist();
+  $('#dlgRule').close();
+  render();
+  toast(`Regel gespeichert: „${kw}“ → ${cat.name}. ` + (n ? `${nBook(n)} ${n === 1 ? 'ist' : 'sind'} jetzt in dieser Kategorie.` : 'Im Moment trifft sie auf keine Buchung zu.'));
+};
+
+/* ============================== Kategorien-Dialog ============================== */
+function catRowHtml(c) {
+  return `<div class="catrow" data-orig="${esc(c.name)}"><div><input class="cn" value="${esc(c.name)}" placeholder="Name der Kategorie">
+      <label class="cres" title="Umbuchung auf eigene Konten: zählt weder zu Einnahmen noch zu Ausgaben"><input type="checkbox" class="ct"${c.transfer ? ' checked' : ''}> Rücklage</label></div>
+    <textarea class="ck" placeholder="Stichwörter, mit Komma getrennt">${esc(c.keywords.join(', '))}</textarea>
+    <button class="danger" data-act="del" title="Kategorie löschen" aria-label="Kategorie ${esc(c.name)} löschen">✕</button></div>`;
+}
+function drawCats(list) { $('#catList').innerHTML = list.map(catRowHtml).join(''); }
+function readCats() {
+  const seen = new Set(), out = [], rename = {};
+  for (const row of document.querySelectorAll('#catList .catrow')) {
+    const name = row.querySelector('.cn').value.trim();
+    if (!name || name === UNCAT || seen.has(name)) continue;
+    seen.add(name);
+    if (row.dataset.orig && row.dataset.orig !== name) rename[row.dataset.orig] = name;
+    out.push({ name, keywords: row.querySelector('.ck').value.split(/[,\n]/).map(s => s.trim()).filter(Boolean),
+      ...(row.querySelector('.ct').checked ? { transfer: true } : {}) });
+  }
+  return { out, rename };
+}
+$('#btnCats').onclick = () => { drawCats(cats); $('#dlgCats').showModal(); };
+$('#catList').onclick = ev => { if (ev.target.dataset.act === 'del') ev.target.closest('.catrow').remove(); };
+$('#catAdd').onclick = () => {
+  $('#catList').insertAdjacentHTML('beforeend', catRowHtml({ name: '', keywords: [] }));
+  const rows = document.querySelectorAll('#catList .catrow'), last = rows[rows.length - 1];
+  last.dataset.orig = '';
+  last.querySelector('.cn').focus();
+};
+$('#catDefaults').onclick = () => { if (confirm('Alle Kategorien und Regeln auf den Standard zurücksetzen?')) drawCats(defaultCats()); };
+$('#catCancel').onclick = () => $('#dlgCats').close();
+$('#catSave').onclick = () => {
+  const { out, rename } = readCats();
+  for (const t of txs) if (t.m && rename[t.c]) t.c = rename[t.c];
+  cats = out;
+  recategorize();
+  store('fb.cats', cats); persist();
+  $('#dlgCats').close();
+  render();
+};
+$('#catExport').onclick = () => download('dewz-regeln.json', JSON.stringify(readCats().out, null, 2));
+$('#catImport').onclick = () => $('#catFile').click();
+$('#catFile').onchange = async ev => {
+  try {
+    const data = JSON.parse(await ev.target.files[0].text());
+    if (!Array.isArray(data) || !data.every(c => typeof c.name === 'string' && Array.isArray(c.keywords))) throw new Error();
+    drawCats(data.map(c => ({ name: c.name, keywords: c.keywords.map(String), transfer: c.transfer === true })));
+  } catch { toast('Die Datei enthält keine gültigen Regeln.', true); }
+  ev.target.value = '';
+};
+
+/* ============================== Export ============================== */
+// Speichern unter … im Windows-Dialog; der vorgeschlagene Name legt auch den Dateityp fest
+async function download(name, content) {
+  try {
+    const path = await invoke('save_export', { name, content });
+    if (path) toast('Gespeichert: ' + path);   // null = abgebrochen
+  } catch (e) { toast('Export fehlgeschlagen: ' + errText(e), true); }
+}
+function toCsv(rows) {
+  const cell = v => {
+    let s = String(v ?? '');
+    if (/^[=+@\t]/.test(s) || /^-\D/.test(s)) s = "'" + s;   // Schutz vor Formel-Injektion in Excel
+    return /[";\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  return '﻿' + rows.map(r => r.map(cell).join(';')).join('\r\n');
+}
+const num = cents => (cents / 100).toFixed(2).replace('.', ',');
+$('#btnExport').onclick = () => {
+  if (!lastView.list.length) return toast('Keine Buchungen zum Exportieren.', true);
+  download('buchungen.csv', toCsv([['Datum', 'Empfänger', 'Verwendungszweck', 'Buchungstext', 'Kategorie', 'Betrag'],
+    ...lastView.list.map(t => [fmtDate(t.d), t.r, t.p, t.t, t.c, num(t.a)])]));
+};
+$('#btnExportSum').onclick = () => {
+  if (!lastView.sum.length) return toast('Keine Auswertung zum Exportieren.', true);
+  download('auswertung.csv', toCsv([['Kategorie', 'Ausgaben', 'Einnahmen', 'Saldo', 'Anzahl'],
+    ...lastView.sum.map(s => [s.c, num(s.out), num(s.in), num(s.in - s.out), s.n])]));
+};
+
+/* ============================== Datendatei (JSON im gewählten Ordner) ============================== */
+// Buchungen, Kategorien und Regeln liegen in der Datei DATA_NAME im vom Nutzer gewählten Ordner – optional
+// verschlüsselt (PBKDF2 + AES-GCM, Web Crypto). Lesen und Schreiben übernimmt die Desktop-App (src-tauri):
+// Sie merkt sich den Ordner und schreibt ausschließlich DATA_NAME in einen Ordner, den der Nutzer im
+// Windows-Dialog gewählt hat. Verschlüsselung und Passwort bleiben komplett hier in der Oberfläche.
+const { invoke } = window.__TAURI__.core;
+const appWindow = window.__TAURI__.window.getCurrentWindow();
+const DATA_NAME = 'dewz-daten.json', KDF_ITER = 600000;
+const LEGACY_DATA_NAME = 'finanz-buddy-daten.json';        // Dateiname vor der Umbenennung der App
+const APP_ID = 'dewz', APP_IDS = ['dewz', 'finanz-buddy'];   // Kennung in der Datei; die frühere wird weiter gelesen
+const NOT_DATA = 'Die Datei ist keine dewz-Datendatei.';
+let dataDir = null, remembered = null;                       // Pfad des geöffneten bzw. zuletzt verwendeten Ordners
+let cryptoKey = null, salt = null, kdfIter = KDF_ITER;       // gesetzt = Datei wird verschlüsselt geschrieben
+let dirty = false, saving = false, saveAgain = false, savedAt = null, saveError = '';
+const folderName = p => p.replace(/[\\/]+$/, '').split(/[\\/]/).pop() || p;
+const errText = e => String(e && e.message || e);
+
+function updateStatus() {
+  const b = $('#btnData'), unsaved = !dataDir && txs.length > 0, canLoad = !!remembered && !dataDir;
+  b.textContent = dataDir ? (saveError ? 'Speichern fehlgeschlagen' : `Datenordner: ${folderName(dataDir)}` + (cryptoKey ? ' (verschlüsselt)' : ''))
+    : unsaved ? 'Nicht gespeichert – Datenordner wählen' : 'Kein Datenordner';
+  b.classList.toggle('attention', unsaved || !!saveError);
+  $('#dataState').textContent = dataDir
+    ? `Ordner „${dataDir}“, Datei ${DATA_NAME}, ${cryptoKey ? 'mit Passwort verschlüsselt' : 'unverschlüsselt'}` +
+      (saveError ? ` – Speichern fehlgeschlagen: ${saveError}` : savedAt ? ` – zuletzt gespeichert um ${savedAt.toLocaleTimeString('de-DE')}` : '')
+    : canLoad ? `Zuletzt verwendeter Ordner: „${remembered}“. Er ist noch nicht geöffnet.`
+    : unsaved ? `${txs.length} Buchungen sind geladen, aber noch nirgends gespeichert. Wähle einen Ordner, um sie zu sichern.`
+    : 'Es ist kein Datenordner gewählt.';
+  const loadLabel = canLoad ? `Daten aus „${folderName(remembered)}“ laden` : 'Datenordner wählen';
+  $('#dropOpen').textContent = loadLabel;
+  $('#dropOther').hidden = !canLoad;
+  $('#dataLoad').textContent = loadLabel;
+  $('#dataLoad').hidden = !canLoad;
+  $('#dataChoose').textContent = dataDir || canLoad ? 'Anderen Ordner wählen' : 'Ordner wählen';
+  $('#pwSet').hidden = !dataDir;
+  $('#pwSet').textContent = cryptoKey ? 'Passwort ändern' : 'Passwort festlegen';
+  $('#pwRemove').hidden = !(dataDir && cryptoKey);
+  $('#btnClear').hidden = !txs.length;
+}
+
+// Nach jeder Änderung an Buchungen oder Kategorien aufrufen
+function persist() {
+  dirty = true;
+  if (dataDir) writeFile(); else updateStatus();
+}
+
+/* ---------- Verschlüsselung ---------- */
+function b64(bytes) {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+const unb64 = str => Uint8Array.from(atob(str), c => c.charCodeAt(0));
+
+async function deriveKey(password, saltBytes, iterations) {
+  const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: saltBytes, iterations, hash: 'SHA-256' }, material,
+    { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+
+async function serialize() {
+  const plain = JSON.stringify({ app: APP_ID, version: 2, saved: new Date().toISOString(), cats, txs }, null, 1);
+  if (!cryptoKey) return plain;
+  const iv = crypto.getRandomValues(new Uint8Array(12));   // für jede Speicherung ein neuer Zufallswert
+  const data = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, cryptoKey, new TextEncoder().encode(plain)));
+  return JSON.stringify({ app: APP_ID, version: 1, encrypted: true,
+    kdf: { name: 'PBKDF2', hash: 'SHA-256', iterations: kdfIter, salt: b64(salt) }, cipher: 'AES-GCM', iv: b64(iv), data: b64(data) }, null, 1);
+}
+
+function askPassword(title, text, withConfirm, error) {
+  return new Promise(resolve => {
+    const dlg = $('#dlgPw'), err = msg => { $('#pwErr').textContent = msg; };
+    $('#pwTitle').textContent = title;
+    $('#pwText').textContent = text;
+    $('#pw2Row').hidden = !withConfirm;
+    $('#pw1').value = $('#pw2').value = '';
+    err(error || '');
+    const done = v => { dlg.onclose = null; dlg.close(); resolve(v); };
+    $('#pwOk').onclick = () => {
+      const v = $('#pw1').value;
+      if (!v) return err('Bitte ein Passwort eingeben.');
+      if (withConfirm && v !== $('#pw2').value) return err('Die beiden Eingaben stimmen nicht überein.');
+      done(v);
+    };
+    $('#pwCancel').onclick = () => done(null);
+    dlg.onclose = () => resolve(null);
+    dlg.onkeydown = ev => { if (ev.key === 'Enter' && ev.target.tagName === 'INPUT') { ev.preventDefault(); $('#pwOk').click(); } };
+    dlg.showModal();
+    $('#pw1').focus();
+  });
+}
+
+async function setPassword(password) {
+  salt = crypto.getRandomValues(new Uint8Array(16));
+  kdfIter = KDF_ITER;
+  cryptoKey = await deriveKey(password, salt, kdfIter);
+  await writeFile();
+}
+
+/* ---------- Lesen und Schreiben ---------- */
+async function writeFile() {
+  if (saving) { saveAgain = true; return; }   // läuft schon: danach noch einmal mit dem neuesten Stand schreiben
+  saving = true;
+  try {
+    do {
+      saveAgain = false;
+      await invoke('write_data', { content: await serialize() });   // schreibt atomar: erst Hilfsdatei, dann umbenennen
+    } while (saveAgain);
+    dirty = false; savedAt = new Date(); saveError = '';
+  } catch (e) {
+    saveError = errText(e);
+    toast('Speichern in die Datendatei fehlgeschlagen: ' + saveError, true);
+  }
+  saving = false;
+  updateStatus();
+}
+
+// Übernimmt aus dem gelesenen Objekt nur Einträge mit gültiger Struktur
+function parseData(o) {
+  if (!o || !APP_IDS.includes(o.app) || !Array.isArray(o.txs)) throw new Error(NOT_DATA);
+  const str = v => typeof v === 'string' ? v : '';
+  let id = 0;
+  const list = o.txs.filter(t => t && /^\d{4}-\d{2}-\d{2}$/.test(t.d) && Number.isInteger(t.a)).map(t => {
+    const x = { id: ++id, d: t.d, a: t.a, r: str(t.r), p: str(t.p), t: str(t.t), c: str(t.c) || UNCAT, m: t.m === true };
+    if (str(t.fc)) x.fc = t.fc;
+    return x;
+  });
+  const okCats = Array.isArray(o.cats) && o.cats.every(c => c && typeof c.name === 'string' && Array.isArray(c.keywords));
+  return { txs: list, version: Number(o.version) || 1,
+    cats: okCats ? o.cats.map(c => ({ name: c.name, keywords: c.keywords.map(String), ...(c.transfer === true ? { transfer: true } : {}) })) : null };
+}
+
+// Liest den Dateiinhalt; fragt bei verschlüsselten Dateien nach dem Passwort. Liefert null, wenn abgebrochen wurde.
+async function readPayload(text) {
+  let o;
+  try { o = JSON.parse(text); } catch { o = null; }
+  if (!o || !APP_IDS.includes(o.app)) throw new Error(NOT_DATA);
+  if (!o.encrypted) return { ...parseData(o), key: null, salt: null, iter: KDF_ITER };
+  const iter = o.kdf && o.kdf.iterations;
+  let saltBytes, iv, data;
+  try { saltBytes = unb64(o.kdf.salt); iv = unb64(o.iv); data = unb64(o.data); } catch { iv = null; }
+  if (!iv || !Number.isInteger(iter) || iter < 10000 || iter > 10000000) throw new Error('Die verschlüsselte Datendatei ist beschädigt.');
+  for (let error = ''; ;) {
+    const pw = await askPassword('Datendatei entsperren', 'Die Datendatei ist mit einem Passwort verschlüsselt.', false, error);
+    if (pw === null) return null;
+    const key = await deriveKey(pw, saltBytes, iter);
+    let plain;
+    try { plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data); }
+    catch { error = 'Falsches Passwort.'; continue; }
+    return { ...parseData(JSON.parse(new TextDecoder().decode(plain))), key, salt: saltBytes, iter };
+  }
+}
+
+async function openDir(dir) {
+  try {
+    // { text, legacy } oder null, wenn im Ordner noch keine Datendatei liegt
+    const file = await invoke('read_data', { dir }), legacy = !!(file && file.legacy);
+    let data = null;
+    if (file && file.text.trim()) { data = await readPayload(file.text); if (!data) return; }
+    await invoke('activate_folder', { dir });   // ab jetzt schreibt write_data in diesen Ordner
+
+    const pending = dataDir ? [] : txs;   // geladene, aber noch nirgends gespeicherte Buchungen
+    let mustWrite = !data || legacy, merged = 0;
+    if (data) {
+      txs = data.txs; cryptoKey = data.key; salt = data.salt; kdfIter = data.iter;
+      if (data.cats) {
+        cats = data.cats;
+        if (data.version < 2) { migrateTransfer(cats); mustWrite = true; }   // Datei aus einer Version ohne Rücklagen
+        store('fb.cats', cats);
+      }
+      buildMatchers();
+      merged = pending.length ? mergeTx(pending.map(({ id, ...t }) => t)) : 0;
+      if (merged) mustWrite = true; else recategorize();
+    }
+    dataDir = dir; remembered = dir;
+    dirty = false; saveError = ''; savedAt = null;
+    if (mustWrite) await writeFile();
+    selected.clear();
+    $('#dlgData').close();
+    resetFilters();
+    updateStatus();
+    const name = folderName(dir);
+    if (!saveError) toast(data
+      ? `Daten aus „${name}“ geladen: ${nBook(txs.length)}` + (merged ? `, davon ${merged} neu aus dieser Sitzung übernommen.` : '.') +
+        (legacy ? ` Sie liegen jetzt in ${DATA_NAME}; die bisherige Datei ${LEGACY_DATA_NAME} ist unverändert und kann gelöscht werden.` : '')
+      : `Datendatei im Ordner „${name}“ angelegt` + (txs.length ? ` und ${txs.length} Buchungen gespeichert.` : '.'));
+  } catch (e) {
+    console.error(e);
+    toast(`Der Datenordner „${folderName(dir)}“ konnte nicht geöffnet werden: ${errText(e)}`, true);
+  }
+}
+
+async function chooseDir() {
+  let dir;
+  try { dir = await invoke('choose_folder'); } catch (e) { return toast('Ordnerauswahl fehlgeschlagen: ' + errText(e), true); }
+  if (dir) await openDir(dir);   // null = Auswahl abgebrochen
+}
+
+$('#btnData').onclick = () => { updateStatus(); $('#dlgData').showModal(); };
+$('#dataClose').onclick = () => $('#dlgData').close();
+$('#dataChoose').onclick = $('#dropOther').onclick = chooseDir;
+$('#dataLoad').onclick = $('#dropOpen').onclick = () => remembered && !dataDir ? openDir(remembered) : chooseDir();
+$('#pwSet').onclick = async () => {
+  const pw = await askPassword(cryptoKey ? 'Passwort ändern' : 'Passwort festlegen',
+    'Die Datendatei wird mit diesem Passwort verschlüsselt. Es wird bei jedem Start abgefragt. Wenn du es vergisst, sind die Daten nicht wiederherstellbar.', true);
+  if (pw === null) return;
+  await setPassword(pw);
+  if (!saveError) toast('Die Datendatei ist jetzt mit dem Passwort verschlüsselt.');
+};
+$('#pwRemove').onclick = async () => {
+  if (!confirm('Passwortschutz entfernen? Die Datendatei wird danach unverschlüsselt gespeichert.')) return;
+  cryptoKey = null; salt = null;
+  await writeFile();
+  if (!saveError) toast('Der Passwortschutz wurde entfernt.');
+};
+
+// Beim Schließen: laufende Speicherung abwarten; ungesicherte Buchungen nur nach Rückfrage verwerfen
+appWindow.onCloseRequested(async ev => {
+  if (saving) {
+    ev.preventDefault();
+    while (saving) await new Promise(r => setTimeout(r, 50));
+    await appWindow.destroy();
+  } else if (!dataDir && dirty && !confirm('Die geladenen Buchungen sind noch nirgends gespeichert und gehen beim Schließen verloren. Trotzdem schließen?')) {
+    ev.preventDefault();
+  }
+});
+
+// Zuletzt verwendeten Ordner beim Start direkt öffnen
+invoke('remembered_folder').then(dir => {
+  if (!dir || dataDir) return;
+  remembered = dir;
+  updateStatus();
+  return openDir(dir);
+}).catch(console.error);
+updateStatus();
+
+/* ============================== Ereignisse ============================== */
+$('#btnImport').onclick = () => $('#file').click();
+$('#file').onchange = ev => { const files = [...ev.target.files]; ev.target.value = ''; importFiles(files); };
+$('#btnClear').onclick = () => {
+  if (!confirm('Wirklich alle Buchungen löschen?' + (dataDir ? ' Sie werden auch aus der Datendatei entfernt.' : '') + ' Kategorien und Regeln bleiben erhalten.')) return;
+  txs = [];
+  selected.clear();
+  persist();
+  $('#dlgData').close();
+  resetFilters();
+  toast('Alle Buchungen wurden gelöscht.');
+};
+// Export-Menü schließen nach einer Auswahl, bei Klick daneben oder mit Esc
+document.addEventListener('click', ev => {
+  const m = $('#exportMenu');
+  if (m.open && (!m.contains(ev.target) || ev.target.closest('button'))) m.open = false;
+  if (ev.target.closest('[data-reset]')) resetFilters();
+});
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') $('#exportMenu').open = false; });
+if (load('fb.tipSeen')) $('#txTip').hidden = true;
+$('#tipOk').onclick = () => { store('fb.tipSeen', true); $('#txTip').hidden = true; fitTx(); };
+$('#btnMore').onclick = () => { limit += 500; render(); };
+
+const refilter = () => { limit = 300; render(); };
+for (const id of ['fQ', 'fMin', 'fMax']) $('#' + id).oninput = refilter;
+for (const id of ['fCat', 'fKind']) $('#' + id).onchange = refilter;
+for (const id of ['fFrom', 'fTo']) $('#' + id).onchange = () => { $('#fMonth').value = ''; refilter(); };
+function setMonth(m) {
+  $('#fMonth').value = m;
+  if (m) {
+    const [y, mo] = m.split('-').map(Number);
+    $('#fFrom').value = m + '-01';
+    $('#fTo').value = m + '-' + pad(new Date(Date.UTC(y, mo, 0)).getUTCDate());
+  } else { $('#fFrom').value = ''; $('#fTo').value = ''; }
+  refilter();
+}
+$('#fMonth').onchange = ev => setMonth(ev.target.value);
+function resetFilters() {
+  for (const id of FILTER_IDS) $('#' + id).value = '';
+  refilter();
+}
+// Nach einem Klick auf eine Auswertungszeile zu den Buchungen wechseln; der Filter bleibt dabei gesetzt.
+function showFiltered() {
+  if (tab !== 'tx') { tab = 'tx'; store('fb.tab', tab); layout(); }
+  refilter();
+}
+$('#btnReset').onclick = resetFilters;
+$('#sumTable').onclick = ev => {
+  const tr = ev.target.closest('tr[data-cat]');
+  if (!tr) return;
+  $('#fCat').value = tr.dataset.cat;
+  showFiltered();
+};
+$('#monTable').onclick = ev => {
+  const tr = ev.target.closest('tr[data-month]');
+  if (!tr) return;
+  setMonth(tr.dataset.month);
+  showFiltered();
+};
+$('#smallMax').value = load('fb.small') || 20;
+$('#smallMax').oninput = ev => { const v = parseFloat(ev.target.value); if (v > 0) { store('fb.small', v); render(); } };
+$('#smallMon').onclick = ev => {
+  const tr = ev.target.closest('tr[data-smonth]');
+  if (!tr) return;
+  $('#fKind').value = 'out';
+  $('#fMax').value = $('#smallMax').value;
+  setMonth(tr.dataset.smonth);
+  showFiltered();
+};
+$('#sizeTable').onclick = ev => {
+  const tr = ev.target.closest('tr[data-size]');
+  if (!tr) return;
+  const i = +tr.dataset.size, lo = i ? SIZE_BOUNDS[i - 1] : 0, hi = SIZE_BOUNDS[i];
+  $('#fKind').value = 'out';
+  $('#fMin').value = lo ? (lo + 1) / 100 : '';
+  $('#fMax').value = hi === Infinity ? '' : hi / 100;
+  showFiltered();
+};
+$('#txTable').onclick = ev => {
+  const cb = ev.target.closest('input[data-act]');
+  if (cb) {
+    if (cb.dataset.act === 'selAll') {
+      if (cb.checked) for (const t of lastView.list) selected.add(t.id); else selected.clear();
+    } else {
+      const rows = lastView.list.slice(0, limit), i = rows.findIndex(t => t.id === +cb.closest('tr').dataset.id);
+      const from = ev.shiftKey && lastSel >= 0 ? Math.min(i, lastSel) : i, to = ev.shiftKey && lastSel >= 0 ? Math.max(i, lastSel) : i;
+      for (let j = from; j <= to; j++) cb.checked ? selected.add(rows[j].id) : selected.delete(rows[j].id);
+      lastSel = i;
+    }
+    return syncSel();
+  }
+  const th = ev.target.closest('th[data-sort]');
+  if (th) {
+    const k = th.dataset.sort;
+    sort = sort.key === k ? { key: k, dir: -sort.dir } : { key: k, dir: k === 'd' ? -1 : 1 };
+    return render();
+  }
+  const btn = ev.target.closest('button[data-act=cat]');
+  if (btn) {
+    const tx = txs.find(t => t.id === +btn.closest('tr').dataset.id);
+    if (tx) editCategory(btn, tx);
+  }
+};
+
+// Drag & Drop auf die ganze Seite
+document.addEventListener('dragover', ev => { ev.preventDefault(); document.body.classList.add('dragging'); });
+document.addEventListener('dragleave', ev => { if (!ev.relatedTarget) document.body.classList.remove('dragging'); });
+document.addEventListener('drop', ev => {
+  ev.preventDefault();
+  document.body.classList.remove('dragging');
+  if (ev.dataTransfer.files.length) importFiles([...ev.dataTransfer.files]);
+});
+
+/* ============================== Ansichten (Reiter) ============================== */
+// Über jeder Ansicht stehen Filter und Kennzahlen; darunter genau eine Auswertung.
+const VIEWS = { cat: 'Kategorien', month: 'Monate', cmp: 'Monatsvergleich', small: 'Kleine Ausgaben', tx: 'Buchungen' };
+let tab = load('fb.tab');
+if (!Object.keys(VIEWS).includes(tab)) tab = 'cat';
+
+function layout() {
+  $('#tabs').innerHTML = Object.entries(VIEWS)
+    .map(([id, label]) => `<button class="tab" role="tab" data-tab="${id}" aria-selected="${id === tab}">${label}</button>`).join('');
+  for (const el of document.querySelectorAll('#views > [data-view]')) el.hidden = el.dataset.view !== tab && el.dataset.view !== 'kpi';
+  fitTx();
+}
+
+$('#tabs').onclick = ev => {
+  const t = ev.target.closest('[data-tab]');
+  if (!t) return;
+  const changed = t.dataset.tab !== tab;
+  tab = t.dataset.tab;
+  store('fb.tab', tab);
+  if (changed) resetFilters();   // jede Ansicht startet ungefiltert
+  layout();
+  $(`#tabs [data-tab="${tab}"]`).focus();
+};
+
+buildMatchers();
+layout();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+# ---------------------------------------------------------------------------
+# Persönliche Finanzdaten dürfen NIE ins Repository.
+# ---------------------------------------------------------------------------
+
+# Datendatei der App (Buchungen, Kategorien, Regeln) – aktueller und früherer Name
+*-daten.json
+*daten*.json
+
+# Exporte aus der App (Regeln können z. B. Arbeitgeber- oder Empfängernamen enthalten)
+*-regeln.json
+buchungen*.csv
+auswertung*.csv
+
+# Kontoexporte der Bank: grundsätzlich alles ausschließen ...
+*.xlsx
+*.xlsm
+*.xls
+*.csv
+*.txt
+# ... außer den beiden erfundenen Beispieldateien
+!Kontoauszug_Beispiel.xlsx
+!Kontoauszug_Halbjahr.xlsx
+
+# Archive und Sicherungen (Inhalt unbekannt, können Daten enthalten)
+*.7z
+*.zip
+*.rar
+*.bak
+
+# ---------------------------------------------------------------------------
+# Lokale Werkzeug-Einstellungen
+# ---------------------------------------------------------------------------
+.claude/settings.local.json
+
+# ---------------------------------------------------------------------------
+# Build-Ausgaben
+# ---------------------------------------------------------------------------
+node_modules/

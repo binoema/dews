@@ -1,0 +1,31 @@
+[package]
+name = "dewz"
+version = "0.1.0"
+description = "dewz – offline Kontoauszug-Auswertung"
+edition = "2021"
+license = "GPL-3.0-or-later"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Debug-Builds nur mit Zeilennummern statt vollständiger Debug-Symbole: Fehlermeldungen nennen weiterhin
+# Datei und Zeile, aber target/ wird deutlich kleiner. Für Schritt-für-Schritt-Debugging wieder entfernen.
+[profile.dev]
+debug = "line-tables-only"
+
+# Abhängigkeiten (Tauri, Windows-API usw.) ganz ohne Debug-Informationen
+[profile.dev.package."*"]
+debug = false
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

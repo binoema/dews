@@ -1,0 +1,11 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Bewusst minimal: nur Schließen-Ereignis des Fensters. Datei- und Dialogzugriff laufen ausschließlich über die eigenen Befehle in src/main.rs.",
+  "windows": ["main"],
+  "permissions": [
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "core:window:allow-destroy"
+  ]
+}
