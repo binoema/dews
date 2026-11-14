@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 binoema
 
-// dewz als Windows-App: ein WebView2-Fenster mit src/index.html plus wenige, eng gefasste Befehle für den
+// dewz als Desktop-App: ein Webview-Fenster mit src/index.html plus wenige, eng gefasste Befehle für den
 // Dateizugriff. Die Oberfläche bekommt keinen allgemeinen Dateisystem-Zugriff:
-//   * Sie kann nur Ordner lesen, die der Nutzer im Windows-Dialog gewählt hat (oder der gemerkte Ordner),
+//   * Sie kann nur Ordner lesen, die der Nutzer im Ordnerdialog gewählt hat (oder der gemerkte Ordner),
 //   * schreibt ausschließlich die Datendatei DATA_NAME in den aktivierten Ordner,
 //   * und Exporte nur an den Ort, den der Nutzer im „Speichern unter“-Dialog bestimmt.
 // Verschlüsselung und Passwort bleiben komplett in der Oberfläche; hier kommt nur fertiger Text an.
@@ -15,7 +15,10 @@ use std::{
     fs,
     io::Write,
     path::{Path, PathBuf},
-    sync::Mutex,
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Mutex,
+    },
 };
 use tauri::{AppHandle, Manager, State};
 use tauri_plugin_dialog::DialogExt;
@@ -30,6 +33,16 @@ struct Folders {
     active: Option<PathBuf>,   // hierhin schreibt write_data
 }
 type FolderState = Mutex<Folders>;
+
+/// Sprache der Oberfläche (true = Englisch), damit Dialogtitel und Fehlermeldungen zur Oberfläche passen.
+#[derive(Default)]
+struct English(AtomicBool);
+type Lang<'a> = State<'a, English>;
+
+/// Wählt den Text in der Sprache der Oberfläche.
+fn tr(lang: &Lang, de: &str, en: &str) -> String {
+    if lang.0.load(Ordering::Relaxed) { en } else { de }.to_owned()
+}
 
 #[derive(Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -65,13 +78,14 @@ fn path_string(p: &Path) -> String {
     p.to_string_lossy().into_owned()
 }
 
-fn allowed_dir(state: &State<FolderState>, dir: &str) -> Result<PathBuf, String> {
+fn allowed_dir(state: &State<FolderState>, lang: &Lang, dir: &str) -> Result<PathBuf, String> {
     let dir = PathBuf::from(dir);
     if !state.lock().unwrap().allowed.contains(&dir) {
-        return Err("Dieser Ordner wurde nicht im Dialog ausgewählt.".into());
+        return Err(tr(lang, "Dieser Ordner wurde nicht im Dialog ausgewählt.", "This folder was not chosen in the dialog."));
     }
     if !dir.is_dir() {
-        return Err(format!("Der Ordner „{}“ existiert nicht (mehr).", path_string(&dir)));
+        let p = path_string(&dir);
+        return Err(tr(lang, &format!("Der Ordner „{p}“ existiert nicht (mehr)."), &format!("The folder “{p}” does not exist (any more).")));
     }
     Ok(dir)
 }
@@ -92,6 +106,12 @@ fn write_atomic(target: &Path, content: &str) -> std::io::Result<()> {
     })
 }
 
+/// Stellt die Sprache für Dialoge und Fehlermeldungen um ("de" oder "en").
+#[tauri::command]
+fn set_language(lang: String, state: Lang) {
+    state.0.store(lang == "en", Ordering::Relaxed);
+}
+
 /// Der beim letzten Mal verwendete Datenordner, falls einer gemerkt ist.
 #[tauri::command]
 fn remembered_folder(app: AppHandle, state: State<FolderState>) -> Option<String> {
@@ -101,10 +121,11 @@ fn remembered_folder(app: AppHandle, state: State<FolderState>) -> Option<String
     Some(s)
 }
 
-/// Windows-Ordnerdialog. Liefert null, wenn der Nutzer abbricht.
+/// Ordnerdialog des Systems. Liefert null, wenn der Nutzer abbricht.
 #[tauri::command]
-async fn choose_folder(app: AppHandle, state: State<'_, FolderState>) -> Result<Option<String>, String> {
-    let Some(picked) = app.dialog().file().set_title("Datenordner wählen").blocking_pick_folder() else {
+async fn choose_folder(app: AppHandle, state: State<'_, FolderState>, lang: Lang<'_>) -> Result<Option<String>, String> {
+    let title = tr(&lang, "Datenordner wählen", "Choose data folder");
+    let Some(picked) = app.dialog().file().set_title(title).blocking_pick_folder() else {
         return Ok(None);
     };
     let dir = picked.into_path().map_err(|e| e.to_string())?;
@@ -115,13 +136,15 @@ async fn choose_folder(app: AppHandle, state: State<'_, FolderState>) -> Result<
 
 /// Liest die Datendatei aus dem Ordner (oder die Datei unter dem früheren Namen); null, wenn keine da ist.
 #[tauri::command]
-fn read_data(dir: String, state: State<FolderState>) -> Result<Option<DataFile>, String> {
-    let dir = allowed_dir(&state, &dir)?;
+fn read_data(dir: String, state: State<FolderState>, lang: Lang) -> Result<Option<DataFile>, String> {
+    let dir = allowed_dir(&state, &lang, &dir)?;
     for (name, legacy) in [(DATA_NAME, false), (LEGACY_DATA_NAME, true)] {
         match fs::read_to_string(dir.join(name)) {
             Ok(text) => return Ok(Some(DataFile { text, legacy })),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => continue,
-            Err(e) => return Err(format!("{name} konnte nicht gelesen werden: {e}")),
+            Err(e) => {
+                return Err(tr(&lang, &format!("{name} konnte nicht gelesen werden: {e}"), &format!("{name} could not be read: {e}")))
+            }
         }
     }
     Ok(None)
@@ -129,8 +152,8 @@ fn read_data(dir: String, state: State<FolderState>) -> Result<Option<DataFile>,
 
 /// Macht den Ordner zum Ziel von write_data und merkt ihn für den nächsten Start.
 #[tauri::command]
-fn activate_folder(dir: String, app: AppHandle, state: State<FolderState>) -> Result<(), String> {
-    let dir = allowed_dir(&state, &dir)?;
+fn activate_folder(dir: String, app: AppHandle, state: State<FolderState>, lang: Lang) -> Result<(), String> {
+    let dir = allowed_dir(&state, &lang, &dir)?;
     let path = settings_path(&app)?;
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent).map_err(|e| e.to_string())?;
@@ -143,26 +166,27 @@ fn activate_folder(dir: String, app: AppHandle, state: State<FolderState>) -> Re
 
 /// Schreibt den (ggf. schon verschlüsselten) Inhalt in die Datendatei des aktiven Ordners.
 #[tauri::command]
-fn write_data(content: String, state: State<FolderState>) -> Result<(), String> {
-    let dir = state.lock().unwrap().active.clone().ok_or("Es ist kein Datenordner geöffnet.")?;
+fn write_data(content: String, state: State<FolderState>, lang: Lang) -> Result<(), String> {
+    let active = state.lock().unwrap().active.clone();
+    let dir = active.ok_or_else(|| tr(&lang, "Es ist kein Datenordner geöffnet.", "No data folder is open."))?;
     write_atomic(&dir.join(DATA_NAME), &content).map_err(|e| e.to_string())
 }
 
 /// „Speichern unter“-Dialog für Exporte. Liefert den gewählten Pfad oder null bei Abbruch.
 #[tauri::command]
-async fn save_export(name: String, content: String, app: AppHandle) -> Result<Option<String>, String> {
+async fn save_export(name: String, content: String, app: AppHandle, lang: Lang<'_>) -> Result<Option<String>, String> {
     let ext = Path::new(&name).extension().and_then(|e| e.to_str()).unwrap_or("").to_ascii_lowercase();
     let label = match ext.as_str() {
-        "csv" => "CSV-Datei",
-        "json" => "JSON-Datei",
-        _ => return Err(format!("Unbekannter Dateityp: {name}")),
+        "csv" => tr(&lang, "CSV-Datei", "CSV file"),
+        "json" => tr(&lang, "JSON-Datei", "JSON file"),
+        _ => return Err(tr(&lang, &format!("Unbekannter Dateityp: {name}"), &format!("Unknown file type: {name}"))),
     };
     let Some(picked) = app
         .dialog()
         .file()
-        .set_title("Exportieren")
+        .set_title(tr(&lang, "Exportieren", "Export"))
         .set_file_name(&name)
-        .add_filter(label, &[ext.as_str()])
+        .add_filter(&label, &[ext.as_str()])
         .blocking_save_file()
     else {
         return Ok(None);
@@ -176,7 +200,9 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .manage(FolderState::default())
+        .manage(English::default())
         .invoke_handler(tauri::generate_handler![
+            set_language,
             remembered_folder,
             choose_folder,
             read_data,

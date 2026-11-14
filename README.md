@@ -6,7 +6,8 @@ dewz is a desktop app for Windows, macOS and Linux for analysing your own bank a
 bank, let the bookings be categorised automatically by keyword rules, and see where your money goes – per category,
 per month and over time. Nothing ever leaves your computer: the app has no network access at all.
 
-The user interface is in German.
+The user interface is available in German and English: it starts in the system language and can be switched any time
+with the language button in the header (the choice is remembered).
 
 ## Features
 

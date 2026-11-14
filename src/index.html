@@ -185,42 +185,43 @@ tr.res td { color: var(--muted); }
 </head>
 <body>
 <header>
-  <h1><svg class="logo" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="#2a6fc9"/><path d="M32 8C24 19 15 29 15 39a17 17 0 0 0 34 0C49 29 40 19 32 8Z" fill="#fff"/><g fill="#2a6fc9"><rect x="22" y="41" width="5.5" height="8" rx="1.6"/><rect x="29.25" y="35" width="5.5" height="14" rx="1.6"/><rect x="36.5" y="29" width="5.5" height="20" rx="1.6"/></g></svg><span class="wordmark">dewz</span> <small>Kontoauszug auswerten – 100 % offline</small></h1>
+  <h1><svg class="logo" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="#2a6fc9"/><path d="M32 8C24 19 15 29 15 39a17 17 0 0 0 34 0C49 29 40 19 32 8Z" fill="#fff"/><g fill="#2a6fc9"><rect x="22" y="41" width="5.5" height="8" rx="1.6"/><rect x="29.25" y="35" width="5.5" height="14" rx="1.6"/><rect x="36.5" y="29" width="5.5" height="20" rx="1.6"/></g></svg><span class="wordmark">dewz</span> <small data-i18n="tagline">Kontoauszug auswerten – 100 % offline</small></h1>
   <button id="btnData">Kein Datenordner</button>
-  <button class="primary" id="btnImport">Kontoexport importieren</button>
-  <button id="btnCats">Kategorien &amp; Regeln</button>
+  <button class="primary" id="btnImport" data-i18n="btnImport">Kontoexport importieren</button>
+  <button id="btnCats" data-i18n="btnCats">Kategorien &amp; Regeln</button>
   <details class="menu" id="exportMenu" hidden>
-    <summary>Exportieren</summary>
+    <summary data-i18n="export">Exportieren</summary>
     <div>
-      <button id="btnExport">Buchungen als CSV</button>
-      <button id="btnExportSum">Auswertung als CSV</button>
+      <button id="btnExport" data-i18n="exportTx">Buchungen als CSV</button>
+      <button id="btnExportSum" data-i18n="exportSum">Auswertung als CSV</button>
     </div>
   </details>
+  <button id="btnLang" data-i18n="langBtn" data-i18n-title="langTitle" data-i18n-lang="langOther">English</button>
   <input type="file" id="file" accept=".xlsx,.xlsm,.csv,.txt,.xls" multiple hidden>
 </header>
 
 <main>
   <div id="drop">
-    <h2>Datenordner wählen oder Kontoexport importieren</h2>
-    <p>Deine Buchungen liegen in der Datei <code>dewz-daten.json</code> in einem Ordner deiner Wahl, zum Beispiel
+    <h2 data-i18n="dropTitle">Datenordner wählen oder Kontoexport importieren</h2>
+    <p data-i18n-html="dropText1">Deine Buchungen liegen in der Datei <code>dewz-daten.json</code> in einem Ordner deiner Wahl, zum Beispiel
        in deinen Dokumenten oder auf einem USB-Stick. Wähle den Ordner einmal aus; die App merkt ihn sich und speichert jede Änderung automatisch dort.</p>
-    <p><button class="primary" id="dropOpen">Datenordner wählen</button> <button id="dropOther" hidden>Anderen Ordner wählen</button></p>
-    <p>Einen Kontoexport deiner Bank (<b>Excel .xlsx</b> oder <b>CSV</b>) ziehst du hierher oder wählst ihn über „Kontoexport importieren“.
+    <p><button class="primary" id="dropOpen">Datenordner wählen</button> <button id="dropOther" data-i18n="chooseOther" hidden>Anderen Ordner wählen</button></p>
+    <p data-i18n-html="dropText2">Einen Kontoexport deiner Bank (<b>Excel .xlsx</b> oder <b>CSV</b>) ziehst du hierher oder wählst ihn über „Kontoexport importieren“.
        Mehrere Dateien sind möglich, doppelte Buchungen werden erkannt.</p>
-    <p>Alles wird ausschließlich lokal verarbeitet – es werden keine Daten übertragen.</p>
+    <p data-i18n="dropText3">Alles wird ausschließlich lokal verarbeitet – es werden keine Daten übertragen.</p>
   </div>
 
   <div id="app" hidden>
-    <nav id="tabs" role="tablist" aria-label="Ansichten"></nav>
+    <nav id="tabs" role="tablist" aria-label="Ansichten" data-i18n-aria="tabsAria"></nav>
     <div class="card filters">
-      <label>Suche<input id="fQ" type="search" placeholder="Empfänger, Zweck, Kategorie …"></label>
-      <label>Kategorie<select id="fCat"></select></label>
-      <label>Art<select id="fKind"><option value="">Alle</option><option value="out">Nur Ausgaben</option><option value="in">Nur Einnahmen</option></select></label>
-      <label>Monat<select id="fMonth"></select></label>
-      <label>Von<input id="fFrom" type="date"></label>
-      <label>Bis<input id="fTo" type="date"></label>
-      <label>Betrag ab (€)<input id="fMin" type="number" min="0" step="0.01"></label>
-      <label>Betrag bis (€)<input id="fMax" type="number" min="0" step="0.01"></label>
+      <label><span data-i18n="fSearch">Suche</span><input id="fQ" type="search" placeholder="Empfänger, Zweck, Kategorie …" data-i18n-placeholder="fSearchPh"></label>
+      <label><span data-i18n="category">Kategorie</span><select id="fCat"></select></label>
+      <label><span data-i18n="fKind">Art</span><select id="fKind"><option value="" data-i18n="fAll">Alle</option><option value="out" data-i18n="fOut">Nur Ausgaben</option><option value="in" data-i18n="fIn">Nur Einnahmen</option></select></label>
+      <label><span data-i18n="month">Monat</span><select id="fMonth"></select></label>
+      <label><span data-i18n="fFrom">Von</span><input id="fFrom" type="date"></label>
+      <label><span data-i18n="fTo">Bis</span><input id="fTo" type="date"></label>
+      <label><span data-i18n="fMin">Betrag ab (€)</span><input id="fMin" type="number" min="0" step="0.01"></label>
+      <label><span data-i18n="fMax">Betrag bis (€)</span><input id="fMax" type="number" min="0" step="0.01"></label>
       <button id="btnReset">Filter zurücksetzen</button>
       <span id="fInfo"></span>
     </div>
@@ -228,32 +229,32 @@ tr.res td { color: var(--muted); }
 
     <div id="views">
     <div class="kpis" data-view="kpi">
-      <div class="kpi"><div class="l">Einnahmen</div><div class="v" id="kIn"></div></div>
-      <div class="kpi"><div class="l">Ausgaben</div><div class="v" id="kOut"></div></div>
+      <div class="kpi"><div class="l" data-i18n="income">Einnahmen</div><div class="v" id="kIn"></div></div>
+      <div class="kpi"><div class="l" data-i18n="expenses">Ausgaben</div><div class="v" id="kOut"></div></div>
       <div class="kpi"><div class="l" id="kSalLabel">Saldo</div><div class="v" id="kSal"></div></div>
-      <div class="kpi" id="kResBox" hidden><div class="l">Rücklagen</div><div class="v2" id="kRes"></div></div>
-      <div class="kpi"><div class="l">Buchungen</div><div class="v" id="kN"></div></div>
+      <div class="kpi" id="kResBox" hidden><div class="l" data-i18n="reserves">Rücklagen</div><div class="v2" id="kRes"></div></div>
+      <div class="kpi"><div class="l" data-i18n="transactions">Buchungen</div><div class="v" id="kN"></div></div>
     </div>
     <p class="note-warn" id="resNote" hidden></p>
 
       <div class="card" data-view="cat">
-        <h2>Ausgaben nach Kategorie <small>Zeile anklicken, um die Buchungen zu sehen</small></h2>
+        <h2><span data-i18n="catTitle">Ausgaben nach Kategorie</span> <small data-i18n="rowHint">Zeile anklicken, um die Buchungen zu sehen</small></h2>
         <div class="scroll"><table id="sumTable"></table></div>
       </div>
       <div class="card" data-view="month">
-        <h2>Monatsübersicht <small>Zeile anklicken, um die Buchungen zu sehen</small></h2>
+        <h2><span data-i18n="monTitle">Monatsübersicht</span> <small data-i18n="rowHint">Zeile anklicken, um die Buchungen zu sehen</small></h2>
         <div class="scroll"><table id="monTable"></table></div>
       </div>
 
     <div class="card" data-view="cmp">
-      <h2>Kategorien im Monatsvergleich <small>Ausgaben je Monat – Balken zeigen den Vergleich innerhalb einer Kategorie</small></h2>
+      <h2><span data-i18n="cmpTitle">Kategorien im Monatsvergleich</span> <small data-i18n="cmpSub">Ausgaben je Monat – Balken zeigen den Vergleich innerhalb einer Kategorie</small></h2>
       <ul id="hints"></ul>
       <div class="scroll"><table id="cmpTable"></table></div>
     </div>
 
     <div class="card" data-view="small">
-      <h2>Kleine Ausgaben
-        <small>Einzelbeträge bis <input id="smallMax" type="number" min="1" step="1"> €</small></h2>
+      <h2><span data-i18n="smallTitle">Kleine Ausgaben</span>
+        <small><span data-i18n="smallUpTo">Einzelbeträge bis</span> <input id="smallMax" type="number" min="1" step="1"> €</small></h2>
       <p id="smallInfo"></p>
       <div class="cols">
         <div>
@@ -265,77 +266,77 @@ tr.res td { color: var(--muted); }
     </div>
 
     <div class="card" data-view="tx">
-      <h2>Buchungen <small id="txCount"></small></h2>
-      <div class="tip" id="txTip"><span><b>Tipp:</b> Klicke auf die Kategorie einer Buchung, um sie zu ändern. Über „Regel erstellen …“ in derselben Auswahl
+      <h2><span data-i18n="transactions">Buchungen</span> <small id="txCount"></small></h2>
+      <div class="tip" id="txTip"><span data-i18n-html="txTip"><b>Tipp:</b> Klicke auf die Kategorie einer Buchung, um sie zu ändern. Über „Regel erstellen …“ in derselben Auswahl
         werden gleichartige Buchungen künftig automatisch zugeordnet – auch bei späteren Importen.</span>
-        <button id="tipOk">Verstanden</button></div>
+        <button id="tipOk" data-i18n="gotIt">Verstanden</button></div>
       <div class="scroll" id="txScroll">
         <table id="txTable"></table>
-        <div class="more" id="more" hidden><button id="btnMore">Weitere anzeigen</button></div>
+        <div class="more" id="more" hidden><button id="btnMore" data-i18n="showMore">Weitere anzeigen</button></div>
       </div>
       <div id="bulk" hidden>
         <b id="bulkN"></b>
-        <select id="bulkCat" aria-label="Kategorie für die ausgewählten Buchungen"></select>
-        <button class="primary" id="bulkOk">Zuweisen</button>
-        <button id="bulkClear">Auswahl aufheben</button>
-        <span class="muted">Tipp: Mit gedrückter Umschalttaste einen ganzen Bereich markieren</span>
+        <select id="bulkCat" aria-label="Kategorie für die ausgewählten Buchungen" data-i18n-aria="bulkAria"></select>
+        <button class="primary" id="bulkOk" data-i18n="assign">Zuweisen</button>
+        <button id="bulkClear" data-i18n="clearSel">Auswahl aufheben</button>
+        <span class="muted" data-i18n="shiftTip">Tipp: Mit gedrückter Umschalttaste einen ganzen Bereich markieren</span>
       </div>
     </div>
     </div>
   </div>
 </main>
-<footer>Buchungen, Kategorien und Regeln liegen in deiner Datendatei; in der App bleiben nur Einstellungen wie die zuletzt geöffnete Ansicht. Netzwerkzugriffe sind per Content-Security-Policy blockiert.</footer>
+<footer data-i18n="footer">Buchungen, Kategorien und Regeln liegen in deiner Datendatei; in der App bleiben nur Einstellungen wie die zuletzt geöffnete Ansicht. Netzwerkzugriffe sind per Content-Security-Policy blockiert.</footer>
 
 <dialog id="dlgMap">
-  <h2>Spalten zuordnen</h2>
+  <h2 data-i18n="mapTitle">Spalten zuordnen</h2>
   <div class="muted" id="mapFile"></div>
   <div id="mapBody"></div>
   <div class="actions">
-    <button id="mapCancel">Abbrechen</button>
-    <button class="primary" id="mapOk">Importieren</button>
+    <button id="mapCancel" data-i18n="cancel">Abbrechen</button>
+    <button class="primary" id="mapOk" data-i18n="import">Importieren</button>
   </div>
 </dialog>
 
 <dialog id="dlgCats">
-  <h2>Kategorien &amp; Regeln</h2>
-  <p class="muted">Eine Buchung bekommt die Kategorie, deren Stichwort in Empfänger, Verwendungszweck oder Buchungstext vorkommt
+  <h2 data-i18n="btnCats">Kategorien &amp; Regeln</h2>
+  <p class="muted" data-i18n-html="catsText1">Eine Buchung bekommt die Kategorie, deren Stichwort in Empfänger, Verwendungszweck oder Buchungstext vorkommt
     (bei mehreren Treffern gewinnt das längste Stichwort). Stichwörter mit Komma trennen.
     In Anführungszeichen – z.&nbsp;B. <code>"jet"</code> – zählt nur das ganze Wort.</p>
-  <p class="muted">Bringt die importierte Datei selbst eine Kategorie mit, hat diese Vorrang vor normalen Stichwörtern.
+  <p class="muted" data-i18n-html="catsText2">Bringt die importierte Datei selbst eine Kategorie mit, hat diese Vorrang vor normalen Stichwörtern.
     Ein Stichwort mit Ausrufezeichen davor – z.&nbsp;B. <code>!thalia</code> – setzt sich auch gegen die Kategorie aus der Datei durch;
     so werden Regeln aus „Regel erstellen“ gespeichert. Von Hand zugeordnete Buchungen bleiben immer unverändert.</p>
-  <p class="muted">Kategorien mit dem Häkchen „Rücklage“ stehen für Umbuchungen auf eigene Konten, etwa aufs Sparkonto und zurück.
+  <p class="muted" data-i18n="catsText3">Kategorien mit dem Häkchen „Rücklage“ stehen für Umbuchungen auf eigene Konten, etwa aufs Sparkonto und zurück.
     Ihre Buchungen zählen weder zu den Einnahmen noch zu den Ausgaben und werden getrennt ausgewiesen. Welche Buchungen das sind,
     legst du selbst über eine Regel oder von Hand fest.</p>
   <div id="catList"></div>
   <div class="actions">
     <div class="left">
-      <button id="catAdd">+ Kategorie</button>
-      <button id="catExport">Regeln exportieren</button>
-      <button id="catImport">Regeln importieren</button>
-      <button id="catDefaults">Standard wiederherstellen</button>
+      <button id="catAdd" data-i18n="catAdd">+ Kategorie</button>
+      <button id="catExport" data-i18n="catExport">Regeln exportieren</button>
+      <button id="catImport" data-i18n="catImport">Regeln importieren</button>
+      <button id="catDefaults" data-i18n="catDefaults">Standard wiederherstellen</button>
       <input type="file" id="catFile" accept=".json" hidden>
     </div>
-    <button id="catCancel">Abbrechen</button>
-    <button class="primary" id="catSave">Speichern</button>
+    <button id="catCancel" data-i18n="cancel">Abbrechen</button>
+    <button class="primary" id="catSave" data-i18n="save">Speichern</button>
   </div>
 </dialog>
 
 <dialog id="dlgData">
-  <h2>Datenordner</h2>
-  <p class="muted">dewz speichert Buchungen, Kategorien und Regeln in der Datei <code>dewz-daten.json</code>
+  <h2 data-i18n="dataTitle">Datenordner</h2>
+  <p class="muted" data-i18n-html="dataText1">dewz speichert Buchungen, Kategorien und Regeln in der Datei <code>dewz-daten.json</code>
     im gewählten Ordner. Jede Änderung wird automatisch dorthin geschrieben. Der Ordner wird gemerkt und beim
     nächsten Start automatisch wieder geöffnet.</p>
-  <p class="muted">Mit einem Passwort wird die Datei verschlüsselt gespeichert. Ohne das Passwort lassen sich die Daten
+  <p class="muted" data-i18n="dataText2">Mit einem Passwort wird die Datei verschlüsselt gespeichert. Ohne das Passwort lassen sich die Daten
     nicht wiederherstellen.</p>
   <p id="dataState"></p>
   <div class="actions">
     <div class="left">
       <button id="pwSet" hidden>Passwort festlegen</button>
-      <button id="pwRemove" hidden>Passwort entfernen</button>
-      <button class="danger" id="btnClear" hidden>Alle Buchungen löschen …</button>
+      <button id="pwRemove" data-i18n="pwRemove" hidden>Passwort entfernen</button>
+      <button class="danger" id="btnClear" data-i18n="clearAll" hidden>Alle Buchungen löschen …</button>
     </div>
-    <button id="dataClose">Schließen</button>
+    <button id="dataClose" data-i18n="close">Schließen</button>
     <button id="dataChoose">Ordner wählen</button>
     <button class="primary" id="dataLoad" hidden>Daten laden</button>
   </div>
@@ -344,28 +345,28 @@ tr.res td { color: var(--muted); }
 <dialog id="dlgPw">
   <h2 id="pwTitle"></h2>
   <p class="muted" id="pwText"></p>
-  <label>Passwort<input type="password" id="pw1" autocomplete="off"></label>
-  <label id="pw2Row">Passwort wiederholen<input type="password" id="pw2" autocomplete="off"></label>
+  <label><span data-i18n="password">Passwort</span><input type="password" id="pw1" autocomplete="off"></label>
+  <label id="pw2Row"><span data-i18n="passwordRepeat">Passwort wiederholen</span><input type="password" id="pw2" autocomplete="off"></label>
   <p id="pwErr" role="alert"></p>
   <div class="actions">
-    <button id="pwCancel">Abbrechen</button>
+    <button id="pwCancel" data-i18n="cancel">Abbrechen</button>
     <button class="primary" id="pwOk">OK</button>
   </div>
 </dialog>
 
 <dialog id="dlgRule">
-  <h2>Regel erstellen</h2>
-  <p class="muted">Buchungen, die dieses Stichwort in Empfänger, Verwendungszweck oder Buchungstext enthalten, werden jetzt und bei
+  <h2 data-i18n="ruleTitle">Regel erstellen</h2>
+  <p class="muted" data-i18n="ruleText">Buchungen, die dieses Stichwort in Empfänger, Verwendungszweck oder Buchungstext enthalten, werden jetzt und bei
     späteren Importen dieser Kategorie zugeordnet – auch wenn die importierte Datei eine andere Kategorie mitbringt.</p>
   <div class="mapgrid">
-    <label>Stichwort<input id="ruleKw"></label>
-    <label>Kategorie<select id="ruleCat"></select></label>
+    <label><span data-i18n="keyword">Stichwort</span><input id="ruleKw"></label>
+    <label><span data-i18n="category">Kategorie</span><select id="ruleCat"></select></label>
   </div>
   <p id="ruleInfo" role="status"></p>
-  <label id="ruleManualRow" hidden><input type="checkbox" id="ruleManual"> Auch die von Hand zugeordneten Buchungen umstellen</label>
+  <label id="ruleManualRow" hidden><input type="checkbox" id="ruleManual"> <span data-i18n="ruleManual">Auch die von Hand zugeordneten Buchungen umstellen</span></label>
   <div class="actions">
-    <button id="ruleCancel">Abbrechen</button>
-    <button class="primary" id="ruleOk">Regel speichern</button>
+    <button id="ruleCancel" data-i18n="cancel">Abbrechen</button>
+    <button class="primary" id="ruleOk" data-i18n="ruleSave">Regel speichern</button>
   </div>
 </dialog>
 
@@ -377,20 +378,283 @@ tr.res td { color: var(--muted); }
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const eur = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
-const fmt = cents => eur.format(cents / 100);
-const fmtDate = iso => iso.slice(8, 10) + '.' + iso.slice(5, 7) + '.' + iso.slice(0, 4);
-const monFmt = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric', timeZone: 'UTC' });
-const fmtMonth = ym => monFmt.format(new Date(ym + '-01T00:00:00Z'));
-const monShortFmt = new Intl.DateTimeFormat('de-DE', { month: 'short', year: '2-digit', timeZone: 'UTC' });
-const fmtMonthShort = ym => monShortFmt.format(new Date(ym + '-01T00:00:00Z'));
 const pad = n => String(n).padStart(2, '0');
+// Interner Wert für Buchungen ohne Kategorie; so steht er auch in der Datendatei. Angezeigt wird T('uncat').
 const UNCAT = 'Nicht zugeordnet';
+
+/* ============================== Sprache ============================== */
+// Texte der Oberfläche auf Deutsch und Englisch. Einträge sind Texte oder Funktionen, die Werte einsetzen.
+// Statische Texte im HTML tragen data-i18n (Text), data-i18n-html (mit Auszeichnung), data-i18n-placeholder,
+// data-i18n-title, data-i18n-aria oder data-i18n-lang mit dem Schlüssel; applyLang() setzt sie.
+const I18N = {
+  de: {
+    langBtn: 'English', langTitle: 'Switch to English', langOther: 'en',
+    tagline: 'Kontoauszug auswerten – 100 % offline',
+    btnImport: 'Kontoexport importieren', btnCats: 'Kategorien & Regeln',
+    export: 'Exportieren', exportTx: 'Buchungen als CSV', exportSum: 'Auswertung als CSV',
+    dropTitle: 'Datenordner wählen oder Kontoexport importieren',
+    dropText1: 'Deine Buchungen liegen in der Datei <code>dewz-daten.json</code> in einem Ordner deiner Wahl, zum Beispiel in deinen Dokumenten oder auf einem USB-Stick. Wähle den Ordner einmal aus; die App merkt ihn sich und speichert jede Änderung automatisch dort.',
+    dropText2: 'Einen Kontoexport deiner Bank (<b>Excel .xlsx</b> oder <b>CSV</b>) ziehst du hierher oder wählst ihn über „Kontoexport importieren“. Mehrere Dateien sind möglich, doppelte Buchungen werden erkannt.',
+    dropText3: 'Alles wird ausschließlich lokal verarbeitet – es werden keine Daten übertragen.',
+    chooseOther: 'Anderen Ordner wählen', tabsAria: 'Ansichten',
+    fSearch: 'Suche', fSearchPh: 'Empfänger, Zweck, Kategorie …', category: 'Kategorie', fKind: 'Art', fAll: 'Alle',
+    fOut: 'Nur Ausgaben', fIn: 'Nur Einnahmen', month: 'Monat', fFrom: 'Von', fTo: 'Bis',
+    fMin: 'Betrag ab (€)', fMax: 'Betrag bis (€)', reset: 'Filter zurücksetzen', resetN: n => `Filter zurücksetzen (${n})`,
+    income: 'Einnahmen', expenses: 'Ausgaben', balance: 'Saldo', balNoRes: 'Saldo ohne Rücklagen', reserves: 'Rücklagen',
+    transactions: 'Buchungen', catTitle: 'Ausgaben nach Kategorie', rowHint: 'Zeile anklicken, um die Buchungen zu sehen',
+    monTitle: 'Monatsübersicht', cmpTitle: 'Kategorien im Monatsvergleich',
+    cmpSub: 'Ausgaben je Monat – Balken zeigen den Vergleich innerhalb einer Kategorie',
+    smallTitle: 'Kleine Ausgaben', smallUpTo: 'Einzelbeträge bis',
+    txTip: '<b>Tipp:</b> Klicke auf die Kategorie einer Buchung, um sie zu ändern. Über „Regel erstellen …“ in derselben Auswahl werden gleichartige Buchungen künftig automatisch zugeordnet – auch bei späteren Importen.',
+    gotIt: 'Verstanden', showMore: 'Weitere anzeigen', bulkAria: 'Kategorie für die ausgewählten Buchungen', assign: 'Zuweisen',
+    clearSel: 'Auswahl aufheben', shiftTip: 'Tipp: Mit gedrückter Umschalttaste einen ganzen Bereich markieren',
+    footer: 'Buchungen, Kategorien und Regeln liegen in deiner Datendatei; in der App bleiben nur Einstellungen wie die zuletzt geöffnete Ansicht. Netzwerkzugriffe sind per Content-Security-Policy blockiert.',
+    mapTitle: 'Spalten zuordnen', cancel: 'Abbrechen', import: 'Importieren', save: 'Speichern', close: 'Schließen',
+    catsText1: 'Eine Buchung bekommt die Kategorie, deren Stichwort in Empfänger, Verwendungszweck oder Buchungstext vorkommt (bei mehreren Treffern gewinnt das längste Stichwort). Stichwörter mit Komma trennen. In Anführungszeichen – z.&nbsp;B. <code>"jet"</code> – zählt nur das ganze Wort.',
+    catsText2: 'Bringt die importierte Datei selbst eine Kategorie mit, hat diese Vorrang vor normalen Stichwörtern. Ein Stichwort mit Ausrufezeichen davor – z.&nbsp;B. <code>!thalia</code> – setzt sich auch gegen die Kategorie aus der Datei durch; so werden Regeln aus „Regel erstellen“ gespeichert. Von Hand zugeordnete Buchungen bleiben immer unverändert.',
+    catsText3: 'Kategorien mit dem Häkchen „Rücklage“ stehen für Umbuchungen auf eigene Konten, etwa aufs Sparkonto und zurück. Ihre Buchungen zählen weder zu den Einnahmen noch zu den Ausgaben und werden getrennt ausgewiesen. Welche Buchungen das sind, legst du selbst über eine Regel oder von Hand fest.',
+    catAdd: '+ Kategorie', catExport: 'Regeln exportieren', catImport: 'Regeln importieren', catDefaults: 'Standard wiederherstellen',
+    dataTitle: 'Datenordner',
+    dataText1: 'dewz speichert Buchungen, Kategorien und Regeln in der Datei <code>dewz-daten.json</code> im gewählten Ordner. Jede Änderung wird automatisch dorthin geschrieben. Der Ordner wird gemerkt und beim nächsten Start automatisch wieder geöffnet.',
+    dataText2: 'Mit einem Passwort wird die Datei verschlüsselt gespeichert. Ohne das Passwort lassen sich die Daten nicht wiederherstellen.',
+    pwRemove: 'Passwort entfernen', clearAll: 'Alle Buchungen löschen …', password: 'Passwort', passwordRepeat: 'Passwort wiederholen',
+    ruleTitle: 'Regel erstellen', keyword: 'Stichwort', ruleSave: 'Regel speichern',
+    ruleText: 'Buchungen, die dieses Stichwort in Empfänger, Verwendungszweck oder Buchungstext enthalten, werden jetzt und bei späteren Importen dieser Kategorie zugeordnet – auch wenn die importierte Datei eine andere Kategorie mitbringt.',
+    ruleManual: 'Auch die von Hand zugeordneten Buchungen umstellen',
+
+    uncat: 'Nicht zugeordnet', settingsFailed: 'Einstellungen konnten nicht gespeichert werden.',
+    errXls: 'Das alte Excel-Format (.xls) wird nicht unterstützt. Bitte in Excel als .xlsx oder CSV speichern.',
+    sheetTable: 'Tabelle', errZip: 'Die Datei ist keine gültige XLSX-Datei.',
+    errZipMethod: 'Nicht unterstützte ZIP-Kompression in der XLSX-Datei.',
+    fieldDate: 'Datum (Pflicht)', fieldAmount: 'Betrag mit Vorzeichen (Pflicht, außer bei getrennten Spalten)',
+    fieldInd: 'Soll/Haben-Kennzeichen (optional)', fieldDebit: 'Ausgaben-Spalte (Soll), falls getrennt',
+    fieldCredit: 'Einnahmen-Spalte (Haben), falls getrennt', fieldRecipient: 'Empfänger / Auftraggeber',
+    fieldPurpose: 'Verwendungszweck', fieldType: 'Buchungstext / Umsatzart (optional)', fieldCat: 'Kategorie aus der Datei (optional)',
+    column: n => 'Spalte ' + n, notPresent: '— nicht vorhanden —', sheet: 'Tabellenblatt',
+    sheetRows: p => `${p.name} (${p.n} Zeilen)`, headerRow: 'Kopfzeile (Zeile mit den Spaltennamen)',
+    invert: 'Vorzeichen umkehren (wenn Ausgaben in der Datei als positive Beträge stehen)',
+    recognized: n => `${n} Buchungen erkannt`, skippedRows: n => `(${n} Zeilen ohne gültiges Datum/Betrag übersprungen)`,
+    date: 'Datum', recipient: 'Empfänger', purpose: 'Verwendungszweck', amount: 'Betrag',
+    mapNeed: 'Bitte mindestens die Spalten für Datum und Betrag zuordnen.',
+    jsonNotImport: 'Die Datendatei wird über den Datenordner geladen, nicht über den Import.',
+    noData: 'Keine Daten gefunden.', fileOf: p => ` (Datei ${p.i} von ${p.n})`,
+    imported: p => `${p.added} Buchungen importiert` + (p.dup ? `, ${p.dup} bereits vorhandene übersprungen` : '') + '.' + (p.unsaved ? ' Noch nicht gespeichert.' : ''),
+    chooseDataDots: 'Datenordner wählen …', importError: p => `Fehler bei „${p.name}“: ${p.msg}`,
+    allCats: 'Alle Kategorien', allMonths: 'Alle Monate',
+    putAside: v => `zurückgelegt ${v}`, withdrawn: v => `entnommen ${v}`,
+    monPutAside: v => `${v} zurückgelegt`, monWithdrawn: v => `${v} entnommen`,
+    resNote: p => `<b>Rücklagen angezapft:</b> In der aktuellen Auswahl hast du ${p.drawn} mehr aus Rücklagen entnommen als zurückgelegt.` +
+      (p.over ? ` Deine Ausgaben lagen ${p.over} über deinen Einnahmen.` : ''),
+    share: 'Anteil', count: 'Anzahl', total: 'Summe',
+    sumRowTitle: p => `${p.c}: ${p.v} Ausgaben in ${p.n} Buchungen`,
+    resRowTitle: 'Rücklage – zählt weder zu Einnahmen noch zu Ausgaben', reserveTag: 'Rücklage', reserveSuffix: ' (Rücklage)',
+    monRowTitle: p => `${p.m}: ${p.o} Ausgaben, ${p.i} Einnahmen`,
+    overAvg: p => `${p.pct} % über dem Durchschnitt von ${p.avg}`, avgPerMonth: 'Ø pro Monat',
+    noHot: 'Keine auffälligen Monate: keine Kategorie liegt deutlich über ihrem Durchschnitt.',
+    hotIntro: '<b>Achtung:</b> In diesen Monaten lagen die Ausgaben deutlich über dem Durchschnitt.',
+    hotItem: p => `<b>${p.c}</b> im ${p.m}: ${p.v} – ${p.over}`, noInfo: '(ohne Angabe)',
+    smallInfo: p => `<b>${p.n} kleine Ausgaben</b> bis ${p.thr} ergeben zusammen <b>${p.sum}</b> – das sind ${p.pct} aller Ausgaben und im Schnitt ${p.avg} pro Buchung.`,
+    smallNone: thr => `Keine Ausgaben bis ${thr} in der aktuellen Auswahl.`,
+    smallCash: p => `<br>Dazu kommen <b>${p.n} Bargeldabhebungen</b> über zusammen <b>${p.sum}</b> (${p.pct} aller Ausgaben) – wofür das Bargeld ausgegeben wurde, ist im Kontoauszug nicht sichtbar.`,
+    smallPerMonth: 'Kleine Ausgaben je Monat', shareMonth: 'Anteil an Monatsausgaben',
+    clickShow: 'Anklicken, um diese Buchungen anzuzeigen', smallTop: 'Wohin die kleinen Beträge gehen (Top 12)', avgAmount: 'Ø Betrag',
+    sizeTitle: 'Alle Ausgaben nach Betragsgröße', shareExp: 'Anteil an Ausgaben',
+    cur0: v => v + ' €', sizeUpTo: v => 'bis ' + v, sizeOver: v => 'über ' + v, sizeRange: p => `${p.lo} – ${p.hi} €`,
+    selAll: 'Alle gefilterten Buchungen auswählen', selOne: 'Buchung auswählen', changeCat: 'Kategorie ändern',
+    shown: p => `${p.n} von ${p.total} angezeigt` + (p.total !== p.all ? ` (gefiltert aus ${p.all})` : ''),
+    filtered: p => `Gefiltert: ${p.n} von ${p.total}`, noTx: 'Keine Buchungen für diese Filter.',
+    chooseCat: 'Kategorie wählen …', autoAssign: '↺ Automatisch zuordnen',
+    nSelected: n => n === 1 ? '1 Buchung ausgewählt' : `${n} Buchungen ausgewählt`,
+    chooseCatFirst: 'Bitte zuerst eine Kategorie wählen.', bulkAuto: n => `${n} Buchungen wieder automatisch zugeordnet.`,
+    bulkSet: p => `${p.n} Buchungen der Kategorie „${p.c}“ zugewiesen.`, createRuleOpt: '＋ Regel erstellen …',
+    catChanged: c => `Kategorie geändert auf „${c}“.`, ruleFromIt: 'Regel daraus erstellen …',
+    nBook: n => n === 1 ? '1 Buchung' : n + ' Buchungen',
+    ruleNone: 'Trifft im Moment auf keine Buchung zu. Die Regel gilt dann für künftige Importe.',
+    ruleHits: p => `Trifft auf ${T('nBook', p.n)} zu.` + (p.manual ? ` ${p.manual === 1 ? 'Eine davon ist' : p.manual + ' davon sind'} von Hand zugeordnet und ${p.manual === 1 ? 'bleibt' : 'bleiben'} unverändert, solange du das Häkchen nicht setzt.` : ''),
+    ruleSaved: p => `Regel gespeichert: „${p.kw}“ → ${p.c}. ` + (p.n ? `${T('nBook', p.n)} ${p.n === 1 ? 'ist' : 'sind'} jetzt in dieser Kategorie.` : 'Im Moment trifft sie auf keine Buchung zu.'),
+    catNamePh: 'Name der Kategorie', keywordsPh: 'Stichwörter, mit Komma getrennt',
+    reserveCheckTitle: 'Umbuchung auf eigene Konten: zählt weder zu Einnahmen noch zu Ausgaben',
+    delCat: 'Kategorie löschen', delCatAria: c => `Kategorie ${c} löschen`,
+    confirmDefaults: 'Alle Kategorien und Regeln auf den Standard zurücksetzen?',
+    invalidRules: 'Die Datei enthält keine gültigen Regeln.', saved: p => 'Gespeichert: ' + p, exportFailed: e => 'Export fehlgeschlagen: ' + e,
+    noTxExport: 'Keine Buchungen zum Exportieren.', noSumExport: 'Keine Auswertung zum Exportieren.',
+    rulesFile: 'dewz-regeln.json', txFile: 'buchungen.csv', sumFile: 'auswertung.csv',
+    csvTxHead: ['Datum', 'Empfänger', 'Verwendungszweck', 'Buchungstext', 'Kategorie', 'Betrag'],
+    csvSumHead: ['Kategorie', 'Ausgaben', 'Einnahmen', 'Saldo', 'Anzahl'],
+    notData: 'Die Datei ist keine dewz-Datendatei.', saveFailedBtn: 'Speichern fehlgeschlagen',
+    dataBtn: p => `Datenordner: ${p.name}` + (p.enc ? ' (verschlüsselt)' : ''),
+    unsavedBtn: 'Nicht gespeichert – Datenordner wählen', noDataDir: 'Kein Datenordner',
+    stateOpen: p => `Ordner „${p.dir}“, Datei ${p.file}, ${p.enc ? 'mit Passwort verschlüsselt' : 'unverschlüsselt'}`,
+    stateSaveFailed: e => ` – Speichern fehlgeschlagen: ${e}`, stateSavedAt: time => ` – zuletzt gespeichert um ${time}`,
+    stateRemembered: dir => `Zuletzt verwendeter Ordner: „${dir}“. Er ist noch nicht geöffnet.`,
+    stateUnsaved: n => `${n} Buchungen sind geladen, aber noch nirgends gespeichert. Wähle einen Ordner, um sie zu sichern.`,
+    stateNone: 'Es ist kein Datenordner gewählt.', loadFrom: name => `Daten aus „${name}“ laden`,
+    chooseDataDir: 'Datenordner wählen', chooseFolder: 'Ordner wählen', pwChange: 'Passwort ändern', pwSet: 'Passwort festlegen',
+    pwEmpty: 'Bitte ein Passwort eingeben.', pwMismatch: 'Die beiden Eingaben stimmen nicht überein.',
+    writeFailed: e => 'Speichern in die Datendatei fehlgeschlagen: ' + e, corrupt: 'Die verschlüsselte Datendatei ist beschädigt.',
+    unlockTitle: 'Datendatei entsperren', unlockText: 'Die Datendatei ist mit einem Passwort verschlüsselt.', wrongPw: 'Falsches Passwort.',
+    loaded: p => `Daten aus „${p.name}“ geladen: ${T('nBook', p.n)}` + (p.merged ? `, davon ${p.merged} neu aus dieser Sitzung übernommen.` : '.') +
+      (p.legacy ? ` Sie liegen jetzt in ${DATA_NAME}; die bisherige Datei ${LEGACY_DATA_NAME} ist unverändert und kann gelöscht werden.` : ''),
+    created: p => `Datendatei im Ordner „${p.name}“ angelegt` + (p.n ? ` und ${p.n} Buchungen gespeichert.` : '.'),
+    openFailed: p => `Der Datenordner „${p.name}“ konnte nicht geöffnet werden: ${p.e}`, chooseFailed: e => 'Ordnerauswahl fehlgeschlagen: ' + e,
+    pwSetText: 'Die Datendatei wird mit diesem Passwort verschlüsselt. Es wird bei jedem Start abgefragt. Wenn du es vergisst, sind die Daten nicht wiederherstellbar.',
+    pwDone: 'Die Datendatei ist jetzt mit dem Passwort verschlüsselt.',
+    pwRemoveConfirm: 'Passwortschutz entfernen? Die Datendatei wird danach unverschlüsselt gespeichert.',
+    pwRemoved: 'Der Passwortschutz wurde entfernt.',
+    closeConfirm: 'Die geladenen Buchungen sind noch nirgends gespeichert und gehen beim Schließen verloren. Trotzdem schließen?',
+    clearConfirm: inFile => 'Wirklich alle Buchungen löschen?' + (inFile ? ' Sie werden auch aus der Datendatei entfernt.' : '') + ' Kategorien und Regeln bleiben erhalten.',
+    cleared: 'Alle Buchungen wurden gelöscht.',
+    viewCat: 'Kategorien', viewMonth: 'Monate', viewCmp: 'Monatsvergleich', viewSmall: 'Kleine Ausgaben', viewTx: 'Buchungen',
+  },
+  en: {
+    langBtn: 'Deutsch', langTitle: 'Auf Deutsch umschalten', langOther: 'de',
+    tagline: 'Analyse bank statements – 100 % offline',
+    btnImport: 'Import bank export', btnCats: 'Categories & rules',
+    export: 'Export', exportTx: 'Transactions as CSV', exportSum: 'Summary as CSV',
+    dropTitle: 'Choose a data folder or import a bank export',
+    dropText1: 'Your transactions are kept in the file <code>dewz-daten.json</code> in a folder of your choice, for example in your documents or on a USB stick. Choose the folder once; the app remembers it and saves every change there automatically.',
+    dropText2: 'Drag a bank export (<b>Excel .xlsx</b> or <b>CSV</b>) here or choose it via “Import bank export”. Several files at once are fine; duplicate transactions are detected.',
+    dropText3: 'Everything is processed locally – no data is ever transmitted.',
+    chooseOther: 'Choose another folder', tabsAria: 'Views',
+    fSearch: 'Search', fSearchPh: 'Recipient, purpose, category …', category: 'Category', fKind: 'Type', fAll: 'All',
+    fOut: 'Expenses only', fIn: 'Income only', month: 'Month', fFrom: 'From', fTo: 'To',
+    fMin: 'Amount from (€)', fMax: 'Amount up to (€)', reset: 'Reset filters', resetN: n => `Reset filters (${n})`,
+    income: 'Income', expenses: 'Expenses', balance: 'Balance', balNoRes: 'Balance excl. reserves', reserves: 'Reserves',
+    transactions: 'Transactions', catTitle: 'Expenses by category', rowHint: 'Click a row to see its transactions',
+    monTitle: 'Monthly overview', cmpTitle: 'Categories month by month',
+    cmpSub: 'Expenses per month – bars compare the months within a category',
+    smallTitle: 'Small expenses', smallUpTo: 'Single amounts up to',
+    txTip: '<b>Tip:</b> Click a transaction’s category to change it. With “Create rule …” in the same list, similar transactions are assigned automatically from then on – in later imports, too.',
+    gotIt: 'Got it', showMore: 'Show more', bulkAria: 'Category for the selected transactions', assign: 'Assign',
+    clearSel: 'Clear selection', shiftTip: 'Tip: hold Shift to select a whole range',
+    footer: 'Transactions, categories and rules are kept in your data file; the app itself only keeps settings such as the last opened view. Network access is blocked by the Content Security Policy.',
+    mapTitle: 'Map columns', cancel: 'Cancel', import: 'Import', save: 'Save', close: 'Close',
+    catsText1: 'A transaction gets the category whose keyword appears in its recipient, purpose or booking text (if several match, the longest keyword wins). Separate keywords with commas. In quotes – e.g. <code>"jet"</code> – only the whole word counts.',
+    catsText2: 'If the imported file brings its own category, it takes precedence over normal keywords. A keyword with an exclamation mark in front – e.g. <code>!thalia</code> – wins even against the category from the file; this is how rules from “Create rule” are saved. Transactions assigned by hand always stay unchanged.',
+    catsText3: 'Categories ticked as “Reserve” stand for transfers between your own accounts, e.g. to the savings account and back. Their transactions count as neither income nor expenses and are shown separately. You decide yourself which transactions these are, with a rule or by hand.',
+    catAdd: '+ Category', catExport: 'Export rules', catImport: 'Import rules', catDefaults: 'Restore defaults',
+    dataTitle: 'Data folder',
+    dataText1: 'dewz stores transactions, categories and rules in the file <code>dewz-daten.json</code> in the chosen folder. Every change is written there automatically. The folder is remembered and opened again automatically at the next start.',
+    dataText2: 'With a password, the file is saved encrypted. Without the password, the data cannot be recovered.',
+    pwRemove: 'Remove password', clearAll: 'Delete all transactions …', password: 'Password', passwordRepeat: 'Repeat password',
+    ruleTitle: 'Create rule', keyword: 'Keyword', ruleSave: 'Save rule',
+    ruleText: 'Transactions containing this keyword in their recipient, purpose or booking text are assigned to this category now and in later imports – even if the imported file brings a different category.',
+    ruleManual: 'Also reassign transactions that were assigned by hand',
+
+    uncat: 'Uncategorised', settingsFailed: 'Settings could not be saved.',
+    errXls: 'The old Excel format (.xls) is not supported. Please save the file as .xlsx or CSV in Excel.',
+    sheetTable: 'Table', errZip: 'The file is not a valid XLSX file.',
+    errZipMethod: 'Unsupported ZIP compression in the XLSX file.',
+    fieldDate: 'Date (required)', fieldAmount: 'Signed amount (required unless in separate columns)',
+    fieldInd: 'Debit/credit indicator (optional)', fieldDebit: 'Expenses column (debit), if separate',
+    fieldCredit: 'Income column (credit), if separate', fieldRecipient: 'Recipient / payer',
+    fieldPurpose: 'Purpose', fieldType: 'Booking text / transaction type (optional)', fieldCat: 'Category from the file (optional)',
+    column: n => 'Column ' + n, notPresent: '— not present —', sheet: 'Worksheet',
+    sheetRows: p => `${p.name} (${p.n} rows)`, headerRow: 'Header row (row with the column names)',
+    invert: 'Invert sign (if the file lists expenses as positive amounts)',
+    recognized: n => `${n} transactions recognised`, skippedRows: n => `(${n} rows without a valid date/amount skipped)`,
+    date: 'Date', recipient: 'Recipient', purpose: 'Purpose', amount: 'Amount',
+    mapNeed: 'Please map at least the date and amount columns.',
+    jsonNotImport: 'The data file is loaded via the data folder, not via import.',
+    noData: 'No data found.', fileOf: p => ` (file ${p.i} of ${p.n})`,
+    imported: p => `${p.added} transactions imported` + (p.dup ? `, ${p.dup} already present skipped` : '') + '.' + (p.unsaved ? ' Not saved yet.' : ''),
+    chooseDataDots: 'Choose data folder …', importError: p => `Error in “${p.name}”: ${p.msg}`,
+    allCats: 'All categories', allMonths: 'All months',
+    putAside: v => `put aside ${v}`, withdrawn: v => `withdrawn ${v}`,
+    monPutAside: v => `${v} put aside`, monWithdrawn: v => `${v} withdrawn`,
+    resNote: p => `<b>Reserves tapped:</b> In the current selection you withdrew ${p.drawn} more from reserves than you put aside.` +
+      (p.over ? ` Your expenses exceeded your income by ${p.over}.` : ''),
+    share: 'Share', count: 'Count', total: 'Total',
+    sumRowTitle: p => `${p.c}: ${p.v} expenses in ${p.n} transactions`,
+    resRowTitle: 'Reserve – counts as neither income nor expenses', reserveTag: 'Reserve', reserveSuffix: ' (reserve)',
+    monRowTitle: p => `${p.m}: ${p.o} expenses, ${p.i} income`,
+    overAvg: p => `${p.pct}% above the average of ${p.avg}`, avgPerMonth: 'Avg. per month',
+    noHot: 'No unusual months: no category is clearly above its average.',
+    hotIntro: '<b>Note:</b> In these months, expenses were clearly above average.',
+    hotItem: p => `<b>${p.c}</b> in ${p.m}: ${p.v} – ${p.over}`, noInfo: '(not specified)',
+    smallInfo: p => `<b>${p.n} small expenses</b> up to ${p.thr} add up to <b>${p.sum}</b> – that is ${p.pct} of all expenses and ${p.avg} per transaction on average.`,
+    smallNone: thr => `No expenses up to ${thr} in the current selection.`,
+    smallCash: p => `<br>On top of that come <b>${p.n} cash withdrawals</b> totalling <b>${p.sum}</b> (${p.pct} of all expenses) – what the cash was spent on is not visible in the statement.`,
+    smallPerMonth: 'Small expenses per month', shareMonth: 'Share of monthly expenses',
+    clickShow: 'Click to show these transactions', smallTop: 'Where the small amounts go (top 12)', avgAmount: 'Avg. amount',
+    sizeTitle: 'All expenses by amount', shareExp: 'Share of expenses',
+    cur0: v => '€' + v, sizeUpTo: v => 'up to ' + v, sizeOver: v => 'over ' + v, sizeRange: p => `€${p.lo} – €${p.hi}`,
+    selAll: 'Select all filtered transactions', selOne: 'Select transaction', changeCat: 'Change category',
+    shown: p => `${p.n} of ${p.total} shown` + (p.total !== p.all ? ` (filtered from ${p.all})` : ''),
+    filtered: p => `Filtered: ${p.n} of ${p.total}`, noTx: 'No transactions match these filters.',
+    chooseCat: 'Choose category …', autoAssign: '↺ Assign automatically',
+    nSelected: n => n === 1 ? '1 transaction selected' : `${n} transactions selected`,
+    chooseCatFirst: 'Please choose a category first.', bulkAuto: n => `${n} transactions assigned automatically again.`,
+    bulkSet: p => `${p.n} transactions assigned to “${p.c}”.`, createRuleOpt: '＋ Create rule …',
+    catChanged: c => `Category changed to “${c}”.`, ruleFromIt: 'Create a rule from it …',
+    nBook: n => n === 1 ? '1 transaction' : n + ' transactions',
+    ruleNone: 'Currently matches no transaction. The rule will apply to future imports.',
+    ruleHits: p => `Matches ${T('nBook', p.n)}.` + (p.manual ? ` ${p.manual === 1 ? 'One of them was' : p.manual + ' of them were'} assigned by hand and ${p.manual === 1 ? 'stays' : 'stay'} unchanged unless you tick the box.` : ''),
+    ruleSaved: p => `Rule saved: “${p.kw}” → ${p.c}. ` + (p.n ? `${T('nBook', p.n)} ${p.n === 1 ? 'is' : 'are'} now in this category.` : 'It currently matches no transaction.'),
+    catNamePh: 'Category name', keywordsPh: 'Keywords, separated by commas',
+    reserveCheckTitle: 'Transfer between your own accounts: counts as neither income nor expenses',
+    delCat: 'Delete category', delCatAria: c => `Delete category ${c}`,
+    confirmDefaults: 'Reset all categories and rules to the defaults?',
+    invalidRules: 'The file does not contain valid rules.', saved: p => 'Saved: ' + p, exportFailed: e => 'Export failed: ' + e,
+    noTxExport: 'No transactions to export.', noSumExport: 'No summary to export.',
+    rulesFile: 'dewz-rules.json', txFile: 'transactions.csv', sumFile: 'summary.csv',
+    csvTxHead: ['Date', 'Recipient', 'Purpose', 'Booking text', 'Category', 'Amount'],
+    csvSumHead: ['Category', 'Expenses', 'Income', 'Balance', 'Count'],
+    notData: 'The file is not a dewz data file.', saveFailedBtn: 'Saving failed',
+    dataBtn: p => `Data folder: ${p.name}` + (p.enc ? ' (encrypted)' : ''),
+    unsavedBtn: 'Not saved – choose data folder', noDataDir: 'No data folder',
+    stateOpen: p => `Folder “${p.dir}”, file ${p.file}, ${p.enc ? 'encrypted with a password' : 'not encrypted'}`,
+    stateSaveFailed: e => ` – saving failed: ${e}`, stateSavedAt: time => ` – last saved at ${time}`,
+    stateRemembered: dir => `Last used folder: “${dir}”. It has not been opened yet.`,
+    stateUnsaved: n => `${n} transactions are loaded but not saved anywhere yet. Choose a folder to save them.`,
+    stateNone: 'No data folder is selected.', loadFrom: name => `Load data from “${name}”`,
+    chooseDataDir: 'Choose data folder', chooseFolder: 'Choose folder', pwChange: 'Change password', pwSet: 'Set password',
+    pwEmpty: 'Please enter a password.', pwMismatch: 'The two entries do not match.',
+    writeFailed: e => 'Saving to the data file failed: ' + e, corrupt: 'The encrypted data file is damaged.',
+    unlockTitle: 'Unlock data file', unlockText: 'The data file is encrypted with a password.', wrongPw: 'Wrong password.',
+    loaded: p => `Data loaded from “${p.name}”: ${T('nBook', p.n)}` + (p.merged ? `, including ${p.merged} new ones from this session.` : '.') +
+      (p.legacy ? ` It is now stored in ${DATA_NAME}; the previous file ${LEGACY_DATA_NAME} is unchanged and can be deleted.` : ''),
+    created: p => `Data file created in folder “${p.name}”` + (p.n ? ` and ${p.n} transactions saved.` : '.'),
+    openFailed: p => `The data folder “${p.name}” could not be opened: ${p.e}`, chooseFailed: e => 'Choosing a folder failed: ' + e,
+    pwSetText: 'The data file will be encrypted with this password. It is asked for at every start. If you forget it, the data cannot be recovered.',
+    pwDone: 'The data file is now encrypted with the password.',
+    pwRemoveConfirm: 'Remove password protection? The data file will then be saved unencrypted.',
+    pwRemoved: 'Password protection has been removed.',
+    closeConfirm: 'The loaded transactions are not saved anywhere yet and will be lost when closing. Close anyway?',
+    clearConfirm: inFile => 'Really delete all transactions?' + (inFile ? ' They will also be removed from the data file.' : '') + ' Categories and rules are kept.',
+    cleared: 'All transactions have been deleted.',
+    viewCat: 'Categories', viewMonth: 'Months', viewCmp: 'Month comparison', viewSmall: 'Small expenses', viewTx: 'Transactions',
+  },
+};
+// Gespeicherte Wahl, sonst Systemsprache; alles außer Deutsch bekommt Englisch.
+let lang = load('fb.lang');
+if (!(lang in I18N)) lang = /^de\b/i.test(navigator.language || '') ? 'de' : 'en';
+function T(key, arg) {
+  const v = I18N[lang][key] ?? I18N.de[key];
+  return typeof v === 'function' ? v(arg) : v ?? key;
+}
+
+// Zahlen, Beträge und Datumsangaben im Format der gewählten Sprache (Währung bleibt Euro)
+let locale, eur, monFmt, monShortFmt;
+function setFormats() {
+  locale = lang === 'de' ? 'de-DE' : 'en-GB';
+  eur = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' });
+  monFmt = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  monShortFmt = new Intl.DateTimeFormat(locale, { month: 'short', year: '2-digit', timeZone: 'UTC' });
+}
+setFormats();
+const fmt = cents => eur.format(cents / 100);
+const fmtDate = iso => [iso.slice(8, 10), iso.slice(5, 7), iso.slice(0, 4)].join(lang === 'de' ? '.' : '/');
+const fmtMonth = ym => monFmt.format(new Date(ym + '-01T00:00:00Z'));
+const fmtMonthShort = ym => monShortFmt.format(new Date(ym + '-01T00:00:00Z'));
+const dec1 = x => x.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const pctText = x => dec1(x) + (lang === 'de' ? ' %' : '%');
+const catLabel = c => c === UNCAT ? T('uncat') : c;   // Anzeigename einer Kategorie
 
 function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }
 function store(key, val) {
   try { localStorage.setItem(key, JSON.stringify(val)); return true; }
-  catch { toast('Einstellungen konnten nicht gespeichert werden.', true); return false; }
+  catch { toast(T('settingsFailed'), true); return false; }
 }
 
 let toastTimer;
@@ -407,7 +671,30 @@ function toast(msg, isErr, actionLabel, action) {
 }
 
 /* ============================== Kategorien ============================== */
-function defaultCats() {
+// Englische Namen der Standardkategorien. Kategorien sind Nutzerdaten: Beim Sprachwechsel werden vorhandene
+// Kategorien nicht umbenannt; die Namen gelten nur für neu angelegte Standards.
+const CAT_EN = {
+  'Supermarkt': 'Groceries', 'Drogerie': 'Drugstore', 'Gesundheit': 'Health', 'Gastronomie': 'Eating out',
+  'Tankstelle': 'Fuel', 'Mobilität': 'Transport', 'Einzelhandel': 'Retail', 'Online-Shopping': 'Online shopping',
+  'Fixkosten': 'Fixed costs', 'Wohnen & Nebenkosten': 'Housing & utilities', 'Versicherungen': 'Insurance',
+  'Telefon & Internet': 'Phone & internet', 'Abos & Streaming': 'Subscriptions & streaming',
+  'Freizeit & Reisen': 'Leisure & travel', 'Bargeld': 'Cash', 'Sparen & Anlage': 'Savings & investments',
+  'Steuern & Gebühren': 'Taxes & fees', 'Einnahmen': 'Income',
+};
+const CASH_CATS = new Set(['Bargeld', CAT_EN['Bargeld']]);
+// Name einer Standardkategorie: vorhandene Kategorie in einer der beiden Sprachen, sonst in der aktuellen Sprache
+function defaultName(de) {
+  const en = CAT_EN[de];
+  if (cats.some(c => c.name === de)) return de;
+  if (cats.some(c => c.name === en)) return en;
+  return lang === 'en' ? en : de;
+}
+function defaultCats(l = lang) {
+  const list = defaultCatsDe();
+  if (l === 'en') for (const c of list) c.name = CAT_EN[c.name] || c.name;
+  return list;
+}
+function defaultCatsDe() {
   return [
     { name: 'Supermarkt', keywords: ['rewe', 'edeka', 'aldi', 'lidl', '"netto"', 'penny', 'kaufland', 'norma', 'tegut', 'globus', 'alnatura', 'denns', 'supermarkt', 'metzgerei', 'getränke'] },
     { name: 'Drogerie', keywords: ['dm-drogerie', 'dm drogerie', '"dm"', 'rossmann', 'müller drogerie', 'budni'] },
@@ -438,7 +725,7 @@ let matchers = [], catSet = new Set();
 if (!(load('fb.catsV') >= 2)) {
   if (load('fb.cats')) {
     const added = ['Supermarkt', 'Drogerie', 'Gesundheit', 'Gastronomie', 'Tankstelle', 'Einzelhandel', 'Fixkosten', 'Einnahmen'];
-    for (const d of defaultCats()) if (added.includes(d.name) && !cats.some(c => c.name === d.name)) cats.push(d);
+    for (const d of defaultCats('de')) if (added.includes(d.name) && !cats.some(c => c.name === d.name)) cats.push(d);
     store('fb.cats', cats);
   }
   store('fb.catsV', 2);
@@ -502,9 +789,9 @@ async function readFile(file) {
   const buf = new Uint8Array(await file.arrayBuffer());
   if (buf[0] === 0x50 && buf[1] === 0x4B) return parseXlsx(buf);
   if (buf[0] === 0xD0 && buf[1] === 0xCF)
-    throw new Error('Das alte Excel-Format (.xls) wird nicht unterstützt. Bitte in Excel als .xlsx oder CSV speichern.');
+    throw new Error(T('errXls'));
   const text = decodeText(buf);
-  if (/<table[\s>]/i.test(text.slice(0, 50000))) return [{ name: 'Tabelle', rows: parseHtmlTable(text) }];
+  if (/<table[\s>]/i.test(text.slice(0, 50000))) return [{ name: T('sheetTable'), rows: parseHtmlTable(text) }];
   return [{ name: 'CSV', rows: parseCsv(text) }];
 }
 
@@ -552,7 +839,7 @@ function unzip(buf) {
   const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
   let e = buf.length - 22;
   while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
-  if (e < 0) throw new Error('Die Datei ist keine gültige XLSX-Datei.');
+  if (e < 0) throw new Error(T('errZip'));
   const n = dv.getUint16(e + 10, true), td = new TextDecoder(), files = {};
   let p = dv.getUint32(e + 16, true);
   for (let i = 0; i < n && dv.getUint32(p, true) === 0x02014b50; i++) {
@@ -569,7 +856,7 @@ function unzip(buf) {
       const start = f.off + 30 + dv.getUint16(f.off + 26, true) + dv.getUint16(f.off + 28, true);
       const data = buf.subarray(start, start + f.size);
       if (f.method === 0) return td.decode(data);
-      if (f.method !== 8) throw new Error('Nicht unterstützte ZIP-Kompression in der XLSX-Datei.');
+      if (f.method !== 8) throw new Error(T('errZipMethod'));
       const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
       return new Response(stream).text();
     },
@@ -678,15 +965,15 @@ function parseAmount(v) {
 
 /* ============================== Spaltenerkennung ============================== */
 const FIELDS = [
-  { key: 'date', label: 'Datum (Pflicht)', pats: [/^buchungstag|^buchungsdatum|^buchung$/, /^datum|^date/, /datum|buchung(?!stext)/, /valuta|wertstellung/] },
-  { key: 'amount', label: 'Betrag mit Vorzeichen (Pflicht, außer bei getrennten Spalten)', pats: [/^betrag|^umsatz(?!art|typ)|^amount/, /betrag/] },
-  { key: 'ind', label: 'Soll/Haben-Kennzeichen (optional)', pats: [/soll.*haben|^s\/h$/] },
-  { key: 'debit', label: 'Ausgaben-Spalte (Soll), falls getrennt', pats: [/^soll|ausgang|ausgabe|belastung/] },
-  { key: 'credit', label: 'Einnahmen-Spalte (Haben), falls getrennt', pats: [/^haben|eingang|einnahme|gutschrift/] },
-  { key: 'recipient', label: 'Empfänger / Auftraggeber', pats: [/beg[uü]nstigter|zahlungsempf|empf[aä]nger/, /auftraggeber|zahlungsbeteiligt|zahlungspflichtig|^name/, /partner|h[aä]ndler|merchant|payee/] },
-  { key: 'purpose', label: 'Verwendungszweck', pats: [/verwendungszweck/, /zweck|beschreibung|description|vorgang|notiz/, /buchungstext|^text/] },
-  { key: 'type', label: 'Buchungstext / Umsatzart (optional)', pats: [/buchungstext|umsatzart|umsatztyp|buchungsart|^art$|^typ$/] },
-  { key: 'cat', label: 'Kategorie aus der Datei (optional)', pats: [/^kategorie|^category|^rubrik/] },
+  { key: 'date', label: 'fieldDate', pats: [/^buchungstag|^buchungsdatum|^buchung$/, /^datum|^date/, /datum|buchung(?!stext)/, /valuta|wertstellung/] },
+  { key: 'amount', label: 'fieldAmount', pats: [/^betrag|^umsatz(?!art|typ)|^amount/, /betrag/] },
+  { key: 'ind', label: 'fieldInd', pats: [/soll.*haben|^s\/h$/] },
+  { key: 'debit', label: 'fieldDebit', pats: [/^soll|ausgang|ausgabe|belastung/] },
+  { key: 'credit', label: 'fieldCredit', pats: [/^haben|eingang|einnahme|gutschrift/] },
+  { key: 'recipient', label: 'fieldRecipient', pats: [/beg[uü]nstigter|zahlungsempf|empf[aä]nger/, /auftraggeber|zahlungsbeteiligt|zahlungspflichtig|^name/, /partner|h[aä]ndler|merchant|payee/] },
+  { key: 'purpose', label: 'fieldPurpose', pats: [/verwendungszweck/, /zweck|beschreibung|description|vorgang|notiz/, /buchungstext|^text/] },
+  { key: 'type', label: 'fieldType', pats: [/buchungstext|umsatzart|umsatztyp|buchungsart|^art$|^typ$/] },
+  { key: 'cat', label: 'fieldCat', pats: [/^kategorie|^category|^rubrik/] },
 ];
 const HEAD_KW = /datum|buchung|valuta|wertstellung|betrag|umsatz|verwendungszweck|empf[aä]nger|auftraggeber|beg[uü]nstigter|zahlungs|^soll|^haben|w[aä]hrung|iban|saldo|^text|^name|date|amount/i;
 
@@ -733,7 +1020,7 @@ function buildTx(rows, headerIdx, map, invert) {
     const tx = { d, a: invert ? -a : a, r: txt(row, map.recipient), p: txt(row, map.purpose), t: txt(row, map.type) };
     let fc = txt(row, map.cat);
     // Sammelkategorie "Fixkosten/Einnahme" anhand des Vorzeichens aufteilen
-    if (/^fixkosten\s*\/\s*einnahmen?$/i.test(fc)) fc = tx.a > 0 ? 'Einnahmen' : 'Fixkosten';
+    if (/^fixkosten\s*\/\s*einnahmen?$/i.test(fc)) fc = defaultName(tx.a > 0 ? 'Einnahmen' : 'Fixkosten');
     if (fc && fc !== UNCAT) tx.fc = fc;
     out.push(tx);
   }
@@ -751,20 +1038,20 @@ function askMapping(fileName, sheets) {
     function setSheet(i) { si = i; rows = sheets[si].rows; setHeader(detectHeader(rows)); }
     function setHeader(i) {
       hi = Math.min(Math.max(i, 0), rows.length - 1);
-      headers = (rows[hi] || []).map((h, j) => String(h ?? '').trim() || 'Spalte ' + (j + 1));
+      headers = (rows[hi] || []).map((h, j) => String(h ?? '').trim() || T('column', j + 1));
       const saved = maps[headers.join('|')];
       map = saved ? { ...guessMap(headers), ...saved.map } : guessMap(headers);
       invert = saved ? !!saved.invert : false;
       draw();
     }
     function draw() {
-      const opts = sel => '<option value="-1">— nicht vorhanden —</option>' +
+      const opts = sel => `<option value="-1">${esc(T('notPresent'))}</option>` +
         headers.map((h, j) => `<option value="${j}"${j === sel ? ' selected' : ''}>${esc(h)}</option>`).join('');
       body.innerHTML = '<div class="mapgrid">' +
-        (sheets.length > 1 ? `<label>Tabellenblatt<select data-k="sheet">${sheets.map((s, i) => `<option value="${i}"${i === si ? ' selected' : ''}>${esc(s.name)} (${s.rows.length} Zeilen)</option>`).join('')}</select></label>` : '') +
-        `<label>Kopfzeile (Zeile mit den Spaltennamen)<input type="number" data-k="header" min="1" max="${rows.length}" value="${hi + 1}"></label>` +
-        FIELDS.map(f => `<label>${esc(f.label)}<select data-k="${f.key}">${opts(map[f.key])}</select></label>`).join('') +
-        `</div><label><input type="checkbox" data-k="invert"${invert ? ' checked' : ''}> Vorzeichen umkehren (wenn Ausgaben in der Datei als positive Beträge stehen)</label>` +
+        (sheets.length > 1 ? `<label>${esc(T('sheet'))}<select data-k="sheet">${sheets.map((s, i) => `<option value="${i}"${i === si ? ' selected' : ''}>${esc(T('sheetRows', { name: s.name, n: s.rows.length }))}</option>`).join('')}</select></label>` : '') +
+        `<label>${esc(T('headerRow'))}<input type="number" data-k="header" min="1" max="${rows.length}" value="${hi + 1}"></label>` +
+        FIELDS.map(f => `<label>${esc(T(f.label))}<select data-k="${f.key}">${opts(map[f.key])}</select></label>`).join('') +
+        `</div><label><input type="checkbox" data-k="invert"${invert ? ' checked' : ''}> ${esc(T('invert'))}</label>` +
         '<div id="mapPrev"></div>';
       preview();
     }
@@ -772,11 +1059,11 @@ function askMapping(fileName, sheets) {
       result = buildTx(rows, hi, map, invert);
       const ok = map.date >= 0 && (map.amount >= 0 || map.debit >= 0 || map.credit >= 0) && result.list.length > 0;
       $('#mapOk').disabled = !ok;
-      $('#mapPrev').innerHTML = `<b>${result.list.length} Buchungen erkannt</b>` +
-        (result.skipped ? ` <span class="muted">(${result.skipped} Zeilen ohne gültiges Datum/Betrag übersprungen)</span>` : '') +
-        (result.list.length ? '<div class="scroll"><table><tr><th>Datum</th><th>Empfänger</th><th>Verwendungszweck</th><th class="num">Betrag</th></tr>' +
+      $('#mapPrev').innerHTML = `<b>${T('recognized', result.list.length)}</b>` +
+        (result.skipped ? ` <span class="muted">${T('skippedRows', result.skipped)}</span>` : '') +
+        (result.list.length ? `<div class="scroll"><table><tr><th>${T('date')}</th><th>${T('recipient')}</th><th>${T('purpose')}</th><th class="num">${T('amount')}</th></tr>` +
           result.list.slice(0, 5).map(t => `<tr><td>${fmtDate(t.d)}</td><td>${esc(t.r)}</td><td>${esc(t.p.slice(0, 80))}</td><td class="num">${fmt(t.a)}</td></tr>`).join('') +
-          '</table></div>' : '<p class="muted">Bitte mindestens die Spalten für Datum und Betrag zuordnen.</p>');
+          '</table></div>' : `<p class="muted">${T('mapNeed')}</p>`);
     }
     body.onchange = ev => {
       const k = ev.target.dataset.k;
@@ -821,18 +1108,18 @@ function mergeTx(list) {
 
 async function importFiles(files) {
   for (const f of files) {
-    if (/\.json$/i.test(f.name)) { toast('Die Datendatei wird über den Datenordner geladen, nicht über den Import.', true); continue; }
+    if (/\.json$/i.test(f.name)) { toast(T('jsonNotImport'), true); continue; }
     try {
       const sheets = (await readFile(f)).filter(s => s.rows.length);
-      if (!sheets.length) throw new Error('Keine Daten gefunden.');
-      const list = await askMapping(f.name + (files.length > 1 ? ` (Datei ${files.indexOf(f) + 1} von ${files.length})` : ''), sheets);
+      if (!sheets.length) throw new Error(T('noData'));
+      const list = await askMapping(f.name + (files.length > 1 ? T('fileOf', { i: files.indexOf(f) + 1, n: files.length }) : ''), sheets);
       if (!list) continue;
       const added = mergeTx(list), dup = list.length - added;
-      toast(`${added} Buchungen importiert` + (dup ? `, ${dup} bereits vorhandene übersprungen` : '') + '.' + (dataDir ? '' : ' Noch nicht gespeichert.'),
-        false, dataDir ? '' : 'Datenordner wählen …', () => $('#btnData').click());
+      toast(T('imported', { added, dup, unsaved: !dataDir }),
+        false, dataDir ? '' : T('chooseDataDots'), () => $('#btnData').click());
     } catch (e) {
       console.error(e);
-      toast(`Fehler bei „${f.name}“: ${e.message}`, true);
+      toast(T('importError', { name: f.name, msg: e.message }), true);
     }
   }
   persist();
@@ -852,7 +1139,7 @@ function getFiltered() {
   const from = $('#fFrom').value, to = $('#fTo').value;
   const mn = parseFloat($('#fMin').value), mx = parseFloat($('#fMax').value);
   return txs.filter(t =>
-    (!q || (t.r + ' ' + t.p + ' ' + t.t + ' ' + t.c).toLowerCase().includes(q)) &&
+    (!q || (t.r + ' ' + t.p + ' ' + t.t + ' ' + catLabel(t.c)).toLowerCase().includes(q)) &&
     (!c || t.c === c) &&
     (!k || (k === 'out' ? t.a < 0 : t.a > 0)) &&
     (!from || t.d >= from) && (!to || t.d <= to) &&
@@ -873,13 +1160,14 @@ function render() {
   $('#exportMenu').hidden = !has;
   if (!has) return;
 
-  fillSelect($('#fCat'), [['', 'Alle Kategorien'], ...cats.map(c => [c.name, c.name]), [UNCAT, UNCAT]]);
+  fillSelect($('#fCat'), [['', T('allCats')], ...cats.map(c => [c.name, c.name]), [UNCAT, T('uncat')]]);
   const months = [...new Set(txs.map(t => t.d.slice(0, 7)))].sort().reverse();
-  fillSelect($('#fMonth'), [['', 'Alle Monate'], ...months.map(m => [m, fmtMonth(m)])]);
+  fillSelect($('#fMonth'), [['', T('allMonths')], ...months.map(m => [m, fmtMonth(m)])]);
 
   const list = getFiltered();
+  const sortVal = t => sort.key === 'c' ? catLabel(t.c) : String(t[sort.key]);
   const cmp = sort.key === 'a' ? (x, y) => x.a - y.a
-    : (x, y) => String(x[sort.key]).localeCompare(String(y[sort.key]), 'de', { sensitivity: 'base' });
+    : (x, y) => sortVal(x).localeCompare(sortVal(y), lang, { sensitivity: 'base' });
   list.sort((x, y) => sort.dir * cmp(x, y) || y.d.localeCompare(x.d) || x.id - y.id);
 
   // Kennzahlen
@@ -893,15 +1181,14 @@ function render() {
   $('#kIn').textContent = fmt(tin);
   $('#kOut').textContent = fmt(tout);
   $('#kSal').textContent = fmt(tin - tout);
-  $('#kSalLabel').textContent = resN ? 'Saldo ohne Rücklagen' : 'Saldo';
-  $('#kN').textContent = list.length.toLocaleString('de-DE');
+  $('#kSalLabel').textContent = T(resN ? 'balNoRes' : 'balance');
+  $('#kN').textContent = list.length.toLocaleString(locale);
   $('#kResBox').hidden = !resN;
-  $('#kRes').innerHTML = `zurückgelegt ${fmt(resOut)}<br>entnommen ${fmt(resIn)}`;
+  $('#kRes').innerHTML = T('putAside', fmt(resOut)) + '<br>' + T('withdrawn', fmt(resIn));
   // Hinweis, wenn im betrachteten Zeitraum mehr aus Rücklagen kam als hineinging
   const drawn = resIn - resOut;
   $('#resNote').hidden = !(drawn > 0);
-  $('#resNote').innerHTML = `<b>Rücklagen angezapft:</b> In der aktuellen Auswahl hast du ${fmt(drawn)} mehr aus Rücklagen entnommen als zurückgelegt.` +
-    (tout > tin ? ` Deine Ausgaben lagen ${fmt(tout - tin)} über deinen Einnahmen.` : '');
+  $('#resNote').innerHTML = T('resNote', { drawn: fmt(drawn), over: tout > tin ? fmt(tout - tin) : '' });
 
   // Auswertung nach Kategorie
   const by = new Map();
@@ -915,15 +1202,15 @@ function render() {
   const sum = allSum.filter(x => !resCats.has(x.c)), resSum = allSum.filter(x => resCats.has(x.c));
   const maxOut = Math.max(1, ...sum.map(s => s.out)), activeCat = $('#fCat').value;
   $('#sumTable').innerHTML =
-    '<tr><th>Kategorie</th><th class="num">Ausgaben</th><th class="num">Anteil</th><th></th><th class="num">Einnahmen</th><th class="num">Anzahl</th></tr>' +
-    sum.map(s => `<tr class="click${s.c === activeCat ? ' active' : ''}" data-cat="${esc(s.c)}" title="${esc(s.c)}: ${fmt(s.out)} Ausgaben in ${s.n} Buchungen">
-      <td>${esc(s.c)}</td><td class="num">${fmt(s.out)}</td><td class="num">${tout ? (s.out / tout * 100).toFixed(1).replace('.', ',') : '0,0'} %</td>
+    `<tr><th>${T('category')}</th><th class="num">${T('expenses')}</th><th class="num">${T('share')}</th><th></th><th class="num">${T('income')}</th><th class="num">${T('count')}</th></tr>` +
+    sum.map(s => `<tr class="click${s.c === activeCat ? ' active' : ''}" data-cat="${esc(s.c)}" title="${esc(T('sumRowTitle', { c: catLabel(s.c), v: fmt(s.out), n: s.n }))}">
+      <td>${esc(catLabel(s.c))}</td><td class="num">${fmt(s.out)}</td><td class="num">${pctText(tout ? s.out / tout * 100 : 0)}</td>
       <td class="barcell"><div class="bartrack">${s.out ? `<div class="bar" data-w="${(s.out / maxOut * 100).toFixed(1)}"></div>` : ''}</div></td>
       <td class="num${s.in ? ' pos' : ''}">${s.in ? fmt(s.in) : '–'}</td><td class="num">${s.n}</td></tr>`).join('') +
-    `<tr class="total"><td>Summe</td><td class="num">${fmt(tout)}</td><td class="num">${tout ? '100,0 %' : ''}</td><td></td><td class="num">${fmt(tin)}</td><td class="num">${list.length - resN}</td></tr>` +
-    resSum.map(x => `<tr class="click res${x.c === activeCat ? ' active' : ''}" data-cat="${esc(x.c)}" title="Rücklage – zählt weder zu Einnahmen noch zu Ausgaben">
-      <td>${esc(x.c)}<span class="tag">Rücklage</span></td><td class="num" colspan="3">zurückgelegt ${fmt(x.out)}</td>
-      <td class="num">entnommen ${fmt(x.in)}</td><td class="num">${x.n}</td></tr>`).join('');
+    `<tr class="total"><td>${T('total')}</td><td class="num">${fmt(tout)}</td><td class="num">${tout ? pctText(100) : ''}</td><td></td><td class="num">${fmt(tin)}</td><td class="num">${list.length - resN}</td></tr>` +
+    resSum.map(x => `<tr class="click res${x.c === activeCat ? ' active' : ''}" data-cat="${esc(x.c)}" title="${esc(T('resRowTitle'))}">
+      <td>${esc(x.c)}<span class="tag">${T('reserveTag')}</span></td><td class="num" colspan="3">${T('putAside', fmt(x.out))}</td>
+      <td class="num">${T('withdrawn', fmt(x.in))}</td><td class="num">${x.n}</td></tr>`).join('');
 
   // Monatsübersicht
   const mon = new Map();
@@ -935,37 +1222,37 @@ function render() {
   }
   const ml = [...mon.values()].sort((a, b) => b.m.localeCompare(a.m)), maxM = Math.max(1, ...ml.map(s => s.out));
   $('#monTable').innerHTML =
-    `<tr><th>Monat</th><th class="num">Ausgaben</th><th></th><th class="num">Einnahmen</th><th class="num">${resN ? 'Saldo ohne Rücklagen' : 'Saldo'}</th>${resN ? '<th class="num">Rücklagen</th>' : ''}</tr>` +
-    ml.map(s => `<tr class="click${s.m === $('#fMonth').value ? ' active' : ''}" data-month="${s.m}" title="${esc(fmtMonth(s.m))}: ${fmt(s.out)} Ausgaben, ${fmt(s.in)} Einnahmen">
+    `<tr><th>${T('month')}</th><th class="num">${T('expenses')}</th><th></th><th class="num">${T('income')}</th><th class="num">${T(resN ? 'balNoRes' : 'balance')}</th>${resN ? `<th class="num">${T('reserves')}</th>` : ''}</tr>` +
+    ml.map(s => `<tr class="click${s.m === $('#fMonth').value ? ' active' : ''}" data-month="${s.m}" title="${esc(T('monRowTitle', { m: fmtMonth(s.m), o: fmt(s.out), i: fmt(s.in) }))}">
       <td>${esc(fmtMonth(s.m))}</td><td class="num">${fmt(s.out)}</td>
       <td class="barcell"><div class="bartrack">${s.out ? `<div class="bar" data-w="${(s.out / maxM * 100).toFixed(1)}"></div>` : ''}</div></td>
       <td class="num${s.in ? ' pos' : ''}">${fmt(s.in)}</td><td class="num">${fmt(s.in - s.out)}</td>
-      ${resN ? `<td class="num">${s.res > 0 ? fmt(s.res) + ' entnommen' : s.res < 0 ? fmt(-s.res) + ' zurückgelegt' : '–'}</td>` : ''}</tr>`).join('');
+      ${resN ? `<td class="num">${s.res > 0 ? T('monWithdrawn', fmt(s.res)) : s.res < 0 ? T('monPutAside', fmt(-s.res)) : '–'}</td>` : ''}</tr>`).join('');
 
   // Kategorien im Monatsvergleich (Zeilen = Kategorien, Spalten = Monate)
   // Auffällig = mind. 30 % und mind. 20 € über dem eigenen Monatsdurchschnitt (erst ab 3 Monaten sinnvoll).
   const mAsc = [...mon.keys()].sort(), cm = new Map(), hints = [];
   const isHot = (v, avg) => mAsc.length >= 3 && v > avg * 1.3 && v - avg >= 2000;
-  const over = (v, avg) => `${Math.round((v / avg - 1) * 100)} % über dem Durchschnitt von ${fmt(Math.round(avg))}`;
+  const over = (v, avg) => T('overAvg', { pct: Math.round((v / avg - 1) * 100), avg: fmt(Math.round(avg)) });
   const mark = (v, avg) => isHot(v, avg) ? `<span class="warn" title="${over(v, avg)}">▲</span> ` : '';
   for (const t of list) if (t.a < 0 && !isRes(t)) { const k = t.c + '\n' + t.d.slice(0, 7); cm.set(k, (cm.get(k) || 0) - t.a); }
   $('#cmpTable').innerHTML =
-    '<tr><th>Kategorie</th>' + mAsc.map(m => `<th class="num">${esc(fmtMonthShort(m))}</th>`).join('') + '<th class="num">Ø pro Monat</th><th class="num">Summe</th></tr>' +
+    `<tr><th>${T('category')}</th>` + mAsc.map(m => `<th class="num">${esc(fmtMonthShort(m))}</th>`).join('') + `<th class="num">${T('avgPerMonth')}</th><th class="num">${T('total')}</th></tr>` +
     sum.filter(s => s.out > 0).map(s => {
       const vals = mAsc.map(m => cm.get(s.c + '\n' + m) || 0), mx = Math.max(...vals), avg = s.out / mAsc.length;
-      return `<tr><td>${esc(s.c)}</td>` + vals.map((v, i) => {
+      return `<tr><td>${esc(catLabel(s.c))}</td>` + vals.map((v, i) => {
         if (isHot(v, avg)) hints.push({ c: s.c, m: mAsc[i], v, avg });
-        return `<td class="num" title="${esc(s.c + ', ' + fmtMonth(mAsc[i]))}: ${fmt(v)}">${mark(v, avg)}${v ? fmt(v) : '–'}
+        return `<td class="num" title="${esc(catLabel(s.c) + ', ' + fmtMonth(mAsc[i]))}: ${fmt(v)}">${mark(v, avg)}${v ? fmt(v) : '–'}
           <div class="bartrack mini">${v ? `<div class="bar" data-w="${(v / mx * 100).toFixed(0)}"></div>` : ''}</div></td>`;
       }).join('') + `<td class="num">${fmt(Math.round(avg))}</td><td class="num">${fmt(s.out)}</td></tr>`;
     }).join('') +
-    '<tr class="total"><td>Summe</td>' + mAsc.map(m => `<td class="num">${mark(mon.get(m).out, tout / mAsc.length)}${fmt(mon.get(m).out)}</td>`).join('') +
+    `<tr class="total"><td>${T('total')}</td>` + mAsc.map(m => `<td class="num">${mark(mon.get(m).out, tout / mAsc.length)}${fmt(mon.get(m).out)}</td>`).join('') +
     `<td class="num">${fmt(Math.round(tout / Math.max(1, mAsc.length)))}</td><td class="num">${fmt(tout)}</td></tr>`;
   $('#hints').innerHTML = mAsc.length < 3 ? '' : !hints.length
-    ? '<li class="muted">Keine auffälligen Monate: keine Kategorie liegt deutlich über ihrem Durchschnitt.</li>'
-    : '<li><b>Achtung:</b> In diesen Monaten lagen die Ausgaben deutlich über dem Durchschnitt.</li>' +
+    ? `<li class="muted">${T('noHot')}</li>`
+    : `<li>${T('hotIntro')}</li>` +
       hints.sort((a, b) => (b.v - b.avg) - (a.v - a.avg)).slice(0, 6).map(h =>
-      `<li><span class="warn">▲</span> <b>${esc(h.c)}</b> im ${esc(fmtMonth(h.m))}: ${fmt(h.v)} – ${over(h.v, h.avg)}</li>`).join('');
+      `<li><span class="warn">▲</span> ${T('hotItem', { c: esc(catLabel(h.c)), m: esc(fmtMonth(h.m)), v: fmt(h.v), over: over(h.v, h.avg) })}</li>`).join('');
 
   $('#hints').classList.toggle('alert', mAsc.length >= 3 && hints.length > 0);
 
@@ -974,40 +1261,40 @@ function render() {
   const sMon = new Map(), sRec = new Map();
   let sN = 0, sS = 0, cashN = 0, cashS = 0;
   for (const t of list) if (t.a < 0 && !isRes(t)) {
-    if (t.c === 'Bargeld') { cashN++; cashS -= t.a; }
+    if (CASH_CATS.has(t.c)) { cashN++; cashS -= t.a; }
     if (-t.a > thr) continue;
-    const mk = t.d.slice(0, 7), rk = t.r || t.p || '(ohne Angabe)';
+    const mk = t.d.slice(0, 7), rk = t.r || t.p || T('noInfo');
     const a = sMon.get(mk) || { n: 0, s: 0 }, b = sRec.get(rk) || { r: rk, n: 0, s: 0 };
     a.n++; a.s -= t.a; b.n++; b.s -= t.a; sN++; sS -= t.a;
     sMon.set(mk, a); sRec.set(rk, b);
   }
-  const pct = (a, b) => b ? (a / b * 100).toFixed(1).replace('.', ',') + ' %' : '–';
+  const pct = (a, b) => b ? pctText(a / b * 100) : '–';
   $('#smallInfo').innerHTML = (sN
-    ? `<b>${sN} kleine Ausgaben</b> bis ${fmt(thr)} ergeben zusammen <b>${fmt(sS)}</b> – das sind ${pct(sS, tout)} aller Ausgaben und im Schnitt ${fmt(Math.round(sS / sN))} pro Buchung.`
-    : `<span class="muted">Keine Ausgaben bis ${fmt(thr)} in der aktuellen Auswahl.</span>`) +
-    (cashN ? `<br>Dazu kommen <b>${cashN} Bargeldabhebungen</b> über zusammen <b>${fmt(cashS)}</b> (${pct(cashS, tout)} aller Ausgaben) – wofür das Bargeld ausgegeben wurde, ist im Kontoauszug nicht sichtbar.` : '');
+    ? T('smallInfo', { n: sN, thr: fmt(thr), sum: fmt(sS), pct: pct(sS, tout), avg: fmt(Math.round(sS / sN)) })
+    : `<span class="muted">${T('smallNone', fmt(thr))}</span>`) +
+    (cashN ? T('smallCash', { n: cashN, sum: fmt(cashS), pct: pct(cashS, tout) }) : '');
   const maxS = Math.max(1, ...[...sMon.values()].map(x => x.s)), avgS = sS / Math.max(1, ml.length);
   $('#smallMon').innerHTML = !sN ? '' :
-    `<tr><th>Kleine Ausgaben je Monat</th><th class="num">Anzahl</th><th class="num">Summe</th><th></th><th class="num">Anteil an Monatsausgaben</th></tr>` +
+    `<tr><th>${T('smallPerMonth')}</th><th class="num">${T('count')}</th><th class="num">${T('total')}</th><th></th><th class="num">${T('shareMonth')}</th></tr>` +
     ml.map(s => {
       const x = sMon.get(s.m) || { n: 0, s: 0 };
-      return `<tr class="click" data-smonth="${s.m}" title="Anklicken, um diese Buchungen anzuzeigen"><td>${esc(fmtMonth(s.m))}</td><td class="num">${x.n}</td><td class="num">${mark(x.s, avgS)}${fmt(x.s)}</td>
+      return `<tr class="click" data-smonth="${s.m}" title="${esc(T('clickShow'))}"><td>${esc(fmtMonth(s.m))}</td><td class="num">${x.n}</td><td class="num">${mark(x.s, avgS)}${fmt(x.s)}</td>
         <td class="barcell"><div class="bartrack">${x.s ? `<div class="bar" data-w="${(x.s / maxS * 100).toFixed(1)}"></div>` : ''}</div></td>
         <td class="num">${pct(x.s, s.out)}</td></tr>`;
     }).join('');
   $('#smallRec').innerHTML = !sN ? '' :
-    '<tr><th>Wohin die kleinen Beträge gehen (Top 12)</th><th class="num">Anzahl</th><th class="num">Summe</th><th class="num">Ø Betrag</th></tr>' +
+    `<tr><th>${T('smallTop')}</th><th class="num">${T('count')}</th><th class="num">${T('total')}</th><th class="num">${T('avgAmount')}</th></tr>` +
     [...sRec.values()].sort((a, b) => b.s - a.s).slice(0, 12).map(x =>
       `<tr><td>${esc(x.r)}</td><td class="num">${x.n}</td><td class="num">${fmt(x.s)}</td><td class="num">${fmt(Math.round(x.s / x.n))}</td></tr>`).join('');
 
   // Alle Ausgaben nach Betragsgröße
   const sizes = SIZE_BOUNDS.map((hi, i) => ({ lo: i ? SIZE_BOUNDS[i - 1] : 0, hi, n: 0, s: 0 }));
   for (const t of list) if (t.a < 0 && !isRes(t)) { const b = sizes.find(z => -t.a <= z.hi); b.n++; b.s -= t.a; }
-  const maxZ = Math.max(1, ...sizes.map(z => z.s)), e0 = c => (c / 100).toLocaleString('de-DE') + ' €';
+  const maxZ = Math.max(1, ...sizes.map(z => z.s)), e0 = c => (c / 100).toLocaleString(locale);
   $('#sizeTable').innerHTML =
-    '<tr><th>Alle Ausgaben nach Betragsgröße</th><th class="num">Anzahl</th><th class="num">Summe</th><th></th><th class="num">Anteil an Ausgaben</th></tr>' +
-    sizes.map((z, i) => `<tr class="click" data-size="${i}" title="Anklicken, um diese Buchungen anzuzeigen">
-      <td>${!z.lo ? 'bis ' + e0(z.hi) : z.hi === Infinity ? 'über ' + e0(z.lo) : e0(z.lo).replace(' €', '') + ' – ' + e0(z.hi)}</td>
+    `<tr><th>${T('sizeTitle')}</th><th class="num">${T('count')}</th><th class="num">${T('total')}</th><th></th><th class="num">${T('shareExp')}</th></tr>` +
+    sizes.map((z, i) => `<tr class="click" data-size="${i}" title="${esc(T('clickShow'))}">
+      <td>${!z.lo ? T('sizeUpTo', T('cur0', e0(z.hi))) : z.hi === Infinity ? T('sizeOver', T('cur0', e0(z.lo))) : T('sizeRange', { lo: e0(z.lo), hi: e0(z.hi) })}</td>
       <td class="num">${z.n}</td><td class="num">${fmt(z.s)}</td>
       <td class="barcell"><div class="bartrack">${z.s ? `<div class="bar" data-w="${(z.s / maxZ * 100).toFixed(1)}"></div>` : ''}</div></td>
       <td class="num">${pct(z.s, tout)}</td></tr>`).join('');
@@ -1018,12 +1305,12 @@ function render() {
   lastSel = -1;
   const th = (k, label, cls) => `<th class="sortable ${cls || ''}" data-sort="${k}">${label}${sort.key === k ? (sort.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`;
   $('#txTable').innerHTML =
-    '<tr><th class="sel"><input type="checkbox" data-act="selAll" title="Alle gefilterten Buchungen auswählen" aria-label="Alle gefilterten Buchungen auswählen"></th>' + th('d', 'Datum') + th('r', 'Empfänger / Auftraggeber') + th('p', 'Verwendungszweck', 'pcol') + th('c', 'Kategorie') + th('a', 'Betrag', 'num') + '</tr>' +
-    list.slice(0, limit).map(t => `<tr data-id="${t.id}"><td class="sel"><input type="checkbox" data-act="sel" aria-label="Buchung auswählen"></td><td class="d">${fmtDate(t.d)}</td><td>${esc(t.r)}<div class="p2">${esc(t.p || t.t)}</div></td>
+    `<tr><th class="sel"><input type="checkbox" data-act="selAll" title="${esc(T('selAll'))}" aria-label="${esc(T('selAll'))}"></th>` + th('d', T('date')) + th('r', T('fieldRecipient')) + th('p', T('purpose'), 'pcol') + th('c', T('category')) + th('a', T('amount'), 'num') + '</tr>' +
+    list.slice(0, limit).map(t => `<tr data-id="${t.id}"><td class="sel"><input type="checkbox" data-act="sel" aria-label="${esc(T('selOne'))}"></td><td class="d">${fmtDate(t.d)}</td><td>${esc(t.r)}<div class="p2">${esc(t.p || t.t)}</div></td>
       <td class="p pcol" title="${esc(t.p + (t.t ? ' · ' + t.t : ''))}">${esc(t.p || t.t)}</td>
-      <td><button class="chip${t.c === UNCAT ? ' uncat' : ''}" data-act="cat" title="Kategorie ändern">${esc(t.c)}${t.m ? ' ✎' : ''}</button></td>
+      <td><button class="chip${t.c === UNCAT ? ' uncat' : ''}" data-act="cat" title="${esc(T('changeCat'))}">${esc(catLabel(t.c))}${t.m ? ' ✎' : ''}</button></td>
       <td class="num${t.a > 0 ? ' pos' : ''}">${fmt(t.a)}</td></tr>`).join('');
-  $('#txCount').textContent = `${Math.min(limit, list.length)} von ${list.length} angezeigt` + (list.length !== txs.length ? ` (gefiltert aus ${txs.length})` : '');
+  $('#txCount').textContent = T('shown', { n: Math.min(limit, list.length), total: list.length, all: txs.length });
   $('#more').hidden = list.length <= limit;
   // Sichtbar machen, dass gefiltert wird (Monat zählt mit Von/Bis als ein Filter)
   let nSet = 0;
@@ -1033,17 +1320,17 @@ function render() {
     if (on && !((id === 'fFrom' || id === 'fTo') && $('#fMonth').value)) nSet++;
   }
   $('#btnReset').disabled = !nSet;
-  $('#btnReset').textContent = nSet ? `Filter zurücksetzen (${nSet})` : 'Filter zurücksetzen';
-  $('#fInfo').textContent = nSet ? `Gefiltert: ${list.length} von ${nBook(txs.length)}` : '';
+  $('#btnReset').textContent = nSet ? T('resetN', nSet) : T('reset');
+  $('#fInfo').textContent = nSet ? T('filtered', { n: list.length, total: nBook(txs.length) }) : '';
   if (!list.length) {
-    const empty = '<tr><td class="empty">Keine Buchungen für diese Filter. <button data-reset>Filter zurücksetzen</button></td></tr>';
+    const empty = `<tr><td class="empty">${T('noTx')} <button data-reset>${T('reset')}</button></td></tr>`;
     for (const id of ['sumTable', 'monTable', 'cmpTable', 'sizeTable', 'txTable']) $('#' + id).innerHTML = empty;
     $('#smallMon').innerHTML = $('#smallRec').innerHTML = $('#hints').innerHTML = '';
     $('#hints').classList.remove('alert');
-    $('#smallInfo').innerHTML = '<span class="muted">Keine Buchungen für diese Filter.</span>';
+    $('#smallInfo').innerHTML = `<span class="muted">${T('noTx')}</span>`;
   }
   lastView = { list, sum: allSum };
-  fillSelect($('#bulkCat'), [['', 'Kategorie wählen …'], ...cats.map(c => [c.name, c.name]), [UNCAT, UNCAT], ['__auto__', '↺ Automatisch zuordnen']]);
+  fillSelect($('#bulkCat'), [['', T('chooseCat')], ...cats.map(c => [c.name, c.name]), [UNCAT, T('uncat')], ['__auto__', T('autoAssign')]]);
   syncSel();
   fitTx();
   // Balkenbreiten setzen (als Attribut im HTML würde die Content-Security-Policy sie blockieren)
@@ -1064,12 +1351,12 @@ function syncSel() {
   if (all) { all.checked = n > 0 && n === total; all.indeterminate = n > 0 && n < total; }
   $('#bulk').hidden = !n;
   $('#txScroll').classList.toggle('hasbulk', n > 0);
-  $('#bulkN').textContent = n === 1 ? '1 Buchung ausgewählt' : `${n} Buchungen ausgewählt`;
+  $('#bulkN').textContent = T('nSelected', n);
 }
 $('#bulkClear').onclick = () => { selected.clear(); syncSel(); };
 $('#bulkOk').onclick = () => {
   const cat = $('#bulkCat').value, n = selected.size;
-  if (!cat) return toast('Bitte zuerst eine Kategorie wählen.', true);
+  if (!cat) return toast(T('chooseCatFirst'), true);
   for (const t of txs) if (selected.has(t.id)) {
     if (cat === '__auto__') { t.m = false; t.c = categorize(t); }
     else { t.c = cat; t.m = true; }
@@ -1078,7 +1365,7 @@ $('#bulkOk').onclick = () => {
   selected.clear();
   $('#bulkCat').value = '';
   render();
-  toast(cat === '__auto__' ? `${n} Buchungen wieder automatisch zugeordnet.` : `${n} Buchungen der Kategorie „${cat}“ zugewiesen.`);
+  toast(cat === '__auto__' ? T('bulkAuto', n) : T('bulkSet', { n, c: catLabel(cat) }));
 };
 
 // Die Buchungsliste füllt den Rest des Fensters, damit Filter und Kennzahlen sichtbar bleiben und nur die Liste scrollt.
@@ -1093,9 +1380,9 @@ window.addEventListener('resize', fitTx);
 /* ============================== Kategorie einer Buchung ändern ============================== */
 function editCategory(btn, tx) {
   const sel = document.createElement('select');
-  sel.innerHTML = [...cats.map(c => c.name), UNCAT].map(n => `<option${n === tx.c ? ' selected' : ''}>${esc(n)}</option>`).join('') +
-    (tx.m ? '<option value="__auto__">↺ Automatisch zuordnen</option>' : '') +
-    '<option value="__rule__">＋ Regel erstellen …</option>';
+  sel.innerHTML = [...cats.map(c => c.name), UNCAT].map(n => `<option value="${esc(n)}"${n === tx.c ? ' selected' : ''}>${esc(catLabel(n))}</option>`).join('') +
+    (tx.m ? `<option value="__auto__">${esc(T('autoAssign'))}</option>` : '') +
+    `<option value="__rule__">${esc(T('createRuleOpt'))}</option>`;
   // Das Feld bleibt unsichtbar stehen und hält die Zeilenhöhe und Spaltenbreite; die Auswahl liegt darüber.
   btn.style.visibility = 'hidden';
   btn.parentNode.classList.add('editing');
@@ -1110,11 +1397,11 @@ function editCategory(btn, tx) {
     else { tx.c = sel.value; tx.m = true; }
     persist();
     finish();
-    if (tx.m && tx.c !== UNCAT) toast(`Kategorie geändert auf „${tx.c}“.`, false, 'Regel daraus erstellen …', () => openRule(tx));
+    if (tx.m && tx.c !== UNCAT) toast(T('catChanged', tx.c), false, T('ruleFromIt'), () => openRule(tx));
   };
 }
 
-const nBook = n => n === 1 ? '1 Buchung' : n + ' Buchungen';
+const nBook = n => T('nBook', n);
 const ruleKeyword = () => $('#ruleKw').value.trim().toLowerCase().replace(/^!+\s*/, '');
 function ruleMatches() {
   const m = parseKw(ruleKeyword());
@@ -1124,13 +1411,13 @@ function ruleMatches() {
 function updateRuleInfo() {
   const list = ruleMatches(), manual = list.filter(t => t.m).length;
   $('#ruleInfo').textContent = !ruleKeyword() ? ''
-    : !list.length ? 'Trifft im Moment auf keine Buchung zu. Die Regel gilt dann für künftige Importe.'
-    : `Trifft auf ${nBook(list.length)} zu.` + (manual ? ` ${manual === 1 ? 'Eine davon ist' : manual + ' davon sind'} von Hand zugeordnet und ${manual === 1 ? 'bleibt' : 'bleiben'} unverändert, solange du das Häkchen nicht setzt.` : '');
+    : !list.length ? T('ruleNone')
+    : T('ruleHits', { n: list.length, manual });
   $('#ruleManualRow').hidden = !manual;
 }
 function openRule(tx) {
   $('#ruleKw').value = (tx.r || tx.p).toLowerCase().slice(0, 40);
-  $('#ruleCat').innerHTML = cats.map(c => `<option value="${esc(c.name)}"${c.name === tx.c ? ' selected' : ''}>${esc(c.name)}${c.transfer ? ' (Rücklage)' : ''}</option>`).join('');
+  $('#ruleCat').innerHTML = cats.map(c => `<option value="${esc(c.name)}"${c.name === tx.c ? ' selected' : ''}>${esc(c.name)}${c.transfer ? esc(T('reserveSuffix')) : ''}</option>`).join('');
   $('#ruleManual').checked = false;
   updateRuleInfo();
   $('#dlgRule').showModal();
@@ -1151,22 +1438,24 @@ $('#ruleOk').onclick = () => {
   store('fb.cats', cats); persist();
   $('#dlgRule').close();
   render();
-  toast(`Regel gespeichert: „${kw}“ → ${cat.name}. ` + (n ? `${nBook(n)} ${n === 1 ? 'ist' : 'sind'} jetzt in dieser Kategorie.` : 'Im Moment trifft sie auf keine Buchung zu.'));
+  toast(T('ruleSaved', { kw, c: cat.name, n }));
 };
 
 /* ============================== Kategorien-Dialog ============================== */
 function catRowHtml(c) {
-  return `<div class="catrow" data-orig="${esc(c.name)}"><div><input class="cn" value="${esc(c.name)}" placeholder="Name der Kategorie">
-      <label class="cres" title="Umbuchung auf eigene Konten: zählt weder zu Einnahmen noch zu Ausgaben"><input type="checkbox" class="ct"${c.transfer ? ' checked' : ''}> Rücklage</label></div>
-    <textarea class="ck" placeholder="Stichwörter, mit Komma getrennt">${esc(c.keywords.join(', '))}</textarea>
-    <button class="danger" data-act="del" title="Kategorie löschen" aria-label="Kategorie ${esc(c.name)} löschen">✕</button></div>`;
+  return `<div class="catrow" data-orig="${esc(c.name)}"><div><input class="cn" value="${esc(c.name)}" placeholder="${esc(T('catNamePh'))}">
+      <label class="cres" title="${esc(T('reserveCheckTitle'))}"><input type="checkbox" class="ct"${c.transfer ? ' checked' : ''}> ${esc(T('reserveTag'))}</label></div>
+    <textarea class="ck" placeholder="${esc(T('keywordsPh'))}">${esc(c.keywords.join(', '))}</textarea>
+    <button class="danger" data-act="del" title="${esc(T('delCat'))}" aria-label="${esc(T('delCatAria', c.name))}">✕</button></div>`;
 }
 function drawCats(list) { $('#catList').innerHTML = list.map(catRowHtml).join(''); }
+// Namen, die für „nicht zugeordnet“ stehen, in allen Sprachen – als Kategorienamen nicht erlaubt
+const UNCAT_NAMES = new Set([UNCAT, ...Object.values(I18N).map(d => d.uncat)]);
 function readCats() {
   const seen = new Set(), out = [], rename = {};
   for (const row of document.querySelectorAll('#catList .catrow')) {
     const name = row.querySelector('.cn').value.trim();
-    if (!name || name === UNCAT || seen.has(name)) continue;
+    if (!name || UNCAT_NAMES.has(name) || seen.has(name)) continue;
     seen.add(name);
     if (row.dataset.orig && row.dataset.orig !== name) rename[row.dataset.orig] = name;
     out.push({ name, keywords: row.querySelector('.ck').value.split(/[,\n]/).map(s => s.trim()).filter(Boolean),
@@ -1182,7 +1471,7 @@ $('#catAdd').onclick = () => {
   last.dataset.orig = '';
   last.querySelector('.cn').focus();
 };
-$('#catDefaults').onclick = () => { if (confirm('Alle Kategorien und Regeln auf den Standard zurücksetzen?')) drawCats(defaultCats()); };
+$('#catDefaults').onclick = () => { if (confirm(T('confirmDefaults'))) drawCats(defaultCats()); };
 $('#catCancel').onclick = () => $('#dlgCats').close();
 $('#catSave').onclick = () => {
   const { out, rename } = readCats();
@@ -1193,56 +1482,58 @@ $('#catSave').onclick = () => {
   $('#dlgCats').close();
   render();
 };
-$('#catExport').onclick = () => download('dewz-regeln.json', JSON.stringify(readCats().out, null, 2));
+$('#catExport').onclick = () => download(T('rulesFile'), JSON.stringify(readCats().out, null, 2));
 $('#catImport').onclick = () => $('#catFile').click();
 $('#catFile').onchange = async ev => {
   try {
     const data = JSON.parse(await ev.target.files[0].text());
     if (!Array.isArray(data) || !data.every(c => typeof c.name === 'string' && Array.isArray(c.keywords))) throw new Error();
     drawCats(data.map(c => ({ name: c.name, keywords: c.keywords.map(String), transfer: c.transfer === true })));
-  } catch { toast('Die Datei enthält keine gültigen Regeln.', true); }
+  } catch { toast(T('invalidRules'), true); }
   ev.target.value = '';
 };
 
 /* ============================== Export ============================== */
-// Speichern unter … im Windows-Dialog; der vorgeschlagene Name legt auch den Dateityp fest
+// Speichern unter … im Dialog des Systems; der vorgeschlagene Name legt auch den Dateityp fest
 async function download(name, content) {
   try {
     const path = await invoke('save_export', { name, content });
-    if (path) toast('Gespeichert: ' + path);   // null = abgebrochen
-  } catch (e) { toast('Export fehlgeschlagen: ' + errText(e), true); }
+    if (path) toast(T('saved', path));   // null = abgebrochen
+  } catch (e) { toast(T('exportFailed', errText(e)), true); }
 }
+// CSV so, wie Excel in der jeweiligen Sprache sie öffnet: Deutsch mit ; und Dezimalkomma, Englisch mit , und Punkt
+const csvSep = () => lang === 'de' ? ';' : ',';
 function toCsv(rows) {
+  const sep = csvSep();
   const cell = v => {
     let s = String(v ?? '');
     if (/^[=+@\t]/.test(s) || /^-\D/.test(s)) s = "'" + s;   // Schutz vor Formel-Injektion in Excel
-    return /[";\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    return /["\n\r]/.test(s) || s.includes(sep) ? '"' + s.replace(/"/g, '""') + '"' : s;
   };
-  return '﻿' + rows.map(r => r.map(cell).join(';')).join('\r\n');
+  return '﻿' + rows.map(r => r.map(cell).join(sep)).join('\r\n');
 }
-const num = cents => (cents / 100).toFixed(2).replace('.', ',');
+const num = cents => { const s = (cents / 100).toFixed(2); return lang === 'de' ? s.replace('.', ',') : s; };
 $('#btnExport').onclick = () => {
-  if (!lastView.list.length) return toast('Keine Buchungen zum Exportieren.', true);
-  download('buchungen.csv', toCsv([['Datum', 'Empfänger', 'Verwendungszweck', 'Buchungstext', 'Kategorie', 'Betrag'],
-    ...lastView.list.map(t => [fmtDate(t.d), t.r, t.p, t.t, t.c, num(t.a)])]));
+  if (!lastView.list.length) return toast(T('noTxExport'), true);
+  download(T('txFile'), toCsv([T('csvTxHead'),
+    ...lastView.list.map(t => [fmtDate(t.d), t.r, t.p, t.t, catLabel(t.c), num(t.a)])]));
 };
 $('#btnExportSum').onclick = () => {
-  if (!lastView.sum.length) return toast('Keine Auswertung zum Exportieren.', true);
-  download('auswertung.csv', toCsv([['Kategorie', 'Ausgaben', 'Einnahmen', 'Saldo', 'Anzahl'],
-    ...lastView.sum.map(s => [s.c, num(s.out), num(s.in), num(s.in - s.out), s.n])]));
+  if (!lastView.sum.length) return toast(T('noSumExport'), true);
+  download(T('sumFile'), toCsv([T('csvSumHead'),
+    ...lastView.sum.map(s => [catLabel(s.c), num(s.out), num(s.in), num(s.in - s.out), s.n])]));
 };
 
 /* ============================== Datendatei (JSON im gewählten Ordner) ============================== */
 // Buchungen, Kategorien und Regeln liegen in der Datei DATA_NAME im vom Nutzer gewählten Ordner – optional
 // verschlüsselt (PBKDF2 + AES-GCM, Web Crypto). Lesen und Schreiben übernimmt die Desktop-App (src-tauri):
 // Sie merkt sich den Ordner und schreibt ausschließlich DATA_NAME in einen Ordner, den der Nutzer im
-// Windows-Dialog gewählt hat. Verschlüsselung und Passwort bleiben komplett hier in der Oberfläche.
+// Ordnerdialog gewählt hat. Verschlüsselung und Passwort bleiben komplett hier in der Oberfläche.
 const { invoke } = window.__TAURI__.core;
 const appWindow = window.__TAURI__.window.getCurrentWindow();
 const DATA_NAME = 'dewz-daten.json', KDF_ITER = 600000;
 const LEGACY_DATA_NAME = 'finanz-buddy-daten.json';        // Dateiname vor der Umbenennung der App
 const APP_ID = 'dewz', APP_IDS = ['dewz', 'finanz-buddy'];   // Kennung in der Datei; die frühere wird weiter gelesen
-const NOT_DATA = 'Die Datei ist keine dewz-Datendatei.';
 let dataDir = null, remembered = null;                       // Pfad des geöffneten bzw. zuletzt verwendeten Ordners
 let cryptoKey = null, salt = null, kdfIter = KDF_ITER;       // gesetzt = Datei wird verschlüsselt geschrieben
 let dirty = false, saving = false, saveAgain = false, savedAt = null, saveError = '';
@@ -1251,23 +1542,23 @@ const errText = e => String(e && e.message || e);
 
 function updateStatus() {
   const b = $('#btnData'), unsaved = !dataDir && txs.length > 0, canLoad = !!remembered && !dataDir;
-  b.textContent = dataDir ? (saveError ? 'Speichern fehlgeschlagen' : `Datenordner: ${folderName(dataDir)}` + (cryptoKey ? ' (verschlüsselt)' : ''))
-    : unsaved ? 'Nicht gespeichert – Datenordner wählen' : 'Kein Datenordner';
+  b.textContent = dataDir ? (saveError ? T('saveFailedBtn') : T('dataBtn', { name: folderName(dataDir), enc: !!cryptoKey }))
+    : unsaved ? T('unsavedBtn') : T('noDataDir');
   b.classList.toggle('attention', unsaved || !!saveError);
   $('#dataState').textContent = dataDir
-    ? `Ordner „${dataDir}“, Datei ${DATA_NAME}, ${cryptoKey ? 'mit Passwort verschlüsselt' : 'unverschlüsselt'}` +
-      (saveError ? ` – Speichern fehlgeschlagen: ${saveError}` : savedAt ? ` – zuletzt gespeichert um ${savedAt.toLocaleTimeString('de-DE')}` : '')
-    : canLoad ? `Zuletzt verwendeter Ordner: „${remembered}“. Er ist noch nicht geöffnet.`
-    : unsaved ? `${txs.length} Buchungen sind geladen, aber noch nirgends gespeichert. Wähle einen Ordner, um sie zu sichern.`
-    : 'Es ist kein Datenordner gewählt.';
-  const loadLabel = canLoad ? `Daten aus „${folderName(remembered)}“ laden` : 'Datenordner wählen';
+    ? T('stateOpen', { dir: dataDir, file: DATA_NAME, enc: !!cryptoKey }) +
+      (saveError ? T('stateSaveFailed', saveError) : savedAt ? T('stateSavedAt', savedAt.toLocaleTimeString(locale)) : '')
+    : canLoad ? T('stateRemembered', remembered)
+    : unsaved ? T('stateUnsaved', txs.length)
+    : T('stateNone');
+  const loadLabel = canLoad ? T('loadFrom', folderName(remembered)) : T('chooseDataDir');
   $('#dropOpen').textContent = loadLabel;
   $('#dropOther').hidden = !canLoad;
   $('#dataLoad').textContent = loadLabel;
   $('#dataLoad').hidden = !canLoad;
-  $('#dataChoose').textContent = dataDir || canLoad ? 'Anderen Ordner wählen' : 'Ordner wählen';
+  $('#dataChoose').textContent = T(dataDir || canLoad ? 'chooseOther' : 'chooseFolder');
   $('#pwSet').hidden = !dataDir;
-  $('#pwSet').textContent = cryptoKey ? 'Passwort ändern' : 'Passwort festlegen';
+  $('#pwSet').textContent = T(cryptoKey ? 'pwChange' : 'pwSet');
   $('#pwRemove').hidden = !(dataDir && cryptoKey);
   $('#btnClear').hidden = !txs.length;
 }
@@ -1312,8 +1603,8 @@ function askPassword(title, text, withConfirm, error) {
     const done = v => { dlg.onclose = null; dlg.close(); resolve(v); };
     $('#pwOk').onclick = () => {
       const v = $('#pw1').value;
-      if (!v) return err('Bitte ein Passwort eingeben.');
-      if (withConfirm && v !== $('#pw2').value) return err('Die beiden Eingaben stimmen nicht überein.');
+      if (!v) return err(T('pwEmpty'));
+      if (withConfirm && v !== $('#pw2').value) return err(T('pwMismatch'));
       done(v);
     };
     $('#pwCancel').onclick = () => done(null);
@@ -1343,7 +1634,7 @@ async function writeFile() {
     dirty = false; savedAt = new Date(); saveError = '';
   } catch (e) {
     saveError = errText(e);
-    toast('Speichern in die Datendatei fehlgeschlagen: ' + saveError, true);
+    toast(T('writeFailed', saveError), true);
   }
   saving = false;
   updateStatus();
@@ -1351,7 +1642,7 @@ async function writeFile() {
 
 // Übernimmt aus dem gelesenen Objekt nur Einträge mit gültiger Struktur
 function parseData(o) {
-  if (!o || !APP_IDS.includes(o.app) || !Array.isArray(o.txs)) throw new Error(NOT_DATA);
+  if (!o || !APP_IDS.includes(o.app) || !Array.isArray(o.txs)) throw new Error(T('notData'));
   const str = v => typeof v === 'string' ? v : '';
   let id = 0;
   const list = o.txs.filter(t => t && /^\d{4}-\d{2}-\d{2}$/.test(t.d) && Number.isInteger(t.a)).map(t => {
@@ -1368,19 +1659,19 @@ function parseData(o) {
 async function readPayload(text) {
   let o;
   try { o = JSON.parse(text); } catch { o = null; }
-  if (!o || !APP_IDS.includes(o.app)) throw new Error(NOT_DATA);
+  if (!o || !APP_IDS.includes(o.app)) throw new Error(T('notData'));
   if (!o.encrypted) return { ...parseData(o), key: null, salt: null, iter: KDF_ITER };
   const iter = o.kdf && o.kdf.iterations;
   let saltBytes, iv, data;
   try { saltBytes = unb64(o.kdf.salt); iv = unb64(o.iv); data = unb64(o.data); } catch { iv = null; }
-  if (!iv || !Number.isInteger(iter) || iter < 10000 || iter > 10000000) throw new Error('Die verschlüsselte Datendatei ist beschädigt.');
+  if (!iv || !Number.isInteger(iter) || iter < 10000 || iter > 10000000) throw new Error(T('corrupt'));
   for (let error = ''; ;) {
-    const pw = await askPassword('Datendatei entsperren', 'Die Datendatei ist mit einem Passwort verschlüsselt.', false, error);
+    const pw = await askPassword(T('unlockTitle'), T('unlockText'), false, error);
     if (pw === null) return null;
     const key = await deriveKey(pw, saltBytes, iter);
     let plain;
     try { plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data); }
-    catch { error = 'Falsches Passwort.'; continue; }
+    catch { error = T('wrongPw'); continue; }
     return { ...parseData(JSON.parse(new TextDecoder().decode(plain))), key, salt: saltBytes, iter };
   }
 }
@@ -1415,18 +1706,17 @@ async function openDir(dir) {
     updateStatus();
     const name = folderName(dir);
     if (!saveError) toast(data
-      ? `Daten aus „${name}“ geladen: ${nBook(txs.length)}` + (merged ? `, davon ${merged} neu aus dieser Sitzung übernommen.` : '.') +
-        (legacy ? ` Sie liegen jetzt in ${DATA_NAME}; die bisherige Datei ${LEGACY_DATA_NAME} ist unverändert und kann gelöscht werden.` : '')
-      : `Datendatei im Ordner „${name}“ angelegt` + (txs.length ? ` und ${txs.length} Buchungen gespeichert.` : '.'));
+      ? T('loaded', { name, n: txs.length, merged, legacy })
+      : T('created', { name, n: txs.length }));
   } catch (e) {
     console.error(e);
-    toast(`Der Datenordner „${folderName(dir)}“ konnte nicht geöffnet werden: ${errText(e)}`, true);
+    toast(T('openFailed', { name: folderName(dir), e: errText(e) }), true);
   }
 }
 
 async function chooseDir() {
   let dir;
-  try { dir = await invoke('choose_folder'); } catch (e) { return toast('Ordnerauswahl fehlgeschlagen: ' + errText(e), true); }
+  try { dir = await invoke('choose_folder'); } catch (e) { return toast(T('chooseFailed', errText(e)), true); }
   if (dir) await openDir(dir);   // null = Auswahl abgebrochen
 }
 
@@ -1435,17 +1725,16 @@ $('#dataClose').onclick = () => $('#dlgData').close();
 $('#dataChoose').onclick = $('#dropOther').onclick = chooseDir;
 $('#dataLoad').onclick = $('#dropOpen').onclick = () => remembered && !dataDir ? openDir(remembered) : chooseDir();
 $('#pwSet').onclick = async () => {
-  const pw = await askPassword(cryptoKey ? 'Passwort ändern' : 'Passwort festlegen',
-    'Die Datendatei wird mit diesem Passwort verschlüsselt. Es wird bei jedem Start abgefragt. Wenn du es vergisst, sind die Daten nicht wiederherstellbar.', true);
+  const pw = await askPassword(T(cryptoKey ? 'pwChange' : 'pwSet'), T('pwSetText'), true);
   if (pw === null) return;
   await setPassword(pw);
-  if (!saveError) toast('Die Datendatei ist jetzt mit dem Passwort verschlüsselt.');
+  if (!saveError) toast(T('pwDone'));
 };
 $('#pwRemove').onclick = async () => {
-  if (!confirm('Passwortschutz entfernen? Die Datendatei wird danach unverschlüsselt gespeichert.')) return;
+  if (!confirm(T('pwRemoveConfirm'))) return;
   cryptoKey = null; salt = null;
   await writeFile();
-  if (!saveError) toast('Der Passwortschutz wurde entfernt.');
+  if (!saveError) toast(T('pwRemoved'));
 };
 
 // Beim Schließen: laufende Speicherung abwarten; ungesicherte Buchungen nur nach Rückfrage verwerfen
@@ -1454,7 +1743,7 @@ appWindow.onCloseRequested(async ev => {
     ev.preventDefault();
     while (saving) await new Promise(r => setTimeout(r, 50));
     await appWindow.destroy();
-  } else if (!dataDir && dirty && !confirm('Die geladenen Buchungen sind noch nirgends gespeichert und gehen beim Schließen verloren. Trotzdem schließen?')) {
+  } else if (!dataDir && dirty && !confirm(T('closeConfirm'))) {
     ev.preventDefault();
   }
 });
@@ -1472,13 +1761,13 @@ updateStatus();
 $('#btnImport').onclick = () => $('#file').click();
 $('#file').onchange = ev => { const files = [...ev.target.files]; ev.target.value = ''; importFiles(files); };
 $('#btnClear').onclick = () => {
-  if (!confirm('Wirklich alle Buchungen löschen?' + (dataDir ? ' Sie werden auch aus der Datendatei entfernt.' : '') + ' Kategorien und Regeln bleiben erhalten.')) return;
+  if (!confirm(T('clearConfirm', !!dataDir))) return;
   txs = [];
   selected.clear();
   persist();
   $('#dlgData').close();
   resetFilters();
-  toast('Alle Buchungen wurden gelöscht.');
+  toast(T('cleared'));
 };
 // Export-Menü schließen nach einer Auswahl, bei Klick daneben oder mit Esc
 document.addEventListener('click', ev => {
@@ -1583,13 +1872,13 @@ document.addEventListener('drop', ev => {
 
 /* ============================== Ansichten (Reiter) ============================== */
 // Über jeder Ansicht stehen Filter und Kennzahlen; darunter genau eine Auswertung.
-const VIEWS = { cat: 'Kategorien', month: 'Monate', cmp: 'Monatsvergleich', small: 'Kleine Ausgaben', tx: 'Buchungen' };
+const VIEWS = { cat: 'viewCat', month: 'viewMonth', cmp: 'viewCmp', small: 'viewSmall', tx: 'viewTx' };
 let tab = load('fb.tab');
 if (!Object.keys(VIEWS).includes(tab)) tab = 'cat';
 
 function layout() {
   $('#tabs').innerHTML = Object.entries(VIEWS)
-    .map(([id, label]) => `<button class="tab" role="tab" data-tab="${id}" aria-selected="${id === tab}">${label}</button>`).join('');
+    .map(([id, key]) => `<button class="tab" role="tab" data-tab="${id}" aria-selected="${id === tab}">${esc(T(key))}</button>`).join('');
   for (const el of document.querySelectorAll('#views > [data-view]')) el.hidden = el.dataset.view !== tab && el.dataset.view !== 'kpi';
   fitTx();
 }
@@ -1605,8 +1894,32 @@ $('#tabs').onclick = ev => {
   $(`#tabs [data-tab="${tab}"]`).focus();
 };
 
+/* ============================== Sprache umschalten ============================== */
+// Setzt alle statischen Texte; die dynamischen entstehen beim nächsten render()/updateStatus() neu.
+function applyLang() {
+  document.documentElement.lang = lang;
+  const attrs = { 'data-i18n-placeholder': 'placeholder', 'data-i18n-title': 'title', 'data-i18n-aria': 'aria-label', 'data-i18n-lang': 'lang' };
+  for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = T(el.dataset.i18n);
+  for (const el of document.querySelectorAll('[data-i18n-html]')) el.innerHTML = T(el.dataset.i18nHtml);   // nur Texte aus I18N
+  for (const [data, attr] of Object.entries(attrs))
+    for (const el of document.querySelectorAll(`[${data}]`)) el.setAttribute(attr, T(el.getAttribute(data)));
+  // Dialoge und Menüs der Desktop-App (Ordnerwahl, Speichern unter) in derselben Sprache
+  invoke('set_language', { lang }).catch(console.error);
+}
+$('#btnLang').onclick = () => {
+  lang = lang === 'de' ? 'en' : 'de';
+  store('fb.lang', lang);
+  setFormats();
+  applyLang();
+  layout();
+  updateStatus();
+  render();
+};
+
+applyLang();
 buildMatchers();
 layout();
+updateStatus();
 render();
 </script>
 </body>

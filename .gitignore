@@ -10,6 +10,10 @@
 *-regeln.json
 buchungen*.csv
 auswertung*.csv
+# ... und dieselben Exporte aus der englischen Oberfläche
+*-rules.json
+transactions*.csv
+summary*.csv
 
 # Kontoexporte der Bank: grundsätzlich alles ausschließen ...
 *.xlsx
