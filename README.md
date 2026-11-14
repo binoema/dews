@@ -2,7 +2,7 @@
 
 **Kontoauszug auswerten – 100 % offline.**
 
-dewz is a Windows desktop app for analysing your own bank account exports. Import the Excel or CSV export from your
+dewz is a desktop app for Windows, macOS and Linux for analysing your own bank account exports. Import the Excel or CSV export from your
 bank, let the bookings be categorised automatically by keyword rules, and see where your money goes – per category,
 per month and over time. Nothing ever leaves your computer: the app has no network access at all.
 
@@ -26,6 +26,19 @@ The user interface is in German.
 - **Data file** in a folder of your choice, saved automatically after every change – optionally **encrypted with a
   password** (AES-256-GCM, key derived with PBKDF2-SHA-256, 600,000 iterations).
 
+## Download
+
+Installers for every platform are attached to the [GitHub releases](https://github.com/binoema/dews/releases):
+
+| Platform | File |
+|---|---|
+| Windows (x64) | `dewz_<version>_x64-setup.exe` (recommended) or `dewz_<version>_x64_en-US.msi` |
+| macOS (Apple Silicon / Intel) | `dewz_<version>_aarch64.dmg` / `dewz_<version>_x64.dmg` |
+| Linux (x64) | `.AppImage` (runs anywhere), `.deb` (Debian/Ubuntu) or `.rpm` (Fedora/openSUSE) |
+
+The installers are not code-signed. Windows SmartScreen shows a warning on first install ("More info" → "Run
+anyway"); on macOS, open the app via right-click → **Open** the first time, or run `xattr -cr /Applications/dewz.app`.
+
 ## Using the app
 
 1. Start dewz and click **Datenordner wählen**. Pick any folder – e.g. in your documents, a cloud folder or a
@@ -43,8 +56,8 @@ Two invented sample exports for trying the app are included: `Kontoauszug_Beispi
 | What | Where |
 |---|---|
 | Bookings, categories, rules | `dewz-daten.json` in the folder you chose (plain JSON or encrypted) |
-| Remembered data folder | `%APPDATA%\app.dewz.desktop\einstellungen.json` |
-| UI settings (last view, column mappings, small-expense threshold, a copy of the categories) | WebView2 profile in `%LOCALAPPDATA%\app.dewz.desktop` |
+| Remembered data folder | `einstellungen.json` in the app's config folder: `%APPDATA%\app.dewz.desktop` (Windows), `~/Library/Application Support/app.dewz.desktop` (macOS), `~/.config/app.dewz.desktop` (Linux) |
+| UI settings (last view, column mappings, small-expense threshold, a copy of the categories) | the web view's local storage (on Windows the WebView2 profile in `%LOCALAPPDATA%\app.dewz.desktop`) |
 
 Data files from the app's former name (`finanz-buddy-daten.json`) are read and migrated to `dewz-daten.json`;
 the old file is left untouched.
@@ -57,7 +70,7 @@ dewz handles personal financial data, so it is built to have as little attack su
   font and image. The only allowed channel is the IPC bridge to the app's own Rust backend. Inline scripts and styles
   are only executed with the hash/nonce Tauri adds at build time; `eval` is blocked.
 - **Narrow file access.** The web UI has no general file system access. The Rust backend
-  (`src-tauri/src/main.rs`) exposes only a few commands: it reads only folders the user picked in the Windows dialog,
+  (`src-tauri/src/main.rs`) exposes only a few commands: it reads only folders the user picked in the system's folder dialog,
   writes only `dewz-daten.json` into the active folder, and writes exports only to the path chosen in the
   "Save as" dialog.
 - **Atomic saves.** The data file is written to a temporary file first and then renamed, so a crash never leaves a
@@ -69,8 +82,8 @@ dewz handles personal financial data, so it is built to have as little attack su
 
 ## Development
 
-The app is a single self-contained HTML file (`src/index.html`, no build step, no frameworks) running in WebView2,
-hosted by a small [Tauri 2](https://tauri.app) backend in Rust.
+The app is a single self-contained HTML file (`src/index.html`, no build step, no frameworks) running in the system web view
+(WebView2 on Windows, WKWebView on macOS, WebKitGTK on Linux), hosted by a small [Tauri 2](https://tauri.app) backend in Rust.
 
 ### Prerequisites (Windows)
 
@@ -80,6 +93,13 @@ hosted by a small [Tauri 2](https://tauri.app) backend in Rust.
   `winget install Microsoft.VisualStudio.2022.BuildTools --override "--quiet --wait --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"`
 - WebView2 Runtime (preinstalled on Windows 10/11)
 
+### Prerequisites (macOS / Linux)
+
+- Node.js 20 or newer and Rust (stable) as above
+- macOS: Xcode Command Line Tools – `xcode-select --install`
+- Linux (Debian/Ubuntu): `sudo apt install libwebkit2gtk-4.1-dev build-essential libssl-dev libayatana-appindicator3-dev librsvg2-dev`
+  – see the [Tauri prerequisites](https://tauri.app/start/prerequisites/) for other distributions
+
 ### Commands
 
 ```sh
@@ -88,12 +108,24 @@ npm run dev        # starts the app in development mode (rebuilds on Rust change
 npm run build      # release build plus installers
 ```
 
-`npm run build` creates the installers in `src-tauri/target/release/bundle/`:
+`npm run build` creates the installers for the current platform in `src-tauri/target/release/bundle/`:
 
-- `nsis/dewz_<version>_x64-setup.exe` – setup program (recommended)
-- `msi/dewz_<version>_x64_en-US.msi` – MSI package, e.g. for managed installations
+- Windows: `nsis/dewz_<version>_x64-setup.exe` (setup program) and `msi/dewz_<version>_x64_en-US.msi`
+  (e.g. for managed installations)
+- macOS: `macos/dewz.app` and `dmg/dewz_<version>_<arch>.dmg`
+- Linux: `appimage/`, `deb/` and `rpm/` packages
 
-The installers are not code-signed, so Windows SmartScreen shows a warning on first install.
+### Releases
+
+`.github/workflows/release.yml` builds the installers for all platforms on GitHub Actions. To publish a release,
+set the new version in `src-tauri/tauri.conf.json` (and `package.json`), then push a matching tag:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The workflow creates a draft release with all installers attached; review it on GitHub and click **Publish**.
 
 ### Project structure
 

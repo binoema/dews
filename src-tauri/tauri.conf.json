@@ -25,10 +25,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": [
-      "nsis",
-      "msi"
-    ],
+    "targets": "all",
     "license": "GPL-3.0-or-later",
     "copyright": "Copyright (C) 2026 binoema",
     "icon": [

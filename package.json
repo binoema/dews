@@ -2,7 +2,7 @@
   "name": "dewz",
   "private": true,
   "version": "0.1.0",
-  "description": "dewz – offline Kontoauszug-Auswertung als Windows-App",
+  "description": "dewz – offline Kontoauszug-Auswertung für Windows, macOS und Linux",
   "license": "GPL-3.0-or-later",
   "scripts": {
     "dev": "tauri dev",
