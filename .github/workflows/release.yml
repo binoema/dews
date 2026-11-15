@@ -14,6 +14,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write       # für die Herkunftsnachweise (Build-Provenance) der Installer
+  attestations: write
 
 jobs:
   # Legt den Release-Entwurf genau einmal an, bevor die Builds starten. Würden die vier Build-Jobs das
@@ -132,3 +134,44 @@ jobs:
             -H "Content-Type: application/zip" \
             --data-binary @"$name" \
             "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?name=${name}"
+
+      # Herkunftsnachweis: belegt öffentlich, dass jede Datei von diesem Workflow aus genau diesem Commit gebaut
+      # wurde. Prüfen mit: gh attestation verify <datei> --repo <owner>/<repo>
+      # Muster ohne Treffer (z. B. .dmg auf Windows) werden übersprungen.
+      - uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: |
+            src-tauri/target/**/release/bundle/msi/*.msi
+            src-tauri/target/**/release/bundle/nsis/*-setup.exe
+            src-tauri/target/**/release/bundle/dmg/*.dmg
+            src-tauri/target/**/release/bundle/deb/*.deb
+            src-tauri/target/**/release/bundle/rpm/*.rpm
+            src-tauri/target/**/release/bundle/appimage/*.AppImage
+            dewz_*_x64-portable.zip
+
+  # Prüfsummen aller Dateien des Releases als SHA256SUMS.txt – erst, wenn alle Builds hochgeladen haben.
+  checksums:
+    name: Checksums
+    needs: [create-release, build]
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
+        run: |
+          api="repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets"
+          mkdir assets
+          gh api --paginate "$api" --jq '.[] | select(.name != "SHA256SUMS.txt") | "\(.id) \(.name)"' |
+            while read -r id name; do
+              gh api -H "Accept: application/octet-stream" "repos/$GITHUB_REPOSITORY/releases/assets/$id" > "assets/$name"
+            done
+          (cd assets && sha256sum -- * | sort -k2) > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+          # Bei einem erneuten Lauf die alte Prüfsummendatei ersetzen
+          gh api --paginate "$api" --jq '.[] | select(.name == "SHA256SUMS.txt") | .id' |
+            while read -r id; do gh api -X DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$id"; done
+          curl --fail-with-body -sS -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Content-Type: text/plain" \
+            --data-binary @SHA256SUMS.txt \
+            "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=SHA256SUMS.txt"

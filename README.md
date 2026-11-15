@@ -11,7 +11,7 @@ language button in the top right corner.
 
 ## Download
 
-Download the installer for your system from the [releases page](https://github.com/binoema/dews/releases):
+Download the installer for your system from the [releases page](https://github.com/binoema/dewz/releases):
 
 | System | File |
 |---|---|
@@ -25,6 +25,8 @@ The installers are not signed, so your system will warn you the first time:
 - **Windows:** SmartScreen shows "Windows protected your PC" – click **More info**, then **Run anyway**.
 - **macOS:** right-click the app in the Applications folder and choose **Open**. If macOS says the app is damaged,
   run `xattr -cr /Applications/dewz.app` in the Terminal once.
+
+See [Is dewz safe?](#is-dewz-safe) for what the warning means and how to check your download.
 
 ## Getting started
 
@@ -47,12 +49,16 @@ Want to try it first? Download one of the two invented sample exports from this 
 - **Automatic categories** based on keywords in the recipient or purpose, e.g. "rewe" → Groceries. You can change the
   category of any transaction by hand, and turn such a correction into a rule with **Create rule …** so that similar
   transactions are sorted automatically from then on.
+- **Sub-categories:** split a category into finer ones, e.g. "Mobility" into "Car" and "Public transport". The
+  overviews add sub-categories up under their main category and show them with ▸ when you want the details.
 - **Reserves:** mark categories such as "Savings" as transfers between your own accounts. They then don't count as
   income or expenses and are shown separately.
 - **Views:** expenses by category, monthly overview, categories month by month (with unusual months highlighted),
   small expenses and the full list of transactions – all with filters for text, category, month, date range and amount.
 - **Export** transactions and the summary as CSV for Excel, and your category rules to back them up or move them
   to another computer.
+- **Light and dark theme:** dewz follows your system setting; switch any time with the ☾ / ☀ button in the top right
+  corner.
 
 ## Your data
 
@@ -61,6 +67,32 @@ Want to try it first? Download one of the two invented sample exports from this 
 - You can protect the file with a **password** (in the **Data folder** dialog). It is encrypted and the password is
   asked for at every start. **If you forget the password, the data cannot be recovered.**
 - dewz never connects to the internet. Your bank data stays on your computer.
+
+## Is dewz safe?
+
+The warning on first start only means that the installers are not signed with a paid certificate – it says nothing
+about what the app does. Instead of a signature, you can check dewz yourself:
+
+- **Open source:** the complete source code is in this repository. Anyone can read it or build the app themselves
+  (see [DEVELOPMENT.md](DEVELOPMENT.md)).
+- **Built in public:** the installers are not built on a private computer but by GitHub from this repository, using
+  the [release workflow](.github/workflows/release.yml). Every build log is visible under
+  [Actions](https://github.com/binoema/dewz/actions).
+- **No network access:** the app's security policy blocks all connections to the internet. There is no telemetry,
+  no account and no update check. Your data is only written to the folder you chose.
+
+**Check your download (optional).** Each release contains `SHA256SUMS.txt` with a checksum for every file. Compare it
+with the checksum of your download:
+
+- Windows (PowerShell): `Get-FileHash .\dewz_<version>_x64-setup.exe`
+- macOS / Linux: `shasum -a 256 dewz_<version>_aarch64.dmg`
+
+With the [GitHub CLI](https://cli.github.com/) you can also verify that a file was built by this repository's workflow
+and not changed afterwards:
+
+```
+gh attestation verify dewz_<version>_x64-setup.exe --repo binoema/dewz
+```
 
 ## License
 
