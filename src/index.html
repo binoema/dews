@@ -192,6 +192,19 @@ td.empty button { margin-left: 8px; }
 tr.res td { color: var(--muted); }
 .catrow .cn { width: 100%; }
 .cres { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); margin-top: 5px; cursor: pointer; }
+
+/* --- Unterkategorien --- */
+button.exp { border: none; background: none; padding: 0; width: 18px; margin-right: 4px; color: var(--muted); line-height: 1; }
+button.exp:hover { background: none; color: var(--text); }
+.exp-sp { display: inline-block; width: 22px; }
+tr.sub td { font-size: 13px; }
+tr.sub td:first-child { padding-left: 52px; color: var(--muted); }
+tr.sub .bar { background: color-mix(in srgb, var(--bar) 55%, transparent); }
+.catrow.sub { margin-left: 28px; }
+.catrow.sub .cn { border-left: 3px solid var(--accent); }
+.catrow.sub .cres, .catrow.sub [data-act=addsub] { visibility: hidden; }
+.catrow .cp { width: 100%; margin-top: 5px; font-size: 12px; padding: 3px 6px; }
+.catbtns { display: flex; flex-direction: column; gap: 4px; }
 </style>
 </head>
 <body>
@@ -320,6 +333,8 @@ tr.res td { color: var(--muted); }
   <p class="muted" data-i18n="catsText3">Kategorien mit dem Häkchen „Rücklage“ stehen für Umbuchungen auf eigene Konten, etwa aufs Sparkonto und zurück.
     Ihre Buchungen zählen weder zu den Einnahmen noch zu den Ausgaben und werden getrennt ausgewiesen. Welche Buchungen das sind,
     legst du selbst über eine Regel oder von Hand fest.</p>
+  <p class="muted" data-i18n="catsText4">Eine Kategorie kann Unterkategorien haben, etwa „Mobilität“ mit „Auto“ und „ÖPNV“: über „+“ neben der Kategorie
+    oder die Auswahl unter dem Namen. In den Auswertungen zählen Unterkategorien zu ihrer Hauptkategorie; mit ▸ klappst du sie auf.</p>
   <div id="catList"></div>
   <div class="actions">
     <div class="left">
@@ -486,6 +501,10 @@ const I18N = {
     ruleHits: p => `Trifft auf ${T('nBook', p.n)} zu.` + (p.manual ? ` ${p.manual === 1 ? 'Eine davon ist' : p.manual + ' davon sind'} von Hand zugeordnet und ${p.manual === 1 ? 'bleibt' : 'bleiben'} unverändert, solange du das Häkchen nicht setzt.` : ''),
     ruleSaved: p => `Regel gespeichert: „${p.kw}“ → ${p.c}. ` + (p.n ? `${T('nBook', p.n)} ${p.n === 1 ? 'ist' : 'sind'} jetzt in dieser Kategorie.` : 'Im Moment trifft sie auf keine Buchung zu.'),
     catNamePh: 'Name der Kategorie', keywordsPh: 'Stichwörter, mit Komma getrennt',
+    catsText4: 'Eine Kategorie kann Unterkategorien haben, etwa „Mobilität“ mit „Auto“ und „ÖPNV“: über „+“ neben der Kategorie oder die Auswahl unter dem Namen. In den Auswertungen zählen Unterkategorien zu ihrer Hauptkategorie; mit ▸ klappst du sie auf.',
+    noParent: 'Hauptkategorie', subOf: c => `Unterkategorie von ${c}`, parentAria: 'Übergeordnete Kategorie',
+    addSub: 'Unterkategorie hinzufügen', noSub: '(ohne Unterkategorie)',
+    subShow: 'Unterkategorien anzeigen', subHide: 'Unterkategorien ausblenden',
     reserveCheckTitle: 'Umbuchung auf eigene Konten: zählt weder zu Einnahmen noch zu Ausgaben',
     delCat: 'Kategorie löschen', delCatAria: c => `Kategorie ${c} löschen`,
     confirmDefaults: 'Alle Kategorien und Regeln auf den Standard zurücksetzen?',
@@ -493,7 +512,7 @@ const I18N = {
     noTxExport: 'Keine Buchungen zum Exportieren.', noSumExport: 'Keine Auswertung zum Exportieren.',
     rulesFile: 'dewz-regeln.json', txFile: 'buchungen.csv', sumFile: 'auswertung.csv',
     csvTxHead: ['Datum', 'Empfänger', 'Verwendungszweck', 'Buchungstext', 'Kategorie', 'Betrag'],
-    csvSumHead: ['Kategorie', 'Ausgaben', 'Einnahmen', 'Saldo', 'Anzahl'],
+    csvSumHead: ['Kategorie', 'Unterkategorie', 'Ausgaben', 'Einnahmen', 'Saldo', 'Anzahl'],
     notData: 'Die Datei ist keine dewz-Datendatei.', saveFailedBtn: 'Speichern fehlgeschlagen',
     dataBtn: p => `Datenordner: ${p.name}` + (p.enc ? ' (verschlüsselt)' : ''),
     unsavedBtn: 'Nicht gespeichert – Datenordner wählen', noDataDir: 'Kein Datenordner',
@@ -606,6 +625,10 @@ const I18N = {
     ruleHits: p => `Matches ${T('nBook', p.n)}.` + (p.manual ? ` ${p.manual === 1 ? 'One of them was' : p.manual + ' of them were'} assigned by hand and ${p.manual === 1 ? 'stays' : 'stay'} unchanged unless you tick the box.` : ''),
     ruleSaved: p => `Rule saved: “${p.kw}” → ${p.c}. ` + (p.n ? `${T('nBook', p.n)} ${p.n === 1 ? 'is' : 'are'} now in this category.` : 'It currently matches no transaction.'),
     catNamePh: 'Category name', keywordsPh: 'Keywords, separated by commas',
+    catsText4: 'A category can have sub-categories, e.g. “Mobility” with “Car” and “Public transport”: use the “+” next to the category or the selection below its name. In the overviews, sub-categories count towards their main category; expand them with ▸.',
+    noParent: 'Main category', subOf: c => `Sub-category of ${c}`, parentAria: 'Parent category',
+    addSub: 'Add sub-category', noSub: '(no sub-category)',
+    subShow: 'Show sub-categories', subHide: 'Hide sub-categories',
     reserveCheckTitle: 'Transfer between your own accounts: counts as neither income nor expenses',
     delCat: 'Delete category', delCatAria: c => `Delete category ${c}`,
     confirmDefaults: 'Reset all categories and rules to the defaults?',
@@ -613,7 +636,7 @@ const I18N = {
     noTxExport: 'No transactions to export.', noSumExport: 'No summary to export.',
     rulesFile: 'dewz-rules.json', txFile: 'transactions.csv', sumFile: 'summary.csv',
     csvTxHead: ['Date', 'Recipient', 'Purpose', 'Booking text', 'Category', 'Amount'],
-    csvSumHead: ['Category', 'Expenses', 'Income', 'Balance', 'Count'],
+    csvSumHead: ['Category', 'Sub-category', 'Expenses', 'Income', 'Balance', 'Count'],
     notData: 'The file is not a dewz data file.', saveFailedBtn: 'Saving failed',
     dataBtn: p => `Data folder: ${p.name}` + (p.enc ? ' (encrypted)' : ''),
     unsavedBtn: 'Not saved – choose data folder', noDataDir: 'No data folder',
@@ -663,7 +686,27 @@ const fmtMonth = ym => monFmt.format(new Date(ym + '-01T00:00:00Z'));
 const fmtMonthShort = ym => monShortFmt.format(new Date(ym + '-01T00:00:00Z'));
 const dec1 = x => x.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const pctText = x => dec1(x) + (lang === 'de' ? ' %' : '%');
-const catLabel = c => c === UNCAT ? T('uncat') : c;   // Anzeigename einer Kategorie
+// Unterkategorien: eine Kategorie mit parent gehört zu dieser Hauptkategorie (genau eine Ebene).
+// Buchungen tragen den Namen der Unter- oder Hauptkategorie; Auswertungen fassen nach Hauptkategorie zusammen.
+let parentOf = new Map();   // Unterkategorie → Hauptkategorie, neu aufgebaut in buildMatchers()
+const topCat = c => parentOf.get(c) || c;
+const hasSubs = c => cats.some(x => x.parent === c);
+// Anzeigename einer Kategorie; Unterkategorien mit ihrer Hauptkategorie davor
+const catLabel = c => c === UNCAT ? T('uncat') : parentOf.has(c) ? parentOf.get(c) + ' › ' + c : c;
+const catOpts = () => cats.map(c => [c.name, catLabel(c.name)]);
+// Bereinigt eine Kategorienliste: Hauptkategorie muss existieren und darf selbst keine Unterkategorie sein;
+// Unterkategorien erben „Rücklage“ von der Hauptkategorie und stehen direkt nach ihr.
+function normalizeCats(list) {
+  const byName = new Map(list.map(c => [c.name, c]));
+  for (const c of list) {
+    if ('parent' in c) {
+      const p = byName.get(c.parent);
+      if (typeof c.parent !== 'string' || !p || p === c || p.parent) delete c.parent;
+    }
+    if (c.parent) delete c.transfer;
+  }
+  return list.filter(c => !c.parent).flatMap(t => [t, ...list.filter(c => c.parent === t.name)]);
+}
 
 function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }
 function store(key, val) {
@@ -731,8 +774,9 @@ function defaultCatsDe() {
   ];
 }
 
-let cats = load('fb.cats') || defaultCats();
+let cats = normalizeCats(load('fb.cats') || defaultCats());
 let txs = [];   // wird aus der Datendatei geladen
+const expanded = new Set(Array.isArray(load('fb.expanded')) ? load('fb.expanded') : []);   // aufgeklappte Hauptkategorien
 let matchers = [], catSet = new Set();
 
 // Früher gespeicherte Kategorienlisten einmalig um die neu hinzugekommenen Kategorien ergänzen
@@ -774,6 +818,7 @@ if (!(load('fb.catsV') >= 3)) {
 function buildMatchers() {
   matchers = []; prioMatchers = [];
   catSet = new Set(cats.map(c => c.name));
+  parentOf = new Map(cats.filter(c => c.parent).map(c => [c.name, c.parent]));
   for (const cat of cats) for (const kw of cat.keywords) {
     const m = parseKw(kw);
     if (m) { m.cat = cat.name; (m.prio ? prioMatchers : matchers).push(m); }
@@ -1154,7 +1199,7 @@ function getFiltered() {
   const mn = parseFloat($('#fMin').value), mx = parseFloat($('#fMax').value);
   return txs.filter(t =>
     (!q || (t.r + ' ' + t.p + ' ' + t.t + ' ' + catLabel(t.c)).toLowerCase().includes(q)) &&
-    (!c || t.c === c) &&
+    (!c || t.c === c || topCat(t.c) === c) &&   // Hauptkategorie schließt ihre Unterkategorien ein
     (!k || (k === 'out' ? t.a < 0 : t.a > 0)) &&
     (!from || t.d >= from) && (!to || t.d <= to) &&
     (isNaN(mn) || Math.abs(t.a) >= Math.round(mn * 100)) &&
@@ -1174,7 +1219,7 @@ function render() {
   $('#exportMenu').hidden = !has;
   if (!has) return;
 
-  fillSelect($('#fCat'), [['', T('allCats')], ...cats.map(c => [c.name, c.name]), [UNCAT, T('uncat')]]);
+  fillSelect($('#fCat'), [['', T('allCats')], ...catOpts(), [UNCAT, T('uncat')]]);
   const months = [...new Set(txs.map(t => t.d.slice(0, 7)))].sort().reverse();
   fillSelect($('#fMonth'), [['', T('allMonths')], ...months.map(m => [m, fmtMonth(m)])]);
 
@@ -1186,7 +1231,8 @@ function render() {
 
   // Kennzahlen
   // Rücklagen-Kategorien (Umbuchungen auf eigene Konten) zählen weder zu Einnahmen noch zu Ausgaben.
-  const resCats = new Set(cats.filter(c => c.transfer).map(c => c.name)), isRes = t => resCats.has(t.c);
+  // Unterkategorien gelten als Rücklage, wenn ihre Hauptkategorie eine ist.
+  const resCats = new Set(cats.filter(c => c.transfer).map(c => c.name)), isRes = t => resCats.has(topCat(t.c));
   let tin = 0, tout = 0, resOut = 0, resIn = 0, resN = 0;
   for (const t of list) {
     if (isRes(t)) { resN++; t.a < 0 ? resOut -= t.a : resIn += t.a; }
@@ -1204,23 +1250,35 @@ function render() {
   $('#resNote').hidden = !(drawn > 0);
   $('#resNote').innerHTML = T('resNote', { drawn: fmt(drawn), over: tout > tin ? fmt(tout - tin) : '' });
 
-  // Auswertung nach Kategorie
+  // Auswertung nach Kategorie – je Hauptkategorie eine Zeile, Unterkategorien aufklappbar
   const by = new Map();
   for (const t of list) {
-    const s = by.get(t.c) || { c: t.c, out: 0, in: 0, n: 0 };
-    t.a < 0 ? s.out -= t.a : s.in += t.a;
-    s.n++;
-    by.set(t.c, s);
+    const top = topCat(t.c);
+    const s = by.get(top) || { c: top, out: 0, in: 0, n: 0, subs: new Map() };
+    const u = s.subs.get(t.c) || { c: t.c, out: 0, in: 0, n: 0 };   // u.c === s.c: direkt der Hauptkategorie zugeordnet
+    for (const x of [s, u]) { t.a < 0 ? x.out -= t.a : x.in += t.a; x.n++; }
+    s.subs.set(t.c, u);
+    by.set(top, s);
   }
   const allSum = [...by.values()].sort((a, b) => b.out - a.out || b.in - a.in);
   const sum = allSum.filter(x => !resCats.has(x.c)), resSum = allSum.filter(x => resCats.has(x.c));
   const maxOut = Math.max(1, ...sum.map(s => s.out)), activeCat = $('#fCat').value;
+  const anyParent = sum.some(s => hasSubs(s.c));
+  const isOpen = c => expanded.has(c) || parentOf.get(activeCat) === c;
+  // Unterkategorien einer Gruppe, nach Ausgaben sortiert; direkt zugeordnete Buchungen zuletzt
+  const subsOf = s => [...s.subs.values()].sort((a, b) => (a.c === s.c) - (b.c === s.c) || b.out - a.out || b.in - a.in);
+  const expBtn = c => !anyParent ? '' : !hasSubs(c) ? '<span class="exp-sp"></span>'
+    : `<button class="exp" data-exp="${esc(c)}" aria-expanded="${isOpen(c)}" title="${esc(T(isOpen(c) ? 'subHide' : 'subShow'))}">${isOpen(c) ? '▾' : '▸'}</button>`;
+  const sumRow = (s, sub, parent) => {
+    const direct = sub && s.c === parent, cls = (direct ? '' : 'click') + (sub ? ' sub' : '') + (!direct && s.c === activeCat ? ' active' : '');
+    return `<tr class="${cls}"${direct ? '' : ` data-cat="${esc(s.c)}"`} title="${esc(T('sumRowTitle', { c: direct ? catLabel(parent) : catLabel(s.c), v: fmt(s.out), n: s.n }))}">
+      <td>${sub ? esc(direct ? T('noSub') : s.c) : expBtn(s.c) + esc(catLabel(s.c))}</td><td class="num">${fmt(s.out)}</td><td class="num">${pctText(tout ? s.out / tout * 100 : 0)}</td>
+      <td class="barcell"><div class="bartrack">${s.out ? `<div class="bar" data-w="${(s.out / maxOut * 100).toFixed(1)}"></div>` : ''}</div></td>
+      <td class="num${s.in ? ' pos' : ''}">${s.in ? fmt(s.in) : '–'}</td><td class="num">${s.n}</td></tr>`;
+  };
   $('#sumTable').innerHTML =
     `<tr><th>${T('category')}</th><th class="num">${T('expenses')}</th><th class="num">${T('share')}</th><th></th><th class="num">${T('income')}</th><th class="num">${T('count')}</th></tr>` +
-    sum.map(s => `<tr class="click${s.c === activeCat ? ' active' : ''}" data-cat="${esc(s.c)}" title="${esc(T('sumRowTitle', { c: catLabel(s.c), v: fmt(s.out), n: s.n }))}">
-      <td>${esc(catLabel(s.c))}</td><td class="num">${fmt(s.out)}</td><td class="num">${pctText(tout ? s.out / tout * 100 : 0)}</td>
-      <td class="barcell"><div class="bartrack">${s.out ? `<div class="bar" data-w="${(s.out / maxOut * 100).toFixed(1)}"></div>` : ''}</div></td>
-      <td class="num${s.in ? ' pos' : ''}">${s.in ? fmt(s.in) : '–'}</td><td class="num">${s.n}</td></tr>`).join('') +
+    sum.map(s => sumRow(s) + (hasSubs(s.c) && isOpen(s.c) ? subsOf(s).map(u => sumRow(u, true, s.c)).join('') : '')).join('') +
     `<tr class="total"><td>${T('total')}</td><td class="num">${fmt(tout)}</td><td class="num">${tout ? pctText(100) : ''}</td><td></td><td class="num">${fmt(tin)}</td><td class="num">${list.length - resN}</td></tr>` +
     resSum.map(x => `<tr class="click res${x.c === activeCat ? ' active' : ''}" data-cat="${esc(x.c)}" title="${esc(T('resRowTitle'))}">
       <td>${esc(x.c)}<span class="tag">${T('reserveTag')}</span></td><td class="num" colspan="3">${T('putAside', fmt(x.out))}</td>
@@ -1249,17 +1307,26 @@ function render() {
   const isHot = (v, avg) => mAsc.length >= 3 && v > avg * 1.3 && v - avg >= 2000;
   const over = (v, avg) => T('overAvg', { pct: Math.round((v / avg - 1) * 100), avg: fmt(Math.round(avg)) });
   const mark = (v, avg) => isHot(v, avg) ? `<span class="warn" title="${over(v, avg)}">▲</span> ` : '';
-  for (const t of list) if (t.a < 0 && !isRes(t)) { const k = t.c + '\n' + t.d.slice(0, 7); cm.set(k, (cm.get(k) || 0) - t.a); }
+  // Schlüssel: 'T' + Hauptkategorie bzw. 'S' + zugeordnete (Unter-)Kategorie, jeweils mit Monat
+  for (const t of list) if (t.a < 0 && !isRes(t)) {
+    const m = t.d.slice(0, 7);
+    for (const k of ['T\n' + topCat(t.c) + '\n' + m, 'S\n' + t.c + '\n' + m]) cm.set(k, (cm.get(k) || 0) - t.a);
+  }
+  // Auffälligkeiten werden nur für Hauptkategorien als Hinweis gesammelt, damit nichts doppelt erscheint
+  const cmpRow = (s, sub, parent) => {
+    const key = (sub ? 'S\n' : 'T\n') + s.c + '\n', label = sub ? (s.c === parent ? T('noSub') : s.c) : catLabel(s.c);
+    const full = sub && s.c === parent ? catLabel(parent) + ' – ' + T('noSub') : catLabel(s.c);
+    const vals = mAsc.map(m => cm.get(key + m) || 0), mx = Math.max(...vals), avg = s.out / mAsc.length;
+    return `<tr${sub ? ' class="sub"' : ''}><td>${sub ? esc(label) : expBtn(s.c) + esc(label)}</td>` + vals.map((v, i) => {
+      if (!sub && isHot(v, avg)) hints.push({ c: s.c, m: mAsc[i], v, avg });
+      return `<td class="num" title="${esc(full + ', ' + fmtMonth(mAsc[i]))}: ${fmt(v)}">${mark(v, avg)}${v ? fmt(v) : '–'}
+        <div class="bartrack mini">${v ? `<div class="bar" data-w="${(v / mx * 100).toFixed(0)}"></div>` : ''}</div></td>`;
+    }).join('') + `<td class="num">${fmt(Math.round(avg))}</td><td class="num">${fmt(s.out)}</td></tr>`;
+  };
   $('#cmpTable').innerHTML =
     `<tr><th>${T('category')}</th>` + mAsc.map(m => `<th class="num">${esc(fmtMonthShort(m))}</th>`).join('') + `<th class="num">${T('avgPerMonth')}</th><th class="num">${T('total')}</th></tr>` +
-    sum.filter(s => s.out > 0).map(s => {
-      const vals = mAsc.map(m => cm.get(s.c + '\n' + m) || 0), mx = Math.max(...vals), avg = s.out / mAsc.length;
-      return `<tr><td>${esc(catLabel(s.c))}</td>` + vals.map((v, i) => {
-        if (isHot(v, avg)) hints.push({ c: s.c, m: mAsc[i], v, avg });
-        return `<td class="num" title="${esc(catLabel(s.c) + ', ' + fmtMonth(mAsc[i]))}: ${fmt(v)}">${mark(v, avg)}${v ? fmt(v) : '–'}
-          <div class="bartrack mini">${v ? `<div class="bar" data-w="${(v / mx * 100).toFixed(0)}"></div>` : ''}</div></td>`;
-      }).join('') + `<td class="num">${fmt(Math.round(avg))}</td><td class="num">${fmt(s.out)}</td></tr>`;
-    }).join('') +
+    sum.filter(s => s.out > 0).map(s => cmpRow(s) +
+      (hasSubs(s.c) && isOpen(s.c) ? subsOf(s).filter(u => u.out > 0).map(u => cmpRow(u, true, s.c)).join('') : '')).join('') +
     `<tr class="total"><td>${T('total')}</td>` + mAsc.map(m => `<td class="num">${mark(mon.get(m).out, tout / mAsc.length)}${fmt(mon.get(m).out)}</td>`).join('') +
     `<td class="num">${fmt(Math.round(tout / Math.max(1, mAsc.length)))}</td><td class="num">${fmt(tout)}</td></tr>`;
   $('#hints').innerHTML = mAsc.length < 3 ? '' : !hints.length
@@ -1344,7 +1411,7 @@ function render() {
     $('#smallInfo').innerHTML = `<span class="muted">${T('noTx')}</span>`;
   }
   lastView = { list, sum: allSum };
-  fillSelect($('#bulkCat'), [['', T('chooseCat')], ...cats.map(c => [c.name, c.name]), [UNCAT, T('uncat')], ['__auto__', T('autoAssign')]]);
+  fillSelect($('#bulkCat'), [['', T('chooseCat')], ...catOpts(), [UNCAT, T('uncat')], ['__auto__', T('autoAssign')]]);
   syncSel();
   fitTx();
   // Balkenbreiten setzen (als Attribut im HTML würde die Content-Security-Policy sie blockieren)
@@ -1411,7 +1478,7 @@ function editCategory(btn, tx) {
     else { tx.c = sel.value; tx.m = true; }
     persist();
     finish();
-    if (tx.m && tx.c !== UNCAT) toast(T('catChanged', tx.c), false, T('ruleFromIt'), () => openRule(tx));
+    if (tx.m && tx.c !== UNCAT) toast(T('catChanged', catLabel(tx.c)), false, T('ruleFromIt'), () => openRule(tx));
   };
 }
 
@@ -1431,7 +1498,8 @@ function updateRuleInfo() {
 }
 function openRule(tx) {
   $('#ruleKw').value = (tx.r || tx.p).toLowerCase().slice(0, 40);
-  $('#ruleCat').innerHTML = cats.map(c => `<option value="${esc(c.name)}"${c.name === tx.c ? ' selected' : ''}>${esc(c.name)}${c.transfer ? esc(T('reserveSuffix')) : ''}</option>`).join('');
+  const resTop = new Set(cats.filter(c => c.transfer).map(c => c.name));
+  $('#ruleCat').innerHTML = cats.map(c => `<option value="${esc(c.name)}"${c.name === tx.c ? ' selected' : ''}>${esc(catLabel(c.name))}${resTop.has(topCat(c.name)) ? esc(T('reserveSuffix')) : ''}</option>`).join('');
   $('#ruleManual').checked = false;
   updateRuleInfo();
   $('#dlgRule').showModal();
@@ -1452,39 +1520,108 @@ $('#ruleOk').onclick = () => {
   store('fb.cats', cats); persist();
   $('#dlgRule').close();
   render();
-  toast(T('ruleSaved', { kw, c: cat.name, n }));
+  toast(T('ruleSaved', { kw, c: catLabel(cat.name), n }));
 };
 
 /* ============================== Kategorien-Dialog ============================== */
+// Jede Zeile hat einen festen Schlüssel (data-key); die Zugehörigkeit zur Hauptkategorie (data-pkey) verweist auf
+// diesen Schlüssel statt auf den Namen, damit Umbenennen im Dialog die Unterkategorien nicht abhängt.
+let catRowKey = 0;
 function catRowHtml(c) {
-  return `<div class="catrow" data-orig="${esc(c.name)}"><div><input class="cn" value="${esc(c.name)}" placeholder="${esc(T('catNamePh'))}">
+  return `<div class="catrow" data-key="${++catRowKey}" data-orig="${esc(c.name)}" data-pname="${esc(c.parent || '')}"><div><input class="cn" value="${esc(c.name)}" placeholder="${esc(T('catNamePh'))}">
+      <select class="cp" aria-label="${esc(T('parentAria'))}"></select>
       <label class="cres" title="${esc(T('reserveCheckTitle'))}"><input type="checkbox" class="ct"${c.transfer ? ' checked' : ''}> ${esc(T('reserveTag'))}</label></div>
     <textarea class="ck" placeholder="${esc(T('keywordsPh'))}">${esc(c.keywords.join(', '))}</textarea>
-    <button class="danger" data-act="del" title="${esc(T('delCat'))}" aria-label="${esc(T('delCatAria', c.name))}">✕</button></div>`;
+    <div class="catbtns"><button class="danger" data-act="del" title="${esc(T('delCat'))}" aria-label="${esc(T('delCatAria', c.name))}">✕</button>
+      <button data-act="addsub" title="${esc(T('addSub'))}" aria-label="${esc(T('addSub'))}">+</button></div></div>`;
 }
-function drawCats(list) { $('#catList').innerHTML = list.map(catRowHtml).join(''); }
+const catRows = () => [...document.querySelectorAll('#catList .catrow')];
+const rowName = r => r.querySelector('.cn').value.trim();
+// Baut die Auswahl „Hauptkategorie / Unterkategorie von …“ in allen Zeilen neu auf
+function refreshParents() {
+  const rows = catRows(), byName = new Map(rows.map(r => [rowName(r), r]));
+  for (const r of rows) if ('pname' in r.dataset) {   // frisch gezeichnete Zeile: Namen der Hauptkategorie in Schlüssel umsetzen
+    r.dataset.pkey = r.dataset.pname ? byName.get(r.dataset.pname)?.dataset.key || '' : '';
+    delete r.dataset.pname;
+  }
+  const byKey = new Map(rows.map(r => [r.dataset.key, r]));
+  for (const r of rows) {   // Verweise auf gelöschte Zeilen oder auf Unterkategorien entfernen (nur eine Ebene)
+    const p = byKey.get(r.dataset.pkey);
+    if (!p || p === r || p.dataset.pkey) r.dataset.pkey = '';
+  }
+  const tops = rows.filter(r => !r.dataset.pkey), withKids = new Set(rows.map(r => r.dataset.pkey).filter(Boolean));
+  for (const r of rows) {
+    const sel = r.querySelector('.cp');
+    sel.innerHTML = `<option value="">${esc(T('noParent'))}</option>` +
+      tops.filter(t => t !== r).map(t => `<option value="${t.dataset.key}">${esc(T('subOf', rowName(t) || '…'))}</option>`).join('');
+    sel.value = r.dataset.pkey;
+    sel.disabled = withKids.has(r.dataset.key);   // hat selbst Unterkategorien, kann also keine werden
+    r.classList.toggle('sub', !!r.dataset.pkey);
+  }
+}
+// Letzte Zeile des Blocks aus Hauptkategorie und ihren Unterkategorien
+function blockEnd(top) {
+  let end = top;
+  while (end.nextElementSibling && end.nextElementSibling.dataset.pkey === top.dataset.key) end = end.nextElementSibling;
+  return end;
+}
+function drawCats(list) {
+  $('#catList').innerHTML = normalizeCats(list.map(c => ({ ...c }))).map(catRowHtml).join('');
+  refreshParents();
+}
 // Namen, die für „nicht zugeordnet“ stehen, in allen Sprachen – als Kategorienamen nicht erlaubt
 const UNCAT_NAMES = new Set([UNCAT, ...Object.values(I18N).map(d => d.uncat)]);
 function readCats() {
-  const seen = new Set(), out = [], rename = {};
-  for (const row of document.querySelectorAll('#catList .catrow')) {
-    const name = row.querySelector('.cn').value.trim();
+  const seen = new Set(), out = [], rename = {}, nameOfKey = new Map();
+  for (const row of catRows()) {
+    const name = rowName(row);
     if (!name || UNCAT_NAMES.has(name) || seen.has(name)) continue;
     seen.add(name);
+    nameOfKey.set(row.dataset.key, name);
     if (row.dataset.orig && row.dataset.orig !== name) rename[row.dataset.orig] = name;
     out.push({ name, keywords: row.querySelector('.ck').value.split(/[,\n]/).map(s => s.trim()).filter(Boolean),
-      ...(row.querySelector('.ct').checked ? { transfer: true } : {}) });
+      ...(row.querySelector('.ct').checked ? { transfer: true } : {}), pkey: row.dataset.pkey });
   }
-  return { out, rename };
+  for (const c of out) {
+    const parent = nameOfKey.get(c.pkey);
+    delete c.pkey;
+    if (parent) c.parent = parent;
+  }
+  return { out: normalizeCats(out), rename };
+}
+// Neue, leere Zeile; mit Hauptkategorie direkt unter deren letzter Unterkategorie
+function addCatRow(top) {
+  const anchor = top ? blockEnd(top) : null;
+  const html = catRowHtml({ name: '', keywords: [] });
+  anchor ? anchor.insertAdjacentHTML('afterend', html) : $('#catList').insertAdjacentHTML('beforeend', html);
+  const row = anchor ? anchor.nextElementSibling : $('#catList').lastElementChild;
+  row.dataset.orig = '';
+  delete row.dataset.pname;
+  row.dataset.pkey = top ? top.dataset.key : '';
+  refreshParents();
+  row.querySelector('.cn').focus();
 }
 $('#btnCats').onclick = () => { drawCats(cats); $('#dlgCats').showModal(); };
-$('#catList').onclick = ev => { if (ev.target.dataset.act === 'del') ev.target.closest('.catrow').remove(); };
-$('#catAdd').onclick = () => {
-  $('#catList').insertAdjacentHTML('beforeend', catRowHtml({ name: '', keywords: [] }));
-  const rows = document.querySelectorAll('#catList .catrow'), last = rows[rows.length - 1];
-  last.dataset.orig = '';
-  last.querySelector('.cn').focus();
+$('#catList').onclick = ev => {
+  const act = ev.target.dataset.act, row = ev.target.closest('.catrow');
+  if (act === 'del') {
+    // Unterkategorien einer gelöschten Hauptkategorie bleiben als eigene Kategorien erhalten
+    row.remove();
+    refreshParents();
+  } else if (act === 'addsub') addCatRow(row);
 };
+$('#catList').oninput = ev => { if (ev.target.classList.contains('cn')) refreshParents(); };
+$('#catList').onchange = ev => {
+  if (!ev.target.classList.contains('cp')) return;
+  const row = ev.target.closest('.catrow'), oldTop = catRows().find(r => r.dataset.key === row.dataset.pkey);
+  row.dataset.pkey = ev.target.value;
+  const newTop = catRows().find(r => r.dataset.key === row.dataset.pkey);
+  // Zeile in den Block ihrer neuen Hauptkategorie verschieben bzw. hinter den bisherigen Block
+  if (newTop) { row.remove(); blockEnd(newTop).after(row); }
+  else if (oldTop) { row.remove(); blockEnd(oldTop).after(row); }
+  refreshParents();
+};
+$('#catAdd').onclick = () => addCatRow(null);
 $('#catDefaults').onclick = () => { if (confirm(T('confirmDefaults'))) drawCats(defaultCats()); };
 $('#catCancel').onclick = () => $('#dlgCats').close();
 $('#catSave').onclick = () => {
@@ -1502,7 +1639,8 @@ $('#catFile').onchange = async ev => {
   try {
     const data = JSON.parse(await ev.target.files[0].text());
     if (!Array.isArray(data) || !data.every(c => typeof c.name === 'string' && Array.isArray(c.keywords))) throw new Error();
-    drawCats(data.map(c => ({ name: c.name, keywords: c.keywords.map(String), transfer: c.transfer === true })));
+    drawCats(data.map(c => ({ name: c.name, keywords: c.keywords.map(String), transfer: c.transfer === true,
+      ...(typeof c.parent === 'string' ? { parent: c.parent } : {}) })));
   } catch { toast(T('invalidRules'), true); }
   ev.target.value = '';
 };
@@ -1534,8 +1672,11 @@ $('#btnExport').onclick = () => {
 };
 $('#btnExportSum').onclick = () => {
   if (!lastView.sum.length) return toast(T('noSumExport'), true);
+  // Eine Zeile je Unterkategorie, damit sich die Werte in der Tabellenkalkulation ohne Doppelzählung summieren lassen
+  const row = (c, sub, s) => [catLabel(c), sub, num(s.out), num(s.in), num(s.in - s.out), s.n];
   download(T('sumFile'), toCsv([T('csvSumHead'),
-    ...lastView.sum.map(s => [catLabel(s.c), num(s.out), num(s.in), num(s.in - s.out), s.n])]));
+    ...lastView.sum.flatMap(s => !hasSubs(s.c) ? [row(s.c, '', s)]
+      : [...s.subs.values()].map(u => row(s.c, u.c === s.c ? '' : u.c, u)))]));
 };
 
 /* ============================== Datendatei (JSON im gewählten Ordner) ============================== */
@@ -1666,7 +1807,8 @@ function parseData(o) {
   });
   const okCats = Array.isArray(o.cats) && o.cats.every(c => c && typeof c.name === 'string' && Array.isArray(c.keywords));
   return { txs: list, version: Number(o.version) || 1,
-    cats: okCats ? o.cats.map(c => ({ name: c.name, keywords: c.keywords.map(String), ...(c.transfer === true ? { transfer: true } : {}) })) : null };
+    cats: okCats ? normalizeCats(o.cats.map(c => ({ name: c.name, keywords: c.keywords.map(String),
+      ...(c.transfer === true ? { transfer: true } : {}), ...(typeof c.parent === 'string' ? { parent: c.parent } : {}) }))) : null };
 }
 
 // Liest den Dateiinhalt; fragt bei verschlüsselten Dateien nach dem Passwort. Liefert null, wenn abgebrochen wurde.
@@ -1818,7 +1960,19 @@ function showFiltered() {
   refilter();
 }
 $('#btnReset').onclick = resetFilters;
+// ▸ / ▾ vor einer Hauptkategorie klappt ihre Unterkategorien auf oder zu (gilt für alle Auswertungen)
+function toggleExp(ev) {
+  const btn = ev.target.closest('button[data-exp]');
+  if (!btn) return false;
+  const c = btn.dataset.exp;
+  expanded.has(c) ? expanded.delete(c) : expanded.add(c);
+  store('fb.expanded', [...expanded]);
+  render();
+  return true;
+}
+$('#cmpTable').onclick = toggleExp;
 $('#sumTable').onclick = ev => {
+  if (toggleExp(ev)) return;
   const tr = ev.target.closest('tr[data-cat]');
   if (!tr) return;
   $('#fCat').value = tr.dataset.cat;
