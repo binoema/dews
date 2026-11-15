@@ -8,24 +8,35 @@
 <title>dewz</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20role%3D%22img%22%20aria-label%3D%22dewz%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2215%22%20fill%3D%22%232a6fc9%22%2F%3E%3Cpath%20d%3D%22M32%208C24%2019%2015%2029%2015%2039a17%2017%200%200%200%2034%200C49%2029%2040%2019%2032%208Z%22%20fill%3D%22%23fff%22%2F%3E%3Cg%20fill%3D%22%232a6fc9%22%3E%3Crect%20x%3D%2222%22%20y%3D%2241%22%20width%3D%225.5%22%20height%3D%228%22%20rx%3D%221.6%22%2F%3E%3Crect%20x%3D%2229.25%22%20y%3D%2235%22%20width%3D%225.5%22%20height%3D%2214%22%20rx%3D%221.6%22%2F%3E%3Crect%20x%3D%2236.5%22%20y%3D%2229%22%20width%3D%225.5%22%20height%3D%2220%22%20rx%3D%221.6%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
 <style>
+/* Farben aus dem Logo (#2a6fc9): Akzent ist das Logo-Blau, die Grautöne sind leicht blau getönt.
+   Ohne Auswahl folgt das Design dem System; data-theme="light" bzw. "dark" auf <html> überschreibt das. */
 :root {
-  --bg: #f4f4f2; --surface: #fcfcfb; --border: #dcdcd8; --text: #1c1c1a; --muted: #6a6a66;
-  --accent: #2a6fc9; --accent-text: #fff; --bar: #3b82d6; --bar-bg: #e8e8e4;
-  --pos: #006300; --warn: #a85f00; --danger: #b42c2c; --hover: #eeeeea;
+  --bg: #f2f6fb; --surface: #ffffff; --border: #d5dfec; --text: #13223a; --muted: #56677f;
+  --accent: #2a6fc9; --accent-text: #fff; --bar: #2a6fc9; --bar-bg: #e2eaf5;
+  --pos: #006300; --warn: #a85f00; --danger: #b42c2c; --hover: #eaf1fa;
+  color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #121211; --surface: #1a1a19; --border: #363633; --text: #ecece8; --muted: #a0a09a;
-    --accent: #5a9cf0; --accent-text: #0b1420; --bar: #5a9cf0; --bar-bg: #2a2a28;
-    --pos: #3cc43c; --warn: #e8a33a; --danger: #f07070; --hover: #242422;
+  :root:not([data-theme=light]) {
+    --bg: #0c1420; --surface: #13202f; --border: #25364c; --text: #e6edf7; --muted: #94a5bb;
+    --accent: #5a9cf0; --accent-text: #0b1420; --bar: #4a8fe6; --bar-bg: #1e2d42;
+    --pos: #3cc43c; --warn: #e8a33a; --danger: #f07070; --hover: #1a2a3e;
+    color-scheme: dark;
   }
+}
+:root[data-theme=dark] {
+  --bg: #0c1420; --surface: #13202f; --border: #25364c; --text: #e6edf7; --muted: #94a5bb;
+  --accent: #5a9cf0; --accent-text: #0b1420; --bar: #4a8fe6; --bar-bg: #1e2d42;
+  --pos: #3cc43c; --warn: #e8a33a; --danger: #f07070; --hover: #1a2a3e;
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 /* Platz für den Scrollbalken immer freihalten, damit die Seite beim Wechsel der Ansicht nicht seitlich springt */
-html { scrollbar-gutter: stable; color-scheme: light dark; }
+html { scrollbar-gutter: stable; }
 @supports not (scrollbar-gutter: stable) { html { overflow-y: scroll; } }
 body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 "Segoe UI", system-ui, sans-serif; }
-header { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 20px; background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
+header { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 20px; background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: inset 0 3px 0 var(--accent); position: sticky; top: 0; z-index: 5; }
+#btnTheme { width: 34px; padding: 6px 0; line-height: 1; }
 header h1 { font-size: 18px; margin: 0 auto 0 0; display: flex; align-items: center; gap: 8px; }
 header h1 .logo { width: 28px; height: 28px; flex: none; }
 header h1 .wordmark { font-size: 21px; font-weight: 700; letter-spacing: -0.02em; }
@@ -196,6 +207,7 @@ tr.res td { color: var(--muted); }
       <button id="btnExportSum" data-i18n="exportSum">Auswertung als CSV</button>
     </div>
   </details>
+  <button id="btnTheme" type="button">☾</button>
   <button id="btnLang" data-i18n="langBtn" data-i18n-title="langTitle" data-i18n-lang="langOther">English</button>
   <input type="file" id="file" accept=".xlsx,.xlsm,.csv,.txt,.xls" multiple hidden>
 </header>
@@ -389,6 +401,7 @@ const UNCAT = 'Nicht zugeordnet';
 const I18N = {
   de: {
     langBtn: 'English', langTitle: 'Switch to English', langOther: 'en',
+    themeToDark: 'Dunkles Design', themeToLight: 'Helles Design',
     tagline: 'Kontoauszug auswerten – 100 % offline',
     btnImport: 'Kontoexport importieren', btnCats: 'Kategorien & Regeln',
     export: 'Exportieren', exportTx: 'Buchungen als CSV', exportSum: 'Auswertung als CSV',
@@ -508,6 +521,7 @@ const I18N = {
   },
   en: {
     langBtn: 'Deutsch', langTitle: 'Auf Deutsch umschalten', langOther: 'de',
+    themeToDark: 'Dark theme', themeToLight: 'Light theme',
     tagline: 'Analyse bank statements – 100 % offline',
     btnImport: 'Import bank export', btnCats: 'Categories & rules',
     export: 'Export', exportTx: 'Transactions as CSV', exportSum: 'Summary as CSV',
@@ -1905,7 +1919,31 @@ function applyLang() {
     for (const el of document.querySelectorAll(`[${data}]`)) el.setAttribute(attr, T(el.getAttribute(data)));
   // Dialoge und Menüs der Desktop-App (Ordnerwahl, Speichern unter) in derselben Sprache
   invoke('set_language', { lang }).catch(console.error);
+  applyTheme();
 }
+
+/* ============================== Helles / dunkles Design ============================== */
+// Ohne gespeicherte Wahl folgt das Design dem System. Der Knopf schaltet auf das jeweils andere Design
+// und merkt sich die Wahl; die Titelleiste des Fensters wird passend mitgeschaltet.
+const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+let theme = load('fb.theme');   // 'light', 'dark' oder null (System)
+const isDark = () => theme ? theme === 'dark' : darkQuery.matches;
+function applyTheme() {
+  const dark = isDark();
+  if (theme) document.documentElement.dataset.theme = theme;
+  else delete document.documentElement.dataset.theme;
+  const b = $('#btnTheme'), label = T(dark ? 'themeToLight' : 'themeToDark');
+  b.textContent = dark ? '☀' : '☾';
+  b.title = label;
+  b.setAttribute('aria-label', label);
+  appWindow.setTheme(theme).catch(console.error);
+}
+$('#btnTheme').onclick = () => {
+  theme = isDark() ? 'light' : 'dark';
+  store('fb.theme', theme);
+  applyTheme();
+};
+darkQuery.addEventListener('change', () => { if (!theme) applyTheme(); });
 $('#btnLang').onclick = () => {
   lang = lang === 'de' ? 'en' : 'de';
   store('fb.lang', lang);
