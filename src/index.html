@@ -33,6 +33,10 @@
 * { box-sizing: border-box; }
 /* Platz für den Scrollbalken immer freihalten, damit die Seite beim Wechsel der Ansicht nicht seitlich springt */
 html { scrollbar-gutter: stable; }
+/* Solange ein Dialog offen ist, scrollt die Seite dahinter nicht mit – weder über den Hintergrund noch, wenn eine
+   Liste im Dialog ihr Ende erreicht. Dank scrollbar-gutter springt die Seite dabei nicht zur Seite. */
+html:has(dialog[open]) { overflow: hidden; }
+dialog, dialog * { overscroll-behavior: contain; }
 @supports not (scrollbar-gutter: stable) { html { overflow-y: scroll; } }
 body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 "Segoe UI", system-ui, sans-serif; }
 header { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 20px; background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: inset 0 3px 0 var(--accent); position: sticky; top: 0; z-index: 5; }
