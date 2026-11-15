@@ -16,8 +16,48 @@ permissions:
   contents: write
 
 jobs:
+  # Legt den Release-Entwurf genau einmal an, bevor die Builds starten. Würden die vier Build-Jobs das
+  # selbst tun, liefen sie parallel in einen Wettlauf (mehrere Entwürfe, abgebrochene Uploads).
+  # Bei einem erneuten Lauf wird ein vorhandener Entwurf mit demselben Tag wiederverwendet.
+  create-release:
+    name: Create draft release
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.release.outputs.id }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version=$(jq -r .version src-tauri/tauri.conf.json)
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then tag="$GITHUB_REF_NAME"; else tag="v$version"; fi
+
+          id=$(gh api --paginate "repos/$GITHUB_REPOSITORY/releases" \
+            --jq ".[] | select(.tag_name == \"$tag\" and .draft) | .id" | tail -n1)
+
+          if [ -z "$id" ]; then
+            id=$(gh api -X POST "repos/$GITHUB_REPOSITORY/releases" \
+              -f tag_name="$tag" \
+              -f target_commitish="$GITHUB_SHA" \
+              -f name="dewz $tag" \
+              -f body="Installer für Windows (.msi/.exe), macOS (.dmg) und Linux (.deb/.rpm/.AppImage) siehe unten. Windows ohne Installation – dewz_…_x64-portable.zip entpacken und dewz.exe starten." \
+              -F draft=true \
+              -F prerelease=false \
+              --jq .id)
+            echo "Created draft release $id for $tag"
+          else
+            echo "Reusing existing draft release $id for $tag"
+          fi
+
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build (${{ matrix.name }})
+    needs: create-release
     strategy:
       fail-fast: false
       matrix:
@@ -62,15 +102,10 @@ jobs:
         run: npm ci
 
       - uses: tauri-apps/tauri-action@v0
-        id: tauri
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_type == 'tag' && github.ref_name || 'v__VERSION__' }}
-          releaseName: dewz ${{ github.ref_type == 'tag' && github.ref_name || 'v__VERSION__' }}
-          releaseBody: Installer für Windows (.msi/.exe), macOS (.dmg) und Linux (.deb/.rpm/.AppImage) siehe unten. Windows ohne Installation – dewz_…_x64-portable.zip entpacken und dewz.exe starten.
-          releaseDraft: true
-          prerelease: false
+          releaseId: ${{ needs.create-release.outputs.release_id }}
           args: ${{ matrix.args }}
 
       # Portable Windows-Version: nur dewz.exe (plus Lizenz) als ZIP, läuft ohne Installation, solange die
@@ -80,13 +115,18 @@ jobs:
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_ID: ${{ steps.tauri.outputs.releaseId }}
-          VERSION: ${{ steps.tauri.outputs.appVersion }}
+          RELEASE_ID: ${{ needs.create-release.outputs.release_id }}
+          VERSION: ${{ needs.create-release.outputs.version }}
         run: |
           name="dewz_${VERSION}_x64-portable.zip"
           mkdir portable
           cp src-tauri/target/release/dewz.exe LICENSE portable/
           (cd portable && 7z a -tzip "../$name" dewz.exe LICENSE)
+          # Bei einem erneuten Lauf liegt die ZIP schon am Entwurf – vorher löschen, sonst antwortet GitHub mit 422.
+          GH_TOKEN="$GITHUB_TOKEN" gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets" \
+            --jq ".[] | select(.name == \"$name\") | .id" | while read -r asset_id; do
+            GH_TOKEN="$GITHUB_TOKEN" gh api -X DELETE "repos/${GITHUB_REPOSITORY}/releases/assets/${asset_id}"
+          done
           curl --fail-with-body -sS -X POST \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Content-Type: application/zip" \
